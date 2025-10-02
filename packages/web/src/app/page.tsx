@@ -10,16 +10,16 @@ import { FileText, Sparkles, Zap } from 'lucide-react';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-interactive bg-clip-text text-transparent">
             Docuflow
           </h1>
-          <p className="text-2xl text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-2xl text-foreground mb-8">
             Flow from upload to insight
           </p>
-          <p className="text-lg text-gray-500 dark:text-gray-400 mb-8">
+          <p className="text-lg text-muted-foreground mb-8">
             AI-native document intelligence platform
           </p>
           <div className="flex gap-4 justify-center">
@@ -33,14 +33,14 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <Card>
             <CardHeader>
-              <FileText className="w-12 h-12 text-blue-500 mb-4" />
+              <FileText className="w-12 h-12 text-primary mb-4" />
               <CardTitle>Upload Documents</CardTitle>
               <CardDescription>
                 Seamlessly upload and manage your documents in one place
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Support for PDF, DOCX, TXT, and more. Secure cloud storage with
                 S3 integration.
               </p>
@@ -49,14 +49,14 @@ export default function Home() {
 
           <Card>
             <CardHeader>
-              <Sparkles className="w-12 h-12 text-purple-500 mb-4" />
+              <Sparkles className="w-12 h-12 text-accent mb-4" />
               <CardTitle>AI Processing</CardTitle>
               <CardDescription>
                 Powerful AI extracts insights from your documents
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Automated text extraction, entity recognition, and intelligent
                 categorization.
               </p>
@@ -65,14 +65,14 @@ export default function Home() {
 
           <Card>
             <CardHeader>
-              <Zap className="w-12 h-12 text-green-500 mb-4" />
+              <Zap className="w-12 h-12 text-success mb-4" />
               <CardTitle>Instant Insights</CardTitle>
               <CardDescription>
                 Get actionable insights from your documents in seconds
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Real-time processing with background job queues. Export and
                 share insights easily.
               </p>

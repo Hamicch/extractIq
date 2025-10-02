@@ -17,16 +17,24 @@ const config: Config = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: '#3b82f6', // blue-500
-          foreground: '#ffffff',
+          DEFAULT: '#000000', // True Black
+          foreground: '#F8FAFC',
         },
         secondary: {
-          DEFAULT: '#a855f7', // purple-500
-          foreground: '#ffffff',
+          DEFAULT: '#1E293B', // Steel Gray
+          foreground: '#F8FAFC',
+        },
+        accent: {
+          DEFAULT: '#06B6D4', // Cyan
+          foreground: '#000000',
         },
         success: {
-          DEFAULT: '#22c55e', // green-500
-          foreground: '#ffffff',
+          DEFAULT: '#14B8A6', // Teal-500
+          foreground: '#F8FAFC',
+        },
+        interactive: {
+          DEFAULT: '#8B5CF6', // Purple-500
+          foreground: '#F8FAFC',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -35,10 +43,6 @@ const config: Config = {
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
