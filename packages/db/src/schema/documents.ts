@@ -1,17 +1,31 @@
-import { pgTable, uuid, varchar, bigint, timestamp, json } from 'drizzle-orm/pg-core';
-import { users } from './users';
+import { pgTable, uuid, text, bigint, integer, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
+import { tenants } from './tenants';
+
+export const documentStatusEnum = pgEnum('document_status', [
+  'uploaded',
+  'processing',
+  'completed',
+  'failed',
+]);
 
 export const documents = pgTable('documents', {
   id: uuid('id').defaultRandom().primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  size: bigint('size', { mode: 'number' }).notNull(),
-  mimeType: varchar('mime_type', { length: 100 }).notNull(),
-  status: varchar('status', { length: 50 }).notNull().default('uploading'),
-  s3Key: varchar('s3_key', { length: 500 }).notNull(),
-  metadata: json('metadata'),
-  userId: uuid('user_id')
+  tenantId: uuid('tenant_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  uploadedAt: timestamp('uploaded_at').defaultNow().notNull(),
+    .references(() => tenants.id, { onDelete: 'cascade' }),
+  status: documentStatusEnum('status').notNull().default('uploaded'),
+  fileUrl: text('file_url').notNull(),
+  fileName: text('file_name').notNull(),
+  fileSizeBytes: bigint('file_size_bytes', { mode: 'number' }).notNull(),
+  mimeType: text('mime_type').notNull(),
+  pageCount: integer('page_count'),
+  uploadedBy: text('uploaded_by'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
   processedAt: timestamp('processed_at'),
-});
+}, (table) => ({
+  tenantCreatedIdx: index('documents_tenant_created_idx').on(table.tenantId, table.createdAt),
+  tenantStatusIdx: index('documents_tenant_status_idx').on(table.tenantId, table.status),
+}));
+
+export type Document = typeof documents.$inferSelect;
+export type NewDocument = typeof documents.$inferInsert;
