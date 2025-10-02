@@ -6,11 +6,11 @@ export function errorHandler(
   _req: Request,
   res: Response,
   _next: NextFunction
-) {
+): void {
   console.error(err);
 
   if (err instanceof ZodError) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: {
         message: 'Validation error',
@@ -18,6 +18,7 @@ export function errorHandler(
         details: err.errors,
       },
     });
+    return;
   }
 
   res.status(500).json({

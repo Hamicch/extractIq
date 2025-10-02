@@ -1,10 +1,15 @@
-import type { Config } from 'drizzle-kit';
+import { defineConfig } from 'drizzle-kit';
 
-export default {
+export default defineConfig({
   schema: './src/schema/*',
   out: './drizzle',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || '',
+    host: 'localhost',
+    port: 5433,
+    user: 'docuflow',
+    password: 'docuflow_dev',
+    database: 'docuflow',
+    ssl: false,
   },
-} satisfies Config;
+});

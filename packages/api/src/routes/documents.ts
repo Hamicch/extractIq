@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import type { ApiResponse, PaginatedResponse, Document } from '@docuflow/shared';
 
 export const documentsRouter = Router();
 
-documentsRouter.get('/', async (req, res) => {
+documentsRouter.get('/', async (_req, res) => {
   // TODO: Implement document listing with pagination
-  const response: ApiResponse<PaginatedResponse<Document>> = {
+  res.json({
     success: true,
     data: {
       items: [],
@@ -14,33 +13,29 @@ documentsRouter.get('/', async (req, res) => {
       pageSize: 10,
       totalPages: 0,
     },
-  };
-  res.json(response);
+  });
 });
 
-documentsRouter.post('/', async (req, res) => {
+documentsRouter.post('/', async (_req, res) => {
   // TODO: Implement document upload
-  const response: ApiResponse = {
+  res.json({
     success: true,
     data: { message: 'Document uploaded successfully' },
-  };
-  res.json(response);
+  });
 });
 
 documentsRouter.get('/:id', async (req, res) => {
   // TODO: Implement document retrieval
-  const response: ApiResponse = {
+  res.json({
     success: true,
     data: { id: req.params.id },
-  };
-  res.json(response);
+  });
 });
 
-documentsRouter.delete('/:id', async (req, res) => {
+documentsRouter.delete('/:id', async (_req, res) => {
   // TODO: Implement document deletion
-  const response: ApiResponse = {
+  res.json({
     success: true,
     data: { message: 'Document deleted successfully' },
-  };
-  res.json(response);
+  });
 });
