@@ -22,6 +22,9 @@ export function useInfiniteDocuments(
     queryKey: ['documents', 'infinite', params],
     queryFn: ({ pageParam }) =>
       client.listDocuments({
+        limit: 20,
+        sortBy: 'uploadedAt',
+        sortOrder: 'desc',
         ...params,
         cursor: pageParam,
       }),

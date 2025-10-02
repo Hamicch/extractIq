@@ -7,16 +7,16 @@ export function useDocumentStatus(documentId: string, options?: {
 }) {
   const client = getDocuflowClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['documents', documentId, 'status'],
     queryFn: () => client.getDocumentStatus(documentId),
     enabled: options?.enabled ?? true,
     // Poll every 3 seconds by default if document is still processing
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       if (
-        data?.status === 'processing' ||
-        data?.status === 'queued' ||
-        data?.status === 'uploading'
+        query.state.data?.status === 'processing' ||
+        query.state.data?.status === 'queued' ||
+        query.state.data?.status === 'uploading'
       ) {
         return options?.refetchInterval ?? 3000;
       }
@@ -25,4 +25,6 @@ export function useDocumentStatus(documentId: string, options?: {
     // Stop polling on completed/failed
     refetchIntervalInBackground: false,
   });
+
+  return query;
 }

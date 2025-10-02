@@ -272,3 +272,12 @@ export type UploadDocumentRequest = z.infer<typeof UploadDocumentRequestSchema>;
 export type ListDocumentsRequest = z.infer<typeof ListDocumentsRequestSchema>;
 export type GetAnalyticsRequest = z.infer<typeof GetAnalyticsRequestSchema>;
 export type ListTenantsRequest = z.infer<typeof ListTenantsRequestSchema>;
+
+// Job Data Types
+export const JobDataSchema = z.object({
+  documentId: z.string().uuid(),
+  userId: z.string(),
+  tenantId: z.string().uuid(),
+});
+
+export type JobData = z.infer<typeof JobDataSchema>;
