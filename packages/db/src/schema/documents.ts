@@ -2,6 +2,7 @@ import { pgTable, uuid, text, bigint, integer, timestamp, pgEnum, index } from '
 import { tenants } from './tenants';
 
 export const documentStatusEnum = pgEnum('document_status', [
+  'queued',
   'uploaded',
   'processing',
   'completed',
@@ -21,6 +22,7 @@ export const documents = pgTable('documents', {
   pageCount: integer('page_count'),
   uploadedBy: text('uploaded_by'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
   processedAt: timestamp('processed_at'),
 }, (table) => ({
   tenantCreatedIdx: index('documents_tenant_created_idx').on(table.tenantId, table.createdAt),

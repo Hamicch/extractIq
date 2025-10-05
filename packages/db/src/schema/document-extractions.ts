@@ -10,6 +10,7 @@ export const documentExtractions = pgTable('document_extractions', {
   data: jsonb('data').notNull(), // Extracted structured data
   confidenceScore: decimal('confidence_score', { precision: 3, scale: 2 }).notNull(), // 0.00 to 1.00
   modelVersion: text('model_version').notNull(),
+  metadata: jsonb('metadata'),
   extractedAt: timestamp('extracted_at').defaultNow().notNull(),
 }, (table) => ({
   documentIdx: index('extractions_document_idx').on(table.documentId),
