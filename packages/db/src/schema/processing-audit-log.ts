@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, integer, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, integer, timestamp, jsonb, pgEnum, index } from 'drizzle-orm/pg-core';
 import { documents } from './documents';
 
 export const processingStageEnum = pgEnum('processing_stage', [
@@ -19,6 +19,7 @@ export const processingAuditLog = pgTable('processing_audit_log', {
   durationMs: integer('duration_ms'),
   costCents: integer('cost_cents'),
   errorMessage: text('error_message'),
+  metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => ({
   documentStageIdx: index('audit_document_stage_idx').on(table.documentId, table.stage),
