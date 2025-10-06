@@ -29,7 +29,7 @@ import {
 import { useTheme } from 'next-themes';
 
 export default function AnalyticsPage() {
-  const selectedTenant = useAppStore((state) => state.selectedTenant);
+  const _selectedTenant = useAppStore((state) => state.selectedTenant);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
     { name: 'Failed', value: 5 },
   ];
 
-  const costBreakdownData = [
+  const _costBreakdownData = [
     { stage: 'OCR', cost: 450 },
     { stage: 'Extraction', cost: 680 },
     { stage: 'Validation', cost: 120 },

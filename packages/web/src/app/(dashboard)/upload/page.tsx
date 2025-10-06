@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useUploadDocument } from '@/hooks/api';
+import { useUploadDocument as _useUploadDocument } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
 import { Card, Button } from '@docuflow/ui';
 import { AlertCircle, DollarSign } from 'lucide-react';
@@ -117,7 +117,7 @@ export default function UploadPage() {
     }
   };
 
-  const hasErrors = Object.values(uploadProgress).some((p) => p.status === 'error');
+  const _hasErrors = Object.values(uploadProgress).some((p) => p.status === 'error');
   const allCompleted = selectedFiles.length > 0 &&
     Object.keys(uploadProgress).length === selectedFiles.length &&
     Object.values(uploadProgress).every((p) => p.status === 'completed');

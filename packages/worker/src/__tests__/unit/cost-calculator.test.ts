@@ -6,10 +6,8 @@ describe('Cost Calculator', () => {
       // Test: 1000 input tokens + 500 output tokens
       // GPT-4: $0.03/1K input, $0.06/1K output
       // Expect: Total cost = $0.06
-      const inputTokens = 1000;
-      const outputTokens = 500;
       const expectedCost = (1000 * 0.03 / 1000) + (500 * 0.06 / 1000);
-      // expect(calculateCost('gpt-4', inputTokens, outputTokens)).toBe(expectedCost);
+      // TODO: expect(calculateCost('gpt-4', 1000, 500)).toBe(expectedCost);
       expect(expectedCost).toBeGreaterThan(0);
     });
 

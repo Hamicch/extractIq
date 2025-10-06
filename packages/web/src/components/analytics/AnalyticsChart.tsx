@@ -17,7 +17,7 @@ export function AnalyticsChart({
   children,
   className = '',
 }: AnalyticsChartProps) {
-  const { theme } = useTheme();
+  const { theme: _theme } = useTheme();
 
   return (
     <Card className={`p-6 ${className}`}>
