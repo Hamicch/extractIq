@@ -48,6 +48,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build dependencies
+        run: npm run build --workspace=@docuflow/db --workspace=@docuflow/shared
+
       - name: Run API unit tests
         run: npm run test --workspace=@docuflow/api
         env:
@@ -89,6 +92,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build dependencies
+        run: npm run build --workspace=@docuflow/ui --workspace=@docuflow/shared
 
       - name: Run frontend tests
         run: npm run test --workspace=@docuflow/web
