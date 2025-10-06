@@ -15,6 +15,7 @@ export interface Tenant {
   plan: 'free' | 'pro' | 'enterprise';
   quotaUsed: number;
   quotaLimit: number;
+  createdAt?: string;
 }
 
 interface AppState {
