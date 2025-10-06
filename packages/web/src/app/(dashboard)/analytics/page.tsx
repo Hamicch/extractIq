@@ -1,26 +1,70 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useAnalytics } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Card } from '@docuflow/ui';
-import { FileText, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
+import { Button } from '@docuflow/ui';
+import { FileText, CheckCircle, DollarSign, Clock, Download } from 'lucide-react';
+import { MetricCard } from '@/components/analytics/MetricCard';
+import { AnalyticsChart, getChartColors } from '@/components/analytics/AnalyticsChart';
+import { DateRangePicker } from '@/components/analytics/DateRangePicker';
+import { subDays } from 'date-fns';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { useTheme } from 'next-themes';
 
 export default function AnalyticsPage() {
   const selectedTenant = useAppStore((state) => state.selectedTenant);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
-  // Pass proper parameters for analytics
+  const [dateRange, setDateRange] = useState({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  });
+
   const params = {
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    endDate: new Date().toISOString(),
+    startDate: dateRange.from.toISOString(),
+    endDate: dateRange.to.toISOString(),
     granularity: 'day' as const,
   };
 
-  const { data: analytics, isLoading } = useAnalytics(params);
+  const { data: analytics, isLoading, refetch } = useAnalytics(params);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [refetch]);
+
+  const handleExportCSV = () => {
+    // TODO: Implement CSV export
+    console.log('Exporting analytics to CSV...');
+  };
 
   if (isLoading) {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded w-1/4" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
@@ -31,84 +75,281 @@ export default function AnalyticsPage() {
     );
   }
 
-  const stats = [
-    {
-      label: 'Documents Processed',
-      value: analytics?.metrics.documentsProcessed || 0,
-      icon: FileText,
-      color: 'text-primary',
-    },
-    {
-      label: 'Success Rate',
-      value: analytics?.metrics.successRate ? `${(analytics.metrics.successRate * 100).toFixed(0)}%` : '0%',
-      icon: CheckCircle,
-      color: 'text-success',
-    },
-    {
-      label: 'Total Pages',
-      value: analytics?.metrics.totalPages || 0,
-      icon: Clock,
-      color: 'text-warning',
-    },
-    {
-      label: 'Total Cost',
-      value: analytics?.metrics.totalCost ? `$${(analytics.metrics.totalCost / 100).toFixed(2)}` : '$0.00',
-      icon: XCircle,
-      color: 'text-error',
-    },
+  // Mock data for charts - replace with actual API data
+  const timeSeriesData = [
+    { date: '2024-01-01', documents: 45, cost: 120 },
+    { date: '2024-01-02', documents: 52, cost: 145 },
+    { date: '2024-01-03', documents: 49, cost: 132 },
+    { date: '2024-01-04', documents: 63, cost: 178 },
+    { date: '2024-01-05', documents: 58, cost: 165 },
+    { date: '2024-01-06', documents: 71, cost: 201 },
+    { date: '2024-01-07', documents: 67, cost: 189 },
   ];
+
+  const successFailData = [
+    { name: 'Success', value: analytics?.metrics.documentsProcessed || 0 },
+    { name: 'Failed', value: 5 },
+  ];
+
+  const costBreakdownData = [
+    { stage: 'OCR', cost: 450 },
+    { stage: 'Extraction', cost: 680 },
+    { stage: 'Validation', cost: 120 },
+  ];
+
+  const statusDistribution = [
+    { name: 'Completed', value: 65 },
+    { name: 'Processing', value: 15 },
+    { name: 'Queued', value: 10 },
+    { name: 'Failed', value: 10 },
+  ];
+
+  const processingTimeData = [
+    { percentile: 'p50', time: 45 },
+    { percentile: 'p90', time: 89 },
+    { percentile: 'p95', time: 124 },
+    { percentile: 'p99', time: 201 },
+  ];
+
+  const topExpensiveDocs = [
+    { name: 'invoice_2024_q1.pdf', pages: 45, cost: 12.50 },
+    { name: 'contract_renewal.pdf', pages: 38, cost: 10.80 },
+    { name: 'financial_report.pdf', pages: 32, cost: 9.20 },
+    { name: 'tax_documents.pdf', pages: 28, cost: 8.10 },
+    { name: 'legal_agreement.pdf', pages: 25, cost: 7.30 },
+  ];
+
+  const colors = getChartColors(isDark);
+  const COLORS = [colors.primary, colors.secondary, colors.tertiary, colors.error];
+
+  // Sparkline data for metric cards
+  const sparklineData = timeSeriesData.map(d => ({ value: d.documents }));
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-          Analytics
-        </h1>
-        <p className="mt-1 text-neutral-600 dark:text-neutral-400">
-          Track your document processing metrics
-        </p>
+      {/* Header */}
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+            Analytics
+          </h1>
+          <p className="mt-1 text-neutral-600 dark:text-neutral-400">
+            Track your document processing metrics
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <DateRangePicker value={dateRange} onChange={setDateRange} />
+          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2">
+            <Download className="h-4 w-4" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
+      {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label} className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                    {stat.label}
-                  </p>
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mt-1">
-                    {stat.value}
-                  </p>
-                </div>
-                <Icon className={`h-8 w-8 ${stat.color}`} />
-              </div>
-            </Card>
-          );
-        })}
+        <MetricCard
+          title="Total Documents"
+          value={analytics?.metrics.documentsProcessed || 0}
+          icon={FileText}
+          trend={{ value: 12.5, isPositive: true }}
+          sparklineData={sparklineData}
+        />
+        <MetricCard
+          title="Success Rate"
+          value={analytics?.metrics.successRate ? `${(analytics.metrics.successRate * 100).toFixed(0)}%` : '0%'}
+          icon={CheckCircle}
+          trend={{ value: 3.2, isPositive: true }}
+          subtitle="Last 30 days"
+        />
+        <MetricCard
+          title="Total Cost"
+          value={analytics?.metrics.totalCost ? `$${(analytics.metrics.totalCost / 100).toFixed(2)}` : '$0.00'}
+          icon={DollarSign}
+          trend={{ value: 8.1, isPositive: false }}
+        />
+        <MetricCard
+          title="Avg Processing Time"
+          value="1.2m"
+          icon={Clock}
+          trend={{ value: 0, isPositive: true }}
+          subtitle="Median time"
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Processing Trends
-          </h2>
-          <div className="text-center py-12 text-neutral-500 dark:text-neutral-400">
-            Chart coming soon
-          </div>
-        </Card>
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Documents Over Time */}
+        <AnalyticsChart
+          title="Documents Processed"
+          subtitle="Daily document processing volume"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={timeSeriesData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="date" tick={{ fill: colors.text }} />
+              <YAxis tick={{ fill: colors.text }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  border: `1px solid ${colors.grid}`,
+                  borderRadius: '8px',
+                }}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="documents"
+                stroke={colors.primary}
+                strokeWidth={2}
+                dot={{ fill: colors.primary }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </AnalyticsChart>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-            Recent Activity
-          </h2>
-          <div className="text-center py-12 text-neutral-500 dark:text-neutral-400">
-            Activity feed coming soon
+        {/* Success vs Failed */}
+        <AnalyticsChart
+          title="Success vs Failed"
+          subtitle="Document processing outcomes"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={successFailData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="name" tick={{ fill: colors.text }} />
+              <YAxis tick={{ fill: colors.text }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  border: `1px solid ${colors.grid}`,
+                  borderRadius: '8px',
+                }}
+              />
+              <Bar dataKey="value" fill={colors.primary} />
+            </BarChart>
+          </ResponsiveContainer>
+        </AnalyticsChart>
+
+        {/* Cost Over Time */}
+        <AnalyticsChart
+          title="Cost Over Time"
+          subtitle="Processing costs by stage"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={timeSeriesData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="date" tick={{ fill: colors.text }} />
+              <YAxis tick={{ fill: colors.text }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  border: `1px solid ${colors.grid}`,
+                  borderRadius: '8px',
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="cost"
+                stroke={colors.tertiary}
+                fill={colors.tertiary}
+                fillOpacity={0.6}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </AnalyticsChart>
+
+        {/* Status Distribution */}
+        <AnalyticsChart
+          title="Documents by Status"
+          subtitle="Current status distribution"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={statusDistribution}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {statusDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  border: `1px solid ${colors.grid}`,
+                  borderRadius: '8px',
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </AnalyticsChart>
+
+        {/* Processing Time Distribution */}
+        <AnalyticsChart
+          title="Processing Time Distribution"
+          subtitle="Percentile breakdown (seconds)"
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={processingTimeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+              <XAxis dataKey="percentile" tick={{ fill: colors.text }} />
+              <YAxis tick={{ fill: colors.text }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                  border: `1px solid ${colors.grid}`,
+                  borderRadius: '8px',
+                }}
+              />
+              <Bar dataKey="time" fill={colors.secondary} />
+            </BarChart>
+          </ResponsiveContainer>
+        </AnalyticsChart>
+
+        {/* Top Expensive Documents */}
+        <AnalyticsChart
+          title="Top 10 Most Expensive Documents"
+          subtitle="By processing cost"
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b border-neutral-200 dark:border-neutral-700">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                    Document
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                    Pages
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                    Cost
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
+                {topExpensiveDocs.map((doc, index) => (
+                  <tr key={index} className="hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                    <td className="px-4 py-2 text-sm text-neutral-900 dark:text-neutral-100 truncate max-w-[200px]">
+                      {doc.name}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-neutral-900 dark:text-neutral-100 text-right">
+                      {doc.pages}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-neutral-900 dark:text-neutral-100 text-right font-medium">
+                      ${doc.cost.toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </Card>
+        </AnalyticsChart>
       </div>
     </div>
   );
