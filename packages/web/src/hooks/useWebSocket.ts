@@ -8,6 +8,7 @@ interface WebSocketOptions {
   autoConnect?: boolean;
   reconnectAttempts?: number;
   reconnectDelay?: number;
+  onDocumentUpdate?: (data: any) => void;
 }
 
 export function useWebSocket(options: WebSocketOptions = {}) {
@@ -15,6 +16,7 @@ export function useWebSocket(options: WebSocketOptions = {}) {
     autoConnect = true,
     reconnectAttempts = 5,
     reconnectDelay = 1000,
+    onDocumentUpdate,
   } = options;
 
   const socketRef = useRef<Socket | null>(null);
@@ -53,7 +55,12 @@ export function useWebSocket(options: WebSocketOptions = {}) {
       console.error('WebSocket connection error:', error);
       setReconnectCount((prev) => prev + 1);
     });
-  }, [reconnectAttempts, reconnectDelay, selectedTenant]);
+
+    // Listen for document updates
+    if (onDocumentUpdate) {
+      socketRef.current.on('document:update', onDocumentUpdate);
+    }
+  }, [reconnectAttempts, reconnectDelay, selectedTenant, onDocumentUpdate]);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {

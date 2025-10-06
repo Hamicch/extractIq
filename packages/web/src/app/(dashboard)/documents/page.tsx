@@ -1,53 +1,103 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { useDocuments } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Card } from '@docuflow/ui';
-import { FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Card, Button, Input } from '@docuflow/ui';
+import { Search, SlidersHorizontal, Trash2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { DocumentCard } from '@/components/documents/DocumentCard';
+import { useWebSocket } from '@/hooks/useWebSocket';
+
+type SortField = 'uploadedAt' | 'size' | 'name';
+type SortOrder = 'asc' | 'desc';
+type StatusFilter = 'all' | 'uploading' | 'queued' | 'processing' | 'completed' | 'failed';
 
 export default function DocumentsPage() {
   const selectedTenant = useAppStore((state) => state.selectedTenant);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [sortField, setSortField] = useState<SortField>('uploadedAt');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const queryParams = {
-    limit: 50,
-    sortBy: 'uploadedAt' as const,
-    sortOrder: 'desc' as const,
+    limit: pageSize,
+    offset: (page - 1) * pageSize,
+    sortBy: sortField,
+    sortOrder: sortOrder,
   };
 
-  const { data: documentsResponse, isLoading } = useDocuments(queryParams);
-
+  const { data: documentsResponse, isLoading, refetch } = useDocuments(queryParams);
   const documents = documentsResponse?.data || [];
+  const pagination = documentsResponse?.pagination;
+
+  // WebSocket for real-time updates
+  useWebSocket({
+    onDocumentUpdate: (data) => {
+      // Refetch documents when there's an update
+      refetch();
+    },
+  });
+
+  // Filter and search documents
+  const filteredDocuments = useMemo(() => {
+    return documents.filter((doc) => {
+      const matchesSearch = searchQuery === '' ||
+        doc.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [documents, searchQuery, statusFilter]);
+
+  const handleSelectDocument = (id: string) => {
+    const newSelection = new Set(selectedDocuments);
+    if (newSelection.has(id)) {
+      newSelection.delete(id);
+    } else {
+      newSelection.add(id);
+    }
+    setSelectedDocuments(newSelection);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedDocuments.size === 0) return;
+
+    // TODO: Implement bulk delete API call
+    console.log('Deleting documents:', Array.from(selectedDocuments));
+    setSelectedDocuments(new Set());
+  };
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('desc');
+    }
+  };
+
+  // Since we're using cursor-based pagination, we'll simplify this
+  // In a real implementation, you'd use the cursor from pagination
 
   if (isLoading) {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-24 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
-          ))}
+          <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded w-1/4" />
+          <div className="grid grid-cols-1 gap-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
+            ))}
+          </div>
         </div>
       </div>
     );
   }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-5 w-5 text-success" />;
-      case 'failed':
-        return <XCircle className="h-5 w-5 text-error" />;
-      case 'processing':
-      case 'uploaded':
-        return <Clock className="h-5 w-5 text-warning animate-spin" />;
-      default:
-        return <FileText className="h-5 w-5 text-neutral-500" />;
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
-  };
 
   return (
     <div className="p-6">
@@ -56,64 +106,170 @@ export default function DocumentsPage() {
           Documents
         </h1>
         <p className="mt-1 text-neutral-600 dark:text-neutral-400">
-          View and manage your uploaded documents
+          Manage and track your document processing
         </p>
       </div>
 
-      {documents.length === 0 ? (
-        <Card className="p-12 text-center">
-          <FileText className="h-12 w-12 mx-auto text-neutral-400 mb-4" />
-          <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-            No documents yet
-          </h3>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-            Upload your first document to get started
-          </p>
-          <Link
-            href="/upload"
-            className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+      {/* Filters and Search */}
+      <Card className="p-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+              <Input
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Status Filter */}
+          <div className="flex gap-2">
+            {(['all', 'uploading', 'queued', 'processing', 'completed', 'failed'] as StatusFilter[]).map((status) => (
+              <Button
+                key={status}
+                variant={statusFilter === status ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setStatusFilter(status)}
+                className="capitalize"
+              >
+                {status}
+              </Button>
+            ))}
+          </div>
+
+          {/* Sort */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSort('uploadedAt')}
+              className="flex items-center gap-2"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Date {sortField === 'uploadedAt' && (sortOrder === 'asc' ? '↑' : '↓')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSort('size')}
+            >
+              Size {sortField === 'size' && (sortOrder === 'asc' ? '↑' : '↓')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSort('name')}
+            >
+              Name {sortField === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+            </Button>
+          </div>
+
+          {/* Refresh */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="flex items-center gap-2"
           >
-            Upload Document
-          </Link>
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
+      </Card>
+
+      {/* Bulk Actions */}
+      {selectedDocuments.size > 0 && (
+        <Card className="p-4 mb-6 bg-primary/5 border-primary/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                {selectedDocuments.size} document{selectedDocuments.size > 1 ? 's' : ''} selected
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedDocuments(new Set())}
+              >
+                Clear selection
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Selected
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Document List */}
+      {filteredDocuments.length === 0 ? (
+        <Card className="p-12 text-center">
+          <p className="text-neutral-500 dark:text-neutral-400">
+            {searchQuery || statusFilter !== 'all'
+              ? 'No documents match your filters'
+              : 'No documents yet'}
+          </p>
+          {!searchQuery && statusFilter === 'all' && (
+            <Link href="/upload">
+              <Button className="mt-4">Upload Your First Document</Button>
+            </Link>
+          )}
         </Card>
       ) : (
-        <div className="space-y-3">
-          {documents.map((doc) => (
-            <Link key={doc.id} href={`/documents/${doc.id}`}>
-              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0">
-                    {getStatusIcon(doc.status)}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
-                        {doc.name}
-                      </h3>
-                      <span
-                        className={`px-2 py-0.5 text-xs rounded-full ${
-                          doc.status === 'completed'
-                            ? 'bg-success-100 text-success-700 dark:bg-success-900 dark:text-success-300'
-                            : doc.status === 'failed'
-                            ? 'bg-error-100 text-error-700 dark:bg-error-900 dark:text-error-300'
-                            : 'bg-warning-100 text-warning-700 dark:bg-warning-900 dark:text-warning-300'
-                        }`}
-                      >
-                        {getStatusLabel(doc.status)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                      Uploaded {new Date(doc.uploadedAt).toLocaleDateString()}
-                      {(doc.metadata as any)?.pageCount && ` • ${(doc.metadata as any).pageCount} pages`}
-                      {doc.size && ` • ${(doc.size / 1024 / 1024).toFixed(2)} MB`}
-                    </p>
-                  </div>
+        <>
+          <div className="grid grid-cols-1 gap-4 mb-6">
+            {filteredDocuments.map((document) => (
+              <div key={document.id} className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={selectedDocuments.has(document.id)}
+                  onChange={() => handleSelectDocument(document.id)}
+                  className="mt-6 h-4 w-4 rounded border-neutral-300 dark:border-neutral-700"
+                />
+                <div className="flex-1">
+                  <DocumentCard document={document} showConfidence={true} />
                 </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {pagination && (pagination.hasNext || pagination.hasPrev) && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Showing {documents.length} documents
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(page - 1)}
+                  disabled={!pagination.hasPrev}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(page + 1)}
+                  disabled={!pagination.hasNext}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -4,164 +4,259 @@ import { useState, useCallback } from 'react';
 import { useUploadDocument } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
 import { Card, Button } from '@docuflow/ui';
-import { Upload, FileText, X, CheckCircle } from 'lucide-react';
+import { AlertCircle, DollarSign } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { FileUploadZone } from '@/components/documents/FileUploadZone';
+import * as tus from 'tus-js-client';
+
+interface UploadProgress {
+  fileName: string;
+  progress: number;
+  status: 'uploading' | 'completed' | 'error';
+  error?: string;
+}
 
 export default function UploadPage() {
   const router = useRouter();
   const selectedTenant = useAppStore((state) => state.selectedTenant);
-  const { mutateAsync: uploadDocument, isPending } = useUploadDocument();
-  const [file, setFile] = useState<File | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, UploadProgress>>({});
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type === 'application/pdf') {
-      setFile(droppedFile);
-    } else {
-      toast.error('Please upload a PDF file');
-    }
+  const handleFilesSelected = useCallback((files: File[]) => {
+    setSelectedFiles((prev) => [...prev, ...files]);
   }, []);
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
+  const handleRemoveFile = useCallback((index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const estimateCost = () => {
+    const totalPages = selectedFiles.length * 5; // Estimate 5 pages per document
+    const costPerPage = 0.01; // $0.01 per page
+    return (totalPages * costPerPage).toFixed(2);
   };
 
-  const handleUpload = async () => {
-    if (!file || !selectedTenant) return;
+  const uploadWithTus = async (file: File): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const upload = new tus.Upload(file, {
+        endpoint: `${process.env.NEXT_PUBLIC_API_URL}/api/upload`,
+        retryDelays: [0, 3000, 5000, 10000],
+        metadata: {
+          filename: file.name,
+          filetype: file.type,
+          tenantId: selectedTenant?.id || '',
+        },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('docuflow_api_key')}`,
+        },
+        onError: (error) => {
+          setUploadProgress((prev) => ({
+            ...prev,
+            [file.name]: {
+              fileName: file.name,
+              progress: 0,
+              status: 'error',
+              error: error.message,
+            },
+          }));
+          reject(error);
+        },
+        onProgress: (bytesUploaded, bytesTotal) => {
+          const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(0);
+          setUploadProgress((prev) => ({
+            ...prev,
+            [file.name]: {
+              fileName: file.name,
+              progress: Number(percentage),
+              status: 'uploading',
+            },
+          }));
+        },
+        onSuccess: () => {
+          setUploadProgress((prev) => ({
+            ...prev,
+            [file.name]: {
+              fileName: file.name,
+              progress: 100,
+              status: 'completed',
+            },
+          }));
+          resolve();
+        },
+      });
+
+      upload.start();
+    });
+  };
+
+  const handleUploadAll = async () => {
+    if (!selectedTenant || selectedFiles.length === 0) return;
+
+    setIsUploading(true);
 
     try {
-      await uploadDocument({ file });
-      toast.success('Document uploaded successfully');
-      router.push('/documents');
+      // Upload files in batches of 3
+      const batchSize = 3;
+      for (let i = 0; i < selectedFiles.length; i += batchSize) {
+        const batch = selectedFiles.slice(i, i + batchSize);
+        await Promise.all(batch.map((file) => uploadWithTus(file)));
+      }
+
+      toast.success(`Successfully uploaded ${selectedFiles.length} document(s)`);
+
+      // Clear selected files after successful upload
+      setTimeout(() => {
+        router.push('/documents');
+      }, 1500);
     } catch (error) {
-      toast.error('Failed to upload document');
+      toast.error('Some uploads failed. Please check the status below.');
+    } finally {
+      setIsUploading(false);
     }
   };
+
+  const hasErrors = Object.values(uploadProgress).some((p) => p.status === 'error');
+  const allCompleted = selectedFiles.length > 0 &&
+    Object.keys(uploadProgress).length === selectedFiles.length &&
+    Object.values(uploadProgress).every((p) => p.status === 'completed');
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-          Upload Document
+          Upload Documents
         </h1>
         <p className="mt-1 text-neutral-600 dark:text-neutral-400">
-          Upload a document for AI-powered extraction
+          Upload multiple documents for AI-powered extraction
         </p>
       </div>
 
-      <div className="max-w-2xl mx-auto">
-        <Card className="p-8">
-          {!file ? (
-            <div
-              onDrop={handleDrop}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
-                isDragging
-                  ? 'border-primary bg-primary-50 dark:bg-primary-900/10'
-                  : 'border-neutral-300 dark:border-neutral-700'
-              }`}
-            >
-              <Upload
-                className={`h-12 w-12 mx-auto mb-4 ${
-                  isDragging ? 'text-primary' : 'text-neutral-400'
-                }`}
-              />
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Card className="p-6">
+          <FileUploadZone
+            onFilesSelected={handleFilesSelected}
+            selectedFiles={selectedFiles}
+            onRemoveFile={handleRemoveFile}
+            disabled={isUploading}
+          />
 
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-                Drop your file here
-              </h3>
-
-              <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                or click to browse
-              </p>
-
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleFileInput}
-                  className="hidden"
-                  aria-label="Upload file"
-                />
-                <span className="inline-flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-                  Select File
-                </span>
-              </label>
-
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-4">
-                Supported formats: PDF (max 50MB)
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-10 w-10 text-primary" />
-                  <div>
-                    <p className="font-medium text-neutral-900 dark:text-neutral-100">
-                      {file.name}
-                    </p>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setFile(null)}
-                  className="p-2 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-md transition-colors"
-                  aria-label="Remove file"
-                >
-                  <X className="h-5 w-5 text-neutral-500" />
-                </button>
-              </div>
-
-              <div className="bg-accent-50 dark:bg-accent-900/10 border border-accent-200 dark:border-accent-800 rounded-lg p-4">
+          {selectedFiles.length > 0 && (
+            <div className="mt-6 space-y-4">
+              {/* Estimated Cost */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                  <DollarSign className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                   <div className="text-sm">
-                    <p className="font-medium text-accent-900 dark:text-accent-100 mb-1">
-                      Ready to upload
+                    <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                      Estimated Processing Cost
                     </p>
-                    <p className="text-accent-700 dark:text-accent-300">
-                      Your document will be processed using AI to extract structured data.
-                      This typically takes 1-2 minutes.
+                    <p className="text-blue-700 dark:text-blue-300">
+                      ${estimateCost()} (based on estimated page count)
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              {/* Upload Progress */}
+              {Object.keys(uploadProgress).length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    Upload Progress
+                  </p>
+                  {Object.values(uploadProgress).map((progress) => (
+                    <div
+                      key={progress.fileName}
+                      className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
+                          {progress.fileName}
+                        </p>
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                          {progress.progress}%
+                        </span>
+                      </div>
+                      <div className="h-2 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-300 ${
+                            progress.status === 'error'
+                              ? 'bg-red-500'
+                              : progress.status === 'completed'
+                              ? 'bg-green-500'
+                              : 'bg-primary'
+                          }`}
+                          style={{ width: `${progress.progress}%` }}
+                        />
+                      </div>
+                      {progress.error && (
+                        <div className="flex items-center gap-2 mt-2 text-xs text-red-600 dark:text-red-400">
+                          <AlertCircle className="h-3.5 w-3.5" />
+                          <span>{progress.error}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-2">
                 <Button
-                  onClick={handleUpload}
-                  disabled={isPending || !selectedTenant}
+                  onClick={handleUploadAll}
+                  disabled={isUploading || !selectedTenant || selectedFiles.length === 0 || allCompleted}
                   className="flex-1"
+                  size="lg"
                 >
-                  {isPending ? 'Uploading...' : 'Upload & Process'}
+                  {isUploading
+                    ? 'Uploading...'
+                    : allCompleted
+                    ? 'Upload Complete'
+                    : `Upload ${selectedFiles.length} Document${selectedFiles.length > 1 ? 's' : ''}`}
                 </Button>
 
-                <Button
-                  onClick={() => setFile(null)}
-                  variant="outline"
-                  disabled={isPending}
-                >
-                  Cancel
-                </Button>
+                {allCompleted && (
+                  <Button
+                    onClick={() => router.push('/documents')}
+                    variant="outline"
+                    size="lg"
+                  >
+                    View Documents
+                  </Button>
+                )}
+
+                {!isUploading && !allCompleted && (
+                  <Button
+                    onClick={() => {
+                      setSelectedFiles([]);
+                      setUploadProgress({});
+                    }}
+                    variant="outline"
+                    size="lg"
+                  >
+                    Clear All
+                  </Button>
+                )}
               </div>
             </div>
           )}
+        </Card>
+
+        {/* Info Card */}
+        <Card className="p-4 bg-neutral-50 dark:bg-neutral-800/50">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-neutral-500 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="font-medium mb-1">Processing Information</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Documents are processed in batches of 3 concurrent uploads</li>
+                <li>Processing typically takes 1-2 minutes per document</li>
+                <li>You can track progress in real-time on the Documents page</li>
+                <li>Uploads are resumable - they will continue even if interrupted</li>
+              </ul>
+            </div>
+          </div>
         </Card>
       </div>
     </div>
