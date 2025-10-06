@@ -166,7 +166,7 @@ export async function processDocumentExtract(
     await job.updateProgress(25);
 
     // Get extraction schema
-    const schema = EXTRACTION_SCHEMAS[extractionType];
+    const schema = EXTRACTION_SCHEMAS[extractionType as keyof typeof EXTRACTION_SCHEMAS];
     const systemPrompt = `You are an AI document extraction expert. Extract structured data from the provided document text according to the JSON schema. Return only valid JSON matching the schema. Be precise and extract all available information.`;
 
     const userPrompt = `Extract data from this ${extractionType} document:
