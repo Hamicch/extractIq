@@ -31,7 +31,7 @@ export function DocumentCard({ document, showConfidence = true }: DocumentCardPr
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
-  const getFileExtension = (filename: string) => {
+  const _getFileExtension = (filename: string) => {
     const ext = filename.split('.').pop()?.toUpperCase();
     return ext || 'FILE';
   };

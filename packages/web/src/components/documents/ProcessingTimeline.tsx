@@ -36,7 +36,9 @@ export function ProcessingTimeline({ events, className = '' }: ProcessingTimelin
     }
   };
 
-  const getStatusColor = (status: TimelineEvent['status']) => {
+  // Helper function for future use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _getStatusColor = (status: TimelineEvent['status']) => {
     switch (status) {
       case 'completed':
         return 'bg-green-500';

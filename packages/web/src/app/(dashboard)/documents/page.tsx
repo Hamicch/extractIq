@@ -14,7 +14,7 @@ type SortOrder = 'asc' | 'desc';
 type StatusFilter = 'all' | 'uploading' | 'queued' | 'processing' | 'completed' | 'failed';
 
 export default function DocumentsPage() {
-  const selectedTenant = useAppStore((state) => state.selectedTenant);
+  const _selectedTenant = useAppStore((state) => state.selectedTenant);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortField, setSortField] = useState<SortField>('uploadedAt');
@@ -36,7 +36,7 @@ export default function DocumentsPage() {
 
   // WebSocket for real-time updates
   useWebSocket({
-    onDocumentUpdate: (data) => {
+    onDocumentUpdate: (_data) => {
       // Refetch documents when there's an update
       refetch();
     },

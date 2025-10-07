@@ -71,7 +71,7 @@ export default function SettingsPage() {
     toast.success('New API key generated');
   };
 
-  const handleRevokeApiKey = (id: string) => {
+  const handleRevokeApiKey = (_id: string) => {
     // TODO: Implement API key revocation
     toast.success('API key revoked');
   };
