@@ -48,11 +48,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build dependencies
+        run: npx turbo run build --filter=@docuflow/shared --filter=@docuflow/db
+
+      - name: Build API package
+        run: npx turbo run build --filter=@docuflow/api
+
       - name: Run API unit tests
         run: npx turbo run test --filter=@docuflow/api
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/docuflow_test
           REDIS_URL: redis://localhost:6379
+
+      - name: Build Worker package
+        run: npx turbo run build --filter=@docuflow/worker
 
       - name: Run Worker unit tests
         run: npx turbo run test --filter=@docuflow/worker
@@ -89,6 +98,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build dependencies
+        run: npx turbo run build --filter=@docuflow/shared --filter=@docuflow/db --filter=@docuflow/ui
 
       - name: Run frontend tests
         run: npx turbo run test --filter=@docuflow/web
