@@ -1,0 +1,112 @@
+name: Model Evaluation
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/worker/src/agents/**'
+      - 'packages/worker/src/schemas/**'
+      - 'packages/worker/src/eval/**'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  evaluate:
+    name: Run Extraction Evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Run evaluation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd packages/worker
+          npm run eval
+        continue-on-error: true # Don't fail if metrics aren't met
+
+      - name: Upload evaluation results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: packages/worker/eval-results/
+          retention-days: 30
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = './packages/worker/eval-results/latest.json';
+
+            if (!fs.existsSync(path)) {
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+            const body = `## 🤖 Model Evaluation Results
+
+            ### Summary
+            - **Overall Accuracy**: ${(report.summary.overallAccuracy * 100).toFixed(2)}%
+            - **Avg Precision**: ${(report.summary.avgFieldPrecision * 100).toFixed(2)}%
+            - **Avg Recall**: ${(report.summary.avgFieldRecall * 100).toFixed(2)}%
+            - **Avg F1 Score**: ${(report.summary.avgFieldF1 * 100).toFixed(2)}%
+
+            ### Performance
+            - **P95 Latency**: ${report.performance.latency.p95.toFixed(0)}ms
+            - **Avg Cost/Doc**: $${report.performance.cost.avgCostPerDocument.toFixed(4)}
+            - **Total Cost**: $${report.performance.cost.totalCost.toFixed(2)}
+
+            ### By Document Type
+            ${Object.entries(report.byDocumentType).map(([type, metrics]) =>
+              `- **${type}**: ${(metrics.accuracy * 100).toFixed(1)}% accuracy, ${metrics.avgLatency.toFixed(0)}ms latency`
+            ).join('\n')}
+
+            ### Top Fields
+            **Most Accurate**:
+            ${report.fieldAnalysis.mostAccurate.slice(0, 3).map(f =>
+              `- ${f.field}: ${(f.accuracy * 100).toFixed(1)}%`
+            ).join('\n')}
+
+            **Least Accurate**:
+            ${report.fieldAnalysis.leastAccurate.slice(0, 3).map(f =>
+              `- ${f.field}: ${(f.accuracy * 100).toFixed(1)}%`
+            ).join('\n')}
+
+            <details>
+            <summary>Full Results</summary>
+
+            \`\`\`json
+            ${JSON.stringify(report.summary, null, 2)}
+            \`\`\`
+            </details>
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Check if metrics meet targets
+        run: |
+          cd packages/worker
+          npm run eval || echo "::warning::Evaluation metrics below target thresholds"

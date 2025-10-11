@@ -12,7 +12,9 @@
     "type-check": "tsc --noEmit",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "test:ci": "jest --coverage --ci"
+    "test:ci": "jest --coverage --ci",
+    "eval": "tsx src/eval/run-eval.ts",
+    "eval:watch": "tsx watch src/eval/run-eval.ts"
   },
   "dependencies": {
     "@docuflow/db": "*",
@@ -20,10 +22,12 @@
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.47.0",
     "@opentelemetry/sdk-node": "^0.47.0",
+    "@types/pdf-parse": "^1.1.5",
     "bullmq": "^5.1.9",
     "dotenv": "^16.4.1",
     "ioredis": "^5.3.2",
     "openai": "^4.77.0",
+    "pdf-parse": "^2.2.0",
     "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
