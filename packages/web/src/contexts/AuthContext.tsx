@@ -9,6 +9,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -96,6 +97,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const register = async (email: string, password: string, name: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password, name }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Registration failed');
+      }
+
+      const data = await response.json();
+
+      // Store token as API key
+      localStorage.setItem('docuflow_api_key', data.data.token);
+
+      // Set user in store
+      setUser(data.data.user);
+
+      // Reinitialize API client with token
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      initializeDocuflowClient({
+        baseURL: apiUrl,
+        apiKey: data.data.token,
+      });
+
+      // Redirect to dashboard
+      router.push('/documents');
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       // Clear API key
@@ -118,6 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         isLoading,
         login,
+        register,
         logout,
         isAuthenticated: !!user,
       }}
