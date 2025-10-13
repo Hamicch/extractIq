@@ -13,8 +13,8 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:ci": "jest --coverage --ci",
-    "eval": "tsx src/eval/run-eval.ts",
-    "eval:watch": "tsx watch src/eval/run-eval.ts"
+    "eval": "dotenv -e ../../.env -- tsx src/eval/run-eval.ts",
+    "eval:watch": "dotenv -e ../../.env -- tsx watch src/eval/run-eval.ts"
   },
   "dependencies": {
     "@docuflow/db": "*",

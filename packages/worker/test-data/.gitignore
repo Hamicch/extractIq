@@ -1,0 +1,6 @@
+# Test data directory for evaluation framework
+# Add your test PDF files here
+
+*.pdf
+*.docx
+*.doc
