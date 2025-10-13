@@ -4,7 +4,7 @@
 
 **Docuflow** is an AI-native document intelligence platform that enables upload to insight workflow. It's a TypeScript monorepo using npm workspaces and Turbo for build orchestration.
 
-**Tagline:** *"Flow from upload to insight"*
+**Tagline:** _"Flow from upload to insight"_
 
 ---
 
@@ -19,6 +19,7 @@ Monorepo (npm workspaces + Turbo)
 ```
 
 **Technology Stack:**
+
 - **Language:** TypeScript
 - **Frontend:** Next.js 14, React 18, TailwindCSS
 - **Backend:** Express.js, Socket.IO
@@ -41,6 +42,7 @@ Monorepo (npm workspaces + Turbo)
 **Purpose:** RESTful API server handling HTTP requests, authentication, WebSocket connections, and job queue management.
 
 **Key Technologies:**
+
 - Express.js
 - Socket.IO (real-time updates)
 - BullMQ (job queuing)
@@ -49,6 +51,7 @@ Monorepo (npm workspaces + Turbo)
 - Rate limiting
 
 **Directory Structure:**
+
 ```
 packages/api/src/
 ├── index.ts                    # Main entry point
@@ -68,6 +71,7 @@ packages/api/src/
 ```
 
 **Key Features:**
+
 - REST API with OpenAPI validation
 - JWT-based authentication
 - WebSocket for real-time document updates
@@ -78,10 +82,12 @@ packages/api/src/
 - Distributed tracing (OpenTelemetry)
 
 **Ports:**
+
 - HTTP: 3001 (configurable via `API_PORT`)
 - Metrics: 9464 (Prometheus scrape endpoint)
 
 **Dependencies:**
+
 - `@docuflow/db` - Database access
 - `@docuflow/shared` - Shared types/utils
 
@@ -94,12 +100,14 @@ packages/api/src/
 **Purpose:** Processes background jobs from the queue, handles document processing, OCR, AI extraction, and evaluation.
 
 **Key Technologies:**
+
 - BullMQ (job processing)
 - OpenAI API (GPT-4)
 - pdf-parse (PDF text extraction)
 - Socket.IO client (progress updates)
 
 **Directory Structure:**
+
 ```
 packages/worker/src/
 ├── index.ts                    # Worker entry point
@@ -132,6 +140,7 @@ packages/worker/src/
 ```
 
 **Key Features:**
+
 - BullMQ worker with concurrency control
 - Document processing pipeline:
   1. OCR (pdf-parse)
@@ -153,11 +162,13 @@ packages/worker/src/
 - OpenTelemetry tracing
 
 **Scripts:**
+
 - `npm run dev` - Run worker in dev mode
 - `npm run eval` - Run AI extraction evaluation
 - `npm run eval:watch` - Watch mode for evaluation
 
 **Dependencies:**
+
 - `@docuflow/db` - Database access
 - `@docuflow/shared` - Shared types
 - `openai` - GPT-4 API
@@ -173,6 +184,7 @@ packages/worker/src/
 **Purpose:** Next.js web application providing the user interface for document management.
 
 **Key Technologies:**
+
 - Next.js 14 (App Router)
 - React 18
 - TailwindCSS
@@ -181,6 +193,7 @@ packages/worker/src/
 - Socket.IO client (real-time)
 
 **Directory Structure:**
+
 ```
 packages/web/src/
 ├── app/                        # Next.js App Router
@@ -208,6 +221,7 @@ packages/web/src/
 ```
 
 **Key Features:**
+
 - Document upload with drag-and-drop (react-dropzone)
 - Real-time processing updates (Socket.IO)
 - Document management (list, view, edit, delete)
@@ -219,6 +233,7 @@ packages/web/src/
 - Optimistic UI updates (Tanstack Query)
 
 **Frontend Instrumentation (NEW):**
+
 - Web Vitals: CLS, FID, LCP, FCP, TTFB, INP
 - Page view tracking
 - Custom event tracking
@@ -227,10 +242,12 @@ packages/web/src/
 - Feature usage analytics
 
 **Ports:**
+
 - Development: 3000
 - Production: 3000
 
 **Dependencies:**
+
 - `@docuflow/shared` - Shared types
 - `@docuflow/ui` - UI component library
 - `next` - Framework
@@ -245,11 +262,13 @@ packages/web/src/
 **Purpose:** Database schema, migrations, and query utilities using Drizzle ORM.
 
 **Key Technologies:**
+
 - Drizzle ORM
 - PostgreSQL
 - Drizzle Kit (migrations)
 
 **Directory Structure:**
+
 ```
 packages/db/src/
 ├── index.ts                    # Exports client + schemas
@@ -264,11 +283,13 @@ packages/db/src/
 ```
 
 **Database Schema:**
+
 - **users** - User accounts (id, email, password, tenant_id)
 - **documents** - Document metadata (id, filename, status, tenant_id)
 - **processing_audit_log** - Processing history (stage, status, duration, cost)
 
 **Key Features:**
+
 - Type-safe queries with Drizzle ORM
 - Automatic migrations with Drizzle Kit
 - Connection pooling
@@ -276,12 +297,14 @@ packages/db/src/
 - Seed data for development
 
 **Scripts:**
+
 - `npm run db:generate` - Generate migrations from schema
 - `npm run db:push` - Push schema to database
 - `npm run db:studio` - Open Drizzle Studio GUI
 - `npm run db:seed` - Seed test data
 
 **Database Connection:**
+
 ```typescript
 import { db } from '@docuflow/db';
 
@@ -298,6 +321,7 @@ const documents = await db.select().from(documentsTable);
 **Purpose:** Shared TypeScript types, interfaces, constants, and utilities used across packages.
 
 **Directory Structure:**
+
 ```
 packages/shared/src/
 ├── index.ts                    # Main exports
@@ -315,12 +339,14 @@ packages/shared/src/
 ```
 
 **Purpose:**
+
 - Single source of truth for types
 - Ensures consistency across frontend/backend
 - Shared validation logic
 - Common constants
 
 **Example Types:**
+
 ```typescript
 export interface Document {
   id: string;
@@ -349,6 +375,7 @@ export enum DocumentStatus {
 **Purpose:** Reusable React UI components (shadcn/ui based).
 
 **Directory Structure:**
+
 ```
 packages/ui/src/
 ├── index.ts                    # Component exports
@@ -361,6 +388,7 @@ packages/ui/src/
 ```
 
 **Key Features:**
+
 - Based on shadcn/ui (Radix UI + TailwindCSS)
 - Accessible components (WCAG compliant)
 - Dark mode support
@@ -368,10 +396,11 @@ packages/ui/src/
 - TypeScript types included
 
 **Usage in Web:**
+
 ```tsx
 import { Button, Card } from '@docuflow/ui';
 
-<Button variant="primary">Upload</Button>
+<Button variant="primary">Upload</Button>;
 ```
 
 ---
@@ -512,16 +541,19 @@ npm run build --workspace=@docuflow/api
 ### Monitoring Stack
 
 **Jaeger** (Distributed Tracing)
+
 - URL: http://localhost:16686
 - View request traces across services
 - Analyze slow operations
 
 **Prometheus** (Metrics)
+
 - URL: http://localhost:9090
 - Query metrics with PromQL
 - View scrape targets
 
 **Grafana** (Dashboards)
+
 - URL: http://localhost:3002
 - Login: admin/admin
 - Pre-configured Prometheus datasource
@@ -530,24 +562,28 @@ npm run build --workspace=@docuflow/api
 ### Metrics Collected
 
 **API Metrics:**
+
 - Request rate, error rate, latency (RED metrics)
 - Endpoint-level metrics
 - WebSocket connections
 - Queue size
 
 **Worker Metrics:**
+
 - Documents processed (total, by status, by type)
 - Processing duration by stage
 - OpenAI API latency and cost
 - Active jobs, queue depth
 
 **Frontend Metrics:**
+
 - Web Vitals (CLS, FID, LCP)
 - Page load times
 - API call latencies
 - Error rates
 
 **Custom Business Metrics:**
+
 - Cost per document
 - Success rate by document type
 - Confidence score distribution
@@ -555,6 +591,7 @@ npm run build --workspace=@docuflow/api
 ### Tracing
 
 OpenTelemetry traces automatically capture:
+
 - HTTP requests (Express)
 - Database queries (Drizzle)
 - Redis operations
@@ -566,17 +603,20 @@ OpenTelemetry traces automatically capture:
 ## 🔒 Security
 
 **Authentication:**
+
 - JWT-based auth
 - bcrypt password hashing
 - Token expiration
 
 **API Security:**
+
 - Rate limiting (express-rate-limit)
 - Helmet.js security headers
 - CORS configuration
 - Input validation (express-openapi-validator)
 
 **Database Security:**
+
 - Parameterized queries (Drizzle ORM)
 - Multi-tenancy isolation
 - Connection pooling
@@ -622,6 +662,7 @@ OpenTelemetry traces automatically capture:
 ### Adding a New Feature
 
 1. **Create branch**
+
    ```bash
    git checkout -b feature/my-feature
    ```
@@ -633,12 +674,14 @@ OpenTelemetry traces automatically capture:
    - Shared types → `packages/shared/src/types/`
 
 3. **Add tests**
+
    ```bash
    # Unit tests in __tests__/ directories
    npm test --workspace=@docuflow/api
    ```
 
 4. **Run checks locally**
+
    ```bash
    npm run lint
    npm run type-check
@@ -647,6 +690,7 @@ OpenTelemetry traces automatically capture:
    ```
 
 5. **Push and create PR**
+
    ```bash
    git push origin feature/my-feature
    # Create PR on GitHub
@@ -669,11 +713,13 @@ OpenTelemetry traces automatically capture:
 ## 🔮 Future Considerations
 
 **Scalability:**
+
 - Redis Cluster for queue
 - PostgreSQL read replicas
 - Horizontal scaling with K8s HPA (already configured)
 
 **Features:**
+
 - Multi-language support
 - Advanced document types
 - Document comparison
@@ -682,6 +728,7 @@ OpenTelemetry traces automatically capture:
 - Webhook integrations
 
 **Observability:**
+
 - ELK/Loki for log aggregation
 - SLO tracking
 - Custom alert rules

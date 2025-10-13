@@ -27,7 +27,8 @@ export function KeyValueList({ items, className = '' }: KeyValueListProps) {
             {item.key}
           </dt>
           <dd className="text-sm text-neutral-900 dark:text-neutral-100 font-mono flex items-center gap-2">
-            {typeof item.value === 'string' || typeof item.value === 'number' ? (
+            {typeof item.value === 'string' ||
+            typeof item.value === 'number' ? (
               <>
                 <span>{item.value}</span>
                 {item.copyable && typeof item.value === 'string' && (

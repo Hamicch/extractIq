@@ -48,8 +48,12 @@ export const DocumentValidateJobDataSchema = z.object({
 // Job Data Types
 export type DocumentUploadJobData = z.infer<typeof DocumentUploadJobDataSchema>;
 export type DocumentOcrJobData = z.infer<typeof DocumentOcrJobDataSchema>;
-export type DocumentExtractJobData = z.infer<typeof DocumentExtractJobDataSchema>;
-export type DocumentValidateJobData = z.infer<typeof DocumentValidateJobDataSchema>;
+export type DocumentExtractJobData = z.infer<
+  typeof DocumentExtractJobDataSchema
+>;
+export type DocumentValidateJobData = z.infer<
+  typeof DocumentValidateJobDataSchema
+>;
 
 // Job Result Schemas
 export const DocumentUploadResultSchema = z.object({
@@ -89,7 +93,9 @@ export const DocumentValidateResultSchema = z.object({
 export type DocumentUploadResult = z.infer<typeof DocumentUploadResultSchema>;
 export type DocumentOcrResult = z.infer<typeof DocumentOcrResultSchema>;
 export type DocumentExtractResult = z.infer<typeof DocumentExtractResultSchema>;
-export type DocumentValidateResult = z.infer<typeof DocumentValidateResultSchema>;
+export type DocumentValidateResult = z.infer<
+  typeof DocumentValidateResultSchema
+>;
 
 // WebSocket Event Types
 export const WebSocketEvents = {

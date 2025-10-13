@@ -22,7 +22,11 @@ const presets = [
   { label: 'Last 90 days', days: 90 },
 ];
 
-export function DateRangePicker({ value, onChange, className = '' }: DateRangePickerProps) {
+export function DateRangePicker({
+  value,
+  onChange,
+  className = '',
+}: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePresetClick = (days: number) => {
@@ -33,8 +37,10 @@ export function DateRangePicker({ value, onChange, className = '' }: DateRangePi
   };
 
   const getActivePreset = () => {
-    const daysDiff = Math.round((value.to.getTime() - value.from.getTime()) / (1000 * 60 * 60 * 24));
-    const preset = presets.find(p => p.days === daysDiff);
+    const daysDiff = Math.round(
+      (value.to.getTime() - value.from.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const preset = presets.find((p) => p.days === daysDiff);
     return preset?.label || 'Custom range';
   };
 
@@ -68,7 +74,8 @@ export function DateRangePicker({ value, onChange, className = '' }: DateRangePi
             ))}
             <div className="border-t border-neutral-200 dark:border-neutral-700 my-2" />
             <div className="px-3 py-2 text-xs text-neutral-600 dark:text-neutral-400">
-              {format(value.from, 'MMM dd, yyyy')} - {format(value.to, 'MMM dd, yyyy')}
+              {format(value.from, 'MMM dd, yyyy')} -{' '}
+              {format(value.to, 'MMM dd, yyyy')}
             </div>
           </div>
         </>

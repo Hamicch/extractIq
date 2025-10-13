@@ -11,7 +11,13 @@ import { useWebSocket } from '@/hooks/useWebSocket';
 
 type SortField = 'uploadedAt' | 'size' | 'name';
 type SortOrder = 'asc' | 'desc';
-type StatusFilter = 'all' | 'uploading' | 'queued' | 'processing' | 'completed' | 'failed';
+type StatusFilter =
+  | 'all'
+  | 'uploading'
+  | 'queued'
+  | 'processing'
+  | 'completed'
+  | 'failed';
 
 export default function DocumentsPage() {
   const _selectedTenant = useAppStore((state) => state.selectedTenant);
@@ -19,7 +25,9 @@ export default function DocumentsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortField, setSortField] = useState<SortField>('uploadedAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
+  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
+    new Set()
+  );
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
@@ -30,7 +38,11 @@ export default function DocumentsPage() {
     sortOrder: sortOrder,
   };
 
-  const { data: documentsResponse, isLoading, refetch } = useDocuments(queryParams);
+  const {
+    data: documentsResponse,
+    isLoading,
+    refetch,
+  } = useDocuments(queryParams);
   const documents = documentsResponse?.data || [];
   const pagination = documentsResponse?.pagination;
 
@@ -45,10 +57,12 @@ export default function DocumentsPage() {
   // Filter and search documents
   const filteredDocuments = useMemo(() => {
     return documents.filter((doc) => {
-      const matchesSearch = searchQuery === '' ||
+      const matchesSearch =
+        searchQuery === '' ||
         doc.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesStatus = statusFilter === 'all' || doc.status === statusFilter;
+      const matchesStatus =
+        statusFilter === 'all' || doc.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -91,7 +105,10 @@ export default function DocumentsPage() {
           <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded w-1/4" />
           <div className="grid grid-cols-1 gap-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
+              <div
+                key={i}
+                className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg"
+              />
             ))}
           </div>
         </div>
@@ -120,7 +137,9 @@ export default function DocumentsPage() {
               <Input
                 placeholder="Search documents..."
                 value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchQuery(e.target.value)
+                }
                 className="pl-10"
               />
             </div>
@@ -128,7 +147,16 @@ export default function DocumentsPage() {
 
           {/* Status Filter */}
           <div className="flex gap-2">
-            {(['all', 'uploading', 'queued', 'processing', 'completed', 'failed'] as StatusFilter[]).map((status) => (
+            {(
+              [
+                'all',
+                'uploading',
+                'queued',
+                'processing',
+                'completed',
+                'failed',
+              ] as StatusFilter[]
+            ).map((status) => (
               <Button
                 key={status}
                 variant={statusFilter === status ? 'default' : 'outline'}
@@ -150,7 +178,8 @@ export default function DocumentsPage() {
               className="flex items-center gap-2"
             >
               <SlidersHorizontal className="h-4 w-4" />
-              Date {sortField === 'uploadedAt' && (sortOrder === 'asc' ? '↑' : '↓')}
+              Date{' '}
+              {sortField === 'uploadedAt' && (sortOrder === 'asc' ? '↑' : '↓')}
             </Button>
             <Button
               variant="outline"
@@ -186,7 +215,8 @@ export default function DocumentsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                {selectedDocuments.size} document{selectedDocuments.size > 1 ? 's' : ''} selected
+                {selectedDocuments.size} document
+                {selectedDocuments.size > 1 ? 's' : ''} selected
               </p>
               <Button
                 variant="ghost"

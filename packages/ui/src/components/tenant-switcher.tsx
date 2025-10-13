@@ -56,11 +56,16 @@ export function TenantSwitcher({
           </div>
           {selectedTenant && (
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              {selectedTenant.plan.charAt(0).toUpperCase() + selectedTenant.plan.slice(1)} Plan
+              {selectedTenant.plan.charAt(0).toUpperCase() +
+                selectedTenant.plan.slice(1)}{' '}
+              Plan
             </div>
           )}
         </div>
-        <ChevronsUpDown className="h-4 w-4 text-neutral-500" aria-hidden="true" />
+        <ChevronsUpDown
+          className="h-4 w-4 text-neutral-500"
+          aria-hidden="true"
+        />
       </button>
 
       {isOpen && (
@@ -124,7 +129,8 @@ export function TenantSwitcher({
                           {tenant.name}
                         </div>
                         <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                          {tenant.quotaUsed.toLocaleString()} / {tenant.quotaLimit.toLocaleString()} docs
+                          {tenant.quotaUsed.toLocaleString()} /{' '}
+                          {tenant.quotaLimit.toLocaleString()} docs
                         </div>
                         {/* Quota bar */}
                         <div className="mt-1 h-1 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
@@ -134,8 +140,8 @@ export function TenantSwitcher({
                               usage > 90
                                 ? 'bg-error'
                                 : usage > 75
-                                ? 'bg-warning'
-                                : 'bg-success'
+                                  ? 'bg-warning'
+                                  : 'bg-success'
                             )}
                             style={{ width: `${Math.min(usage, 100)}%` }}
                             aria-label={`${usage.toFixed(0)}% quota used`}
@@ -143,7 +149,10 @@ export function TenantSwitcher({
                         </div>
                       </div>
                       {isSelected && (
-                        <Check className="h-4 w-4 text-primary" aria-hidden="true" />
+                        <Check
+                          className="h-4 w-4 text-primary"
+                          aria-hidden="true"
+                        />
                       )}
                     </button>
                   );
@@ -159,11 +168,18 @@ export function TenantSwitcher({
                 </div>
                 <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
                   <span>{quotaPercentage.toFixed(0)}% of quota</span>
-                  <span className={cn(
-                    'font-medium',
-                    quotaPercentage > 90 ? 'text-error' : quotaPercentage > 75 ? 'text-warning' : 'text-success'
-                  )}>
-                    {selectedTenant.quotaLimit - selectedTenant.quotaUsed} remaining
+                  <span
+                    className={cn(
+                      'font-medium',
+                      quotaPercentage > 90
+                        ? 'text-error'
+                        : quotaPercentage > 75
+                          ? 'text-warning'
+                          : 'text-success'
+                    )}
+                  >
+                    {selectedTenant.quotaLimit - selectedTenant.quotaUsed}{' '}
+                    remaining
                   </span>
                 </div>
               </div>

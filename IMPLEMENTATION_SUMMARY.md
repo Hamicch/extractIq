@@ -11,17 +11,20 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 ### 1. GitHub Actions Workflows
 
 #### **Enhanced test.yml** (Modified)
+
 - Added coverage threshold enforcement (80% backend, 70% frontend)
 - Added build verification step
 - Existing: Unit tests, E2E tests, type-check, lint, service containers
 
 #### **build.yml** (NEW)
+
 - Multi-stage Docker image builds for api, worker, web
 - Push to GitHub Container Registry (ghcr.io)
 - Trivy vulnerability scanning
 - Images tagged with git SHA and `latest`
 
 #### **deploy.yml** (NEW)
+
 - Staging deployment with smoke tests
 - Production blue-green deployment
 - Automatic rollback on failure
@@ -29,6 +32,7 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 - Slack notifications
 
 #### **eval.yml** (Already Existed)
+
 - AI extraction evaluation on PRs
 - Metrics reporting in PR comments
 
@@ -37,11 +41,13 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 ### 2. Docker Infrastructure
 
 #### **Dockerfiles** (NEW)
+
 - `packages/api/Dockerfile` - Multi-stage build, non-root user, health checks
 - `packages/worker/Dockerfile` - Optimized for background jobs
 - `packages/web/Dockerfile` - Next.js standalone build
 
 #### **docker-compose.production.yml** (NEW)
+
 - Production-ready compose file with:
   - Resource limits (CPU/memory)
   - Health checks
@@ -57,21 +63,25 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 **Directory:** `k8s/`
 
 #### **common/** (NEW)
+
 - `namespace.yaml` - docuflow namespace
 - `configmap.yaml` - Environment configuration
 - `secrets.yaml` - Sensitive data (template)
 - `ingress.yaml` - TLS ingress with cert-manager
 
 #### **api/** (NEW)
+
 - `deployment.yaml` - API deployment with liveness/readiness probes
 - `service.yaml` - ClusterIP service
 - `hpa.yaml` - Horizontal Pod Autoscaler (3-10 replicas)
 
 #### **worker/** (NEW)
+
 - `deployment.yaml` - Worker deployment
 - `hpa.yaml` - HPA (3-20 replicas, CPU/memory based)
 
 #### **web/** (NEW)
+
 - `deployment.yaml` - Web deployment + service
 
 ---
@@ -79,9 +89,11 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 ### 4. Observability - OpenTelemetry
 
 #### **telemetry-enhanced.ts** (NEW)
+
 **Location:** `packages/api/src/telemetry-enhanced.ts`
 
 **Features:**
+
 - Enhanced OpenTelemetry setup with service metadata
 - Custom span creation helpers:
   - `createSpan()` - Manual span creation
@@ -92,6 +104,7 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 - OpenAI API span helpers
 
 **Usage Example:**
+
 ```typescript
 import { traceAsyncOperation } from './telemetry-enhanced';
 
@@ -107,9 +120,11 @@ const result = await traceAsyncOperation(
 ### 5. Metrics - Prometheus
 
 #### **metrics.ts** (NEW)
+
 **Location:** `packages/api/src/metrics.ts`
 
 **Metrics Implemented:**
+
 1. **documents_processed_total** - Counter by tenant, status, type
 2. **document_processing_duration_seconds** - Histogram by tenant, stage, type
 3. **api_requests_total** - Counter by method, endpoint, status_code
@@ -124,6 +139,7 @@ const result = await traceAsyncOperation(
 12. **cache_requests_total** - Counter by cache_name, result (hit/miss)
 
 **Helper Functions:**
+
 - `recordDocumentProcessed()`
 - `recordDocumentProcessingTime()`
 - `recordApiRequest()`
@@ -131,6 +147,7 @@ const result = await traceAsyncOperation(
 - `recordCacheAccess()`
 
 #### **metrics-middleware.ts** (NEW)
+
 **Location:** `packages/api/src/middleware/metrics.ts`
 
 Automatic request metrics recording for all API endpoints.
@@ -140,9 +157,11 @@ Automatic request metrics recording for all API endpoints.
 ### 6. Frontend Instrumentation
 
 #### **analytics.ts** (NEW)
+
 **Location:** `packages/web/src/lib/analytics.ts`
 
 **Features:**
+
 - Web Vitals tracking (CLS, FID, LCP, FCP, TTFB, INP)
 - Page view tracking
 - Custom event tracking
@@ -153,11 +172,13 @@ Automatic request metrics recording for all API endpoints.
 - Performance timing
 
 **Auto-initialization:**
+
 - Tracks page load on window.load
 - Global error handler
 - Unhandled promise rejection handler
 
 **Usage Example:**
+
 ```typescript
 import { trackEvent, trackDocumentUpload } from '@/lib/analytics';
 
@@ -166,15 +187,18 @@ trackDocumentUpload('completed', { documentId, duration });
 ```
 
 #### **ErrorBoundary.tsx** (NEW)
+
 **Location:** `packages/web/src/components/ErrorBoundary.tsx`
 
 React Error Boundary with:
+
 - Automatic error tracking to analytics
 - User-friendly error UI
 - Dev mode error details
 - Refresh and home navigation options
 
 **Usage:**
+
 ```tsx
 <ErrorBoundary>
   <YourComponent />
@@ -186,9 +210,11 @@ React Error Boundary with:
 ### 7. Monitoring Configuration
 
 #### **Prometheus Config** (NEW)
+
 **File:** `monitoring/prometheus.yml`
 
 Scrape configurations for:
+
 - Prometheus self-monitoring
 - Docuflow API (port 9464)
 - Docuflow Worker (port 9464)
@@ -197,14 +223,17 @@ Scrape configurations for:
 - Node exporter
 
 #### **Grafana Datasource** (NEW)
+
 **File:** `monitoring/grafana/datasources/prometheus.yml`
 
 Prometheus datasource auto-provisioning.
 
 #### **Grafana Dashboard** (NEW)
+
 **File:** `monitoring/grafana/dashboards/docuflow-overview.json`
 
 Overview dashboard with 8 panels:
+
 1. Request Rate
 2. Error Rate
 3. P95 Latency
@@ -233,16 +262,19 @@ Overview dashboard with 8 panels:
 ### New Files Created: 22
 
 **CI/CD:**
+
 - `.github/workflows/build.yml`
 - `.github/workflows/deploy.yml`
 
 **Docker:**
+
 - `packages/api/Dockerfile`
 - `packages/worker/Dockerfile`
 - `packages/web/Dockerfile`
 - `docker-compose.production.yml`
 
 **Kubernetes:** (11 files)
+
 - `k8s/common/namespace.yaml`
 - `k8s/common/configmap.yaml`
 - `k8s/common/secrets.yaml`
@@ -255,6 +287,7 @@ Overview dashboard with 8 panels:
 - `k8s/web/deployment.yaml`
 
 **Observability:**
+
 - `packages/api/src/telemetry-enhanced.ts`
 - `packages/api/src/metrics.ts`
 - `packages/api/src/middleware/metrics.ts`
@@ -262,15 +295,18 @@ Overview dashboard with 8 panels:
 - `packages/web/src/components/ErrorBoundary.tsx`
 
 **Monitoring:**
+
 - `monitoring/prometheus.yml`
 - `monitoring/grafana/datasources/prometheus.yml`
 - `monitoring/grafana/dashboards/docuflow-overview.json`
 
 **Documentation:**
+
 - `CI_CD_OBSERVABILITY.md`
 - `IMPLEMENTATION_SUMMARY.md` (this file)
 
 ### Modified Files: 1
+
 - `.github/workflows/test.yml` - Added coverage thresholds and build check
 
 ---
@@ -292,6 +328,7 @@ docker-compose up -d
 ### Production Deployment
 
 #### Docker Compose:
+
 ```bash
 # Set environment variables
 export IMAGE_TAG=abc1234
@@ -302,6 +339,7 @@ docker-compose -f docker-compose.production.yml up -d
 ```
 
 #### Kubernetes:
+
 ```bash
 # Deploy all resources
 kubectl apply -f k8s/common/
@@ -314,6 +352,7 @@ kubectl get all -n docuflow
 ```
 
 #### GitHub Actions:
+
 ```bash
 # Build images (automatic on push to main)
 git push origin main
@@ -329,7 +368,10 @@ gh workflow run deploy.yml -f environment=production -f image_tag=abc1234
 
 ```typescript
 // API/Worker
-import { recordDocumentProcessed, recordDocumentProcessingTime } from './metrics';
+import {
+  recordDocumentProcessed,
+  recordDocumentProcessingTime,
+} from './metrics';
 
 recordDocumentProcessed(tenantId, 'success', 'invoice');
 recordDocumentProcessingTime(tenantId, 'extraction', 'invoice', duration);
@@ -365,6 +407,7 @@ queue_size{queue_name="documents"}
 ## 🎯 Key Features
 
 ### CI/CD
+
 ✅ Automated testing on every PR
 ✅ Coverage enforcement (80%/70%)
 ✅ Multi-stage Docker builds
@@ -375,6 +418,7 @@ queue_size{queue_name="documents"}
 ✅ Slack notifications
 
 ### Observability
+
 ✅ Distributed tracing with OpenTelemetry
 ✅ Prometheus metrics
 ✅ Grafana dashboards
@@ -385,6 +429,7 @@ queue_size{queue_name="documents"}
 ✅ Custom business metrics
 
 ### Deployment
+
 ✅ Docker Compose for simple deployments
 ✅ Kubernetes for cloud-native deployments
 ✅ Horizontal Pod Autoscaling
@@ -397,6 +442,7 @@ queue_size{queue_name="documents"}
 ## 📖 Documentation
 
 Comprehensive documentation in `CI_CD_OBSERVABILITY.md`:
+
 - Workflow details
 - Deployment guides
 - Metrics reference
@@ -437,6 +483,7 @@ Comprehensive documentation in `CI_CD_OBSERVABILITY.md`:
 ## 🔮 Future Enhancements
 
 Suggested next steps (not implemented):
+
 - [ ] Alertmanager configuration
 - [ ] Custom alert rules
 - [ ] Log aggregation (ELK/Loki)

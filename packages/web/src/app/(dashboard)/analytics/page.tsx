@@ -4,9 +4,18 @@ import { useState, useEffect } from 'react';
 import { useAnalytics } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
 import { Button } from '@docuflow/ui';
-import { FileText, CheckCircle, DollarSign, Clock, Download } from 'lucide-react';
+import {
+  FileText,
+  CheckCircle,
+  DollarSign,
+  Clock,
+  Download,
+} from 'lucide-react';
 import { MetricCard } from '@/components/analytics/MetricCard';
-import { AnalyticsChart, getChartColors } from '@/components/analytics/AnalyticsChart';
+import {
+  AnalyticsChart,
+  getChartColors,
+} from '@/components/analytics/AnalyticsChart';
 import { DateRangePicker } from '@/components/analytics/DateRangePicker';
 import { subDays } from 'date-fns';
 import {
@@ -67,7 +76,10 @@ export default function AnalyticsPage() {
           <div className="h-8 bg-neutral-200 dark:bg-neutral-800 rounded w-1/4" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
+              <div
+                key={i}
+                className="h-32 bg-neutral-200 dark:bg-neutral-800 rounded-lg"
+              />
             ))}
           </div>
         </div>
@@ -112,18 +124,23 @@ export default function AnalyticsPage() {
   ];
 
   const topExpensiveDocs = [
-    { name: 'invoice_2024_q1.pdf', pages: 45, cost: 12.50 },
-    { name: 'contract_renewal.pdf', pages: 38, cost: 10.80 },
-    { name: 'financial_report.pdf', pages: 32, cost: 9.20 },
-    { name: 'tax_documents.pdf', pages: 28, cost: 8.10 },
-    { name: 'legal_agreement.pdf', pages: 25, cost: 7.30 },
+    { name: 'invoice_2024_q1.pdf', pages: 45, cost: 12.5 },
+    { name: 'contract_renewal.pdf', pages: 38, cost: 10.8 },
+    { name: 'financial_report.pdf', pages: 32, cost: 9.2 },
+    { name: 'tax_documents.pdf', pages: 28, cost: 8.1 },
+    { name: 'legal_agreement.pdf', pages: 25, cost: 7.3 },
   ];
 
   const colors = getChartColors(isDark);
-  const COLORS = [colors.primary, colors.secondary, colors.tertiary, colors.error];
+  const COLORS = [
+    colors.primary,
+    colors.secondary,
+    colors.tertiary,
+    colors.error,
+  ];
 
   // Sparkline data for metric cards
-  const sparklineData = timeSeriesData.map(d => ({ value: d.documents }));
+  const sparklineData = timeSeriesData.map((d) => ({ value: d.documents }));
 
   return (
     <div className="p-6">
@@ -139,7 +156,11 @@ export default function AnalyticsPage() {
         </div>
         <div className="flex items-center gap-3">
           <DateRangePicker value={dateRange} onChange={setDateRange} />
-          <Button variant="outline" onClick={handleExportCSV} className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            className="flex items-center gap-2"
+          >
             <Download className="h-4 w-4" />
             Export CSV
           </Button>
@@ -157,14 +178,22 @@ export default function AnalyticsPage() {
         />
         <MetricCard
           title="Success Rate"
-          value={analytics?.metrics.successRate ? `${(analytics.metrics.successRate * 100).toFixed(0)}%` : '0%'}
+          value={
+            analytics?.metrics.successRate
+              ? `${(analytics.metrics.successRate * 100).toFixed(0)}%`
+              : '0%'
+          }
           icon={CheckCircle}
           trend={{ value: 3.2, isPositive: true }}
           subtitle="Last 30 days"
         />
         <MetricCard
           title="Total Cost"
-          value={analytics?.metrics.totalCost ? `$${(analytics.metrics.totalCost / 100).toFixed(2)}` : '$0.00'}
+          value={
+            analytics?.metrics.totalCost
+              ? `$${(analytics.metrics.totalCost / 100).toFixed(2)}`
+              : '$0.00'
+          }
           icon={DollarSign}
           trend={{ value: 8.1, isPositive: false }}
         />
@@ -270,13 +299,18 @@ export default function AnalyticsPage() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }: any) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
               >
                 {statusDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip
@@ -334,7 +368,10 @@ export default function AnalyticsPage() {
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
                 {topExpensiveDocs.map((doc, index) => (
-                  <tr key={index} className="hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                  <tr
+                    key={index}
+                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                  >
                     <td className="px-4 py-2 text-sm text-neutral-900 dark:text-neutral-100 truncate max-w-[200px]">
                       {doc.name}
                     </td>

@@ -1,4 +1,4 @@
-import { onCLS, onFID, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 
 export interface AnalyticsEvent {
   name: string;
@@ -48,13 +48,12 @@ export function initWebVitals() {
 
   // Core Web Vitals
   onCLS(sendWebVital); // Cumulative Layout Shift
-  onFID(sendWebVital); // First Input Delay
   onLCP(sendWebVital); // Largest Contentful Paint
+  onINP(sendWebVital); // Interaction to Next Paint (replaces FID)
 
   // Other important metrics
   onFCP(sendWebVital); // First Contentful Paint
   onTTFB(sendWebVital); // Time to First Byte
-  onINP(sendWebVital); // Interaction to Next Paint
 }
 
 // Custom event tracking
@@ -77,7 +76,10 @@ export function trackPageView(page: string) {
 }
 
 // Document upload tracking
-export function trackDocumentUpload(status: 'started' | 'completed' | 'failed', metadata?: Record<string, any>) {
+export function trackDocumentUpload(
+  status: 'started' | 'completed' | 'failed',
+  metadata?: Record<string, any>
+) {
   sendToAnalytics({
     name: `document_upload_${status}`,
     metadata,
@@ -85,7 +87,12 @@ export function trackDocumentUpload(status: 'started' | 'completed' | 'failed', 
 }
 
 // API call tracking
-export function trackApiCall(endpoint: string, method: string, duration: number, status: number) {
+export function trackApiCall(
+  endpoint: string,
+  method: string,
+  duration: number,
+  status: number
+) {
   sendToAnalytics({
     name: 'api_call',
     value: duration,
@@ -98,7 +105,11 @@ export function trackApiCall(endpoint: string, method: string, duration: number,
 }
 
 // Feature usage tracking
-export function trackFeatureUsage(feature: string, action: string, metadata?: Record<string, any>) {
+export function trackFeatureUsage(
+  feature: string,
+  action: string,
+  metadata?: Record<string, any>
+) {
   sendToAnalytics({
     name: 'feature_usage',
     metadata: {
@@ -128,7 +139,11 @@ export function trackError(error: ErrorInfo) {
 }
 
 // Performance timing tracking
-export function trackPerformance(name: string, duration: number, metadata?: Record<string, any>) {
+export function trackPerformance(
+  name: string,
+  duration: number,
+  metadata?: Record<string, any>
+) {
   sendToAnalytics({
     name: 'performance',
     value: duration,

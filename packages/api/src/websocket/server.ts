@@ -38,7 +38,10 @@ export class WebSocketServer {
         }
 
         // Special token for worker (internal communication)
-        if (token === process.env.WORKER_API_KEY || token === 'worker-internal-key') {
+        if (
+          token === process.env.WORKER_API_KEY ||
+          token === 'worker-internal-key'
+        ) {
           socket.tenantId = 'worker';
           socket.userId = 'worker';
           return next();
@@ -80,7 +83,9 @@ export class WebSocketServer {
     this.io.on('connection', (socket: AuthenticatedSocket) => {
       const { tenantId, userId } = socket;
 
-      console.log(`✅ Client connected: ${socket.id} (tenant: ${tenantId}, user: ${userId})`);
+      console.log(
+        `✅ Client connected: ${socket.id} (tenant: ${tenantId}, user: ${userId})`
+      );
 
       // Join tenant-specific room
       if (tenantId) {

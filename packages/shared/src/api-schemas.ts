@@ -21,11 +21,26 @@ export const WebhookEventSchema = z.enum([
   'document.deleted',
 ]);
 
-export const TenantPlanSchema = z.enum(['free', 'starter', 'pro', 'enterprise']);
+export const TenantPlanSchema = z.enum([
+  'free',
+  'starter',
+  'pro',
+  'enterprise',
+]);
 
-export const AnalyticsGranularitySchema = z.enum(['hour', 'day', 'week', 'month']);
+export const AnalyticsGranularitySchema = z.enum([
+  'hour',
+  'day',
+  'week',
+  'month',
+]);
 
-export const SortBySchema = z.enum(['uploadedAt', 'processedAt', 'name', 'size']);
+export const SortBySchema = z.enum([
+  'uploadedAt',
+  'processedAt',
+  'name',
+  'size',
+]);
 
 export const SortOrderSchema = z.enum(['asc', 'desc']);
 
@@ -248,8 +263,12 @@ export type ExtractedData = z.infer<typeof ExtractedDataSchema>;
 export type ExtractedDataUpdate = z.infer<typeof ExtractedDataUpdateSchema>;
 
 export type Document = z.infer<typeof DocumentSchema>;
-export type DocumentUploadResponse = z.infer<typeof DocumentUploadResponseSchema>;
-export type DocumentStatusResponse = z.infer<typeof DocumentStatusResponseSchema>;
+export type DocumentUploadResponse = z.infer<
+  typeof DocumentUploadResponseSchema
+>;
+export type DocumentStatusResponse = z.infer<
+  typeof DocumentStatusResponseSchema
+>;
 export type CursorPagination = z.infer<typeof CursorPaginationSchema>;
 export type DocumentListResponse = z.infer<typeof DocumentListResponseSchema>;
 

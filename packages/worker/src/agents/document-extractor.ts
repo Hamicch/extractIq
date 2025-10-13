@@ -68,22 +68,33 @@ export class DocumentExtractor {
 
     try {
       // Step 1: OCR Stage
-      console.log(`[DocumentExtractor] Starting OCR for document ${documentId}`);
-      const ocrResult = await this.ocrProcessor.extractFromPDF(documentBuffer, documentId);
+      console.log(
+        `[DocumentExtractor] Starting OCR for document ${documentId}`
+      );
+      const ocrResult = await this.ocrProcessor.extractFromPDF(
+        documentBuffer,
+        documentId
+      );
 
       if (this.ocrProcessor.requiresExternalOCR(ocrResult)) {
-        throw new Error('Document requires external OCR processing (poor quality or no text)');
+        throw new Error(
+          'Document requires external OCR processing (poor quality or no text)'
+        );
       }
 
       const preprocessedText = this.ocrProcessor.preprocessText(ocrResult.text);
 
       // Step 2: Detect document type
-      console.log(`[DocumentExtractor] Detecting document type for ${documentId}`);
+      console.log(
+        `[DocumentExtractor] Detecting document type for ${documentId}`
+      );
       const typeDetection = await this.detectDocumentType(preprocessedText);
       totalTokens += typeDetection.tokensUsed;
 
       if (typeDetection.result.confidence < 0.8) {
-        console.warn(`[DocumentExtractor] Low confidence in type detection: ${typeDetection.result.confidence}`);
+        console.warn(
+          `[DocumentExtractor] Low confidence in type detection: ${typeDetection.result.confidence}`
+        );
       }
 
       // Step 3: Schema-guided extraction with retry loop
@@ -92,7 +103,9 @@ export class DocumentExtractor {
 
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         attemptCount = attempt + 1;
-        console.log(`[DocumentExtractor] Extraction attempt ${attemptCount} for ${documentId}`);
+        console.log(
+          `[DocumentExtractor] Extraction attempt ${attemptCount} for ${documentId}`
+        );
 
         const extractionAttempt = await this.performExtraction(
           preprocessedText,
@@ -115,12 +128,17 @@ export class DocumentExtractor {
         }
 
         validationErrors = validation.errors;
-        console.warn(`[DocumentExtractor] Validation failed on attempt ${attemptCount}:`, validationErrors);
+        console.warn(
+          `[DocumentExtractor] Validation failed on attempt ${attemptCount}:`,
+          validationErrors
+        );
 
         // If this is the last attempt, use the extraction anyway but flag it
         if (attempt === maxRetries) {
           extraction = extractionAttempt.result;
-          console.warn(`[DocumentExtractor] Max retries reached, using last extraction with validation errors`);
+          console.warn(
+            `[DocumentExtractor] Max retries reached, using last extraction with validation errors`
+          );
         }
       }
 
@@ -131,8 +149,12 @@ export class DocumentExtractor {
       // Calculate costs (GPT-4 pricing: ~$0.03/1K input tokens, $0.06/1K output tokens)
       const estimatedCost = (totalTokens / 1000) * 0.045; // Average of input/output
 
-      const lowConfidenceFields = getFieldsWithLowConfidence(extraction, confidenceThreshold);
-      const requiresHumanReview = lowConfidenceFields.length > 0 || validationErrors.length > 0;
+      const lowConfidenceFields = getFieldsWithLowConfidence(
+        extraction,
+        confidenceThreshold
+      );
+      const requiresHumanReview =
+        lowConfidenceFields.length > 0 || validationErrors.length > 0;
 
       const result: ExtractionResult = {
         extraction,
@@ -222,7 +244,11 @@ Respond in JSON format matching this schema:
   }> {
     const schema = getSchemaForType(documentType);
     const systemPrompt = this.buildExtractionSystemPrompt(documentType);
-    const userPrompt = this.buildExtractionUserPrompt(text, documentType, previousErrors);
+    const userPrompt = this.buildExtractionUserPrompt(
+      text,
+      documentType,
+      previousErrors
+    );
 
     const completion = await this.openai.chat.completions.create({
       model: 'gpt-4',
@@ -358,11 +384,14 @@ Example extraction for a generic document:
     const errors: string[] = [];
 
     // Check for low confidence fields
-    const lowConfidenceFields = getFieldsWithLowConfidence(extraction, confidenceThreshold);
+    const lowConfidenceFields = getFieldsWithLowConfidence(
+      extraction,
+      confidenceThreshold
+    );
     if (lowConfidenceFields.length > 0) {
       errors.push(
         `Low confidence fields (< ${confidenceThreshold}): ${lowConfidenceFields
-          .map(f => `${f.path} (${f.confidence.toFixed(2)})`)
+          .map((f) => `${f.path} (${f.confidence.toFixed(2)})`)
           .join(', ')}`
       );
     }
@@ -379,7 +408,7 @@ Example extraction for a generic document:
         if (Math.abs(expectedAmount - actualAmount) > 0.01) {
           errors.push(
             `Line item calculation mismatch: ${item.description.value} - ` +
-            `expected ${expectedAmount}, got ${actualAmount}`
+              `expected ${expectedAmount}, got ${actualAmount}`
           );
         }
 
@@ -390,16 +419,17 @@ Example extraction for a generic document:
       if (Math.abs(lineItemsTotal - invoice.subtotal.value) > 0.01) {
         errors.push(
           `Subtotal mismatch: line items sum to ${lineItemsTotal}, ` +
-          `but subtotal is ${invoice.subtotal.value}`
+            `but subtotal is ${invoice.subtotal.value}`
         );
       }
 
       // Check total calculation
-      const calculatedTotal = invoice.subtotal.value + (invoice.tax?.value || 0);
+      const calculatedTotal =
+        invoice.subtotal.value + (invoice.tax?.value || 0);
       if (Math.abs(calculatedTotal - invoice.total.value) > 0.01) {
         errors.push(
           `Total calculation error: subtotal + tax = ${calculatedTotal}, ` +
-          `but total is ${invoice.total.value}`
+            `but total is ${invoice.total.value}`
         );
       }
     }

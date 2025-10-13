@@ -38,8 +38,18 @@ export default function SettingsPage() {
 
   // Mock data - replace with actual API data
   const apiKeys = [
-    { id: '1', name: 'Production Key', key: 'sk_live_••••••••••••••••', createdAt: '2024-01-15' },
-    { id: '2', name: 'Development Key', key: 'sk_test_••••••••••••••••', createdAt: '2024-01-10' },
+    {
+      id: '1',
+      name: 'Production Key',
+      key: 'sk_live_••••••••••••••••',
+      createdAt: '2024-01-15',
+    },
+    {
+      id: '2',
+      name: 'Development Key',
+      key: 'sk_test_••••••••••••••••',
+      createdAt: '2024-01-10',
+    },
   ];
 
   const webhookDeliveries = [
@@ -133,8 +143,17 @@ export default function SettingsPage() {
               <KeyValueList
                 items={[
                   { key: 'Tenant Name', value: selectedTenant?.name || 'N/A' },
-                  { key: 'Tenant ID', value: selectedTenant?.id || 'N/A', copyable: true },
-                  { key: 'Created', value: new Date(selectedTenant?.createdAt || Date.now()).toLocaleDateString() },
+                  {
+                    key: 'Tenant ID',
+                    value: selectedTenant?.id || 'N/A',
+                    copyable: true,
+                  },
+                  {
+                    key: 'Created',
+                    value: new Date(
+                      selectedTenant?.createdAt || Date.now()
+                    ).toLocaleDateString(),
+                  },
                   { key: 'Plan', value: selectedTenant?.plan || 'free' },
                 ]}
               />
@@ -146,7 +165,11 @@ export default function SettingsPage() {
                 <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                   API Keys
                 </h2>
-                <Button size="sm" onClick={handleGenerateApiKey} className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleGenerateApiKey}
+                  className="flex items-center gap-2"
+                >
                   <Plus className="h-4 w-4" />
                   Generate Key
                 </Button>
@@ -249,7 +272,8 @@ export default function SettingsPage() {
                 Danger Zone
               </h2>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                Once you delete a tenant, there is no going back. All documents, API keys, and data will be permanently deleted.
+                Once you delete a tenant, there is no going back. All documents,
+                API keys, and data will be permanently deleted.
               </p>
               <Button variant="destructive" onClick={handleDeleteTenant}>
                 Delete Tenant
@@ -284,12 +308,21 @@ export default function SettingsPage() {
                   </label>
                   <div className="space-y-2">
                     {[
-                      { id: 'document.completed', label: 'Document Processing Completed' },
-                      { id: 'document.failed', label: 'Document Processing Failed' },
+                      {
+                        id: 'document.completed',
+                        label: 'Document Processing Completed',
+                      },
+                      {
+                        id: 'document.failed',
+                        label: 'Document Processing Failed',
+                      },
                       { id: 'document.uploaded', label: 'Document Uploaded' },
                       { id: 'document.deleted', label: 'Document Deleted' },
                     ].map((event) => (
-                      <label key={event.id} className="flex items-center gap-3 cursor-pointer">
+                      <label
+                        key={event.id}
+                        className="flex items-center gap-3 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700"
@@ -323,7 +356,11 @@ export default function SettingsPage() {
 
                 <div className="flex gap-2">
                   <Button>Save Configuration</Button>
-                  <Button variant="outline" onClick={handleTestWebhook} className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleTestWebhook}
+                    className="flex items-center gap-2"
+                  >
                     <Send className="h-4 w-4" />
                     Test Webhook
                   </Button>
@@ -359,16 +396,28 @@ export default function SettingsPage() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between py-2 border-b border-neutral-200 dark:border-neutral-700">
-                  <span className="text-sm text-neutral-700 dark:text-neutral-300">OCR Processing</span>
-                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">$18.50</span>
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                    OCR Processing
+                  </span>
+                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    $18.50
+                  </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-b border-neutral-200 dark:border-neutral-700">
-                  <span className="text-sm text-neutral-700 dark:text-neutral-300">Data Extraction</span>
-                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">$22.32</span>
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                    Data Extraction
+                  </span>
+                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    $22.32
+                  </span>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-neutral-700 dark:text-neutral-300">Validation</span>
-                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">$5.00</span>
+                  <span className="text-sm text-neutral-700 dark:text-neutral-300">
+                    Validation
+                  </span>
+                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                    $5.00
+                  </span>
                 </div>
               </div>
             </Card>
@@ -417,7 +466,9 @@ export default function SettingsPage() {
                         }`}
                       >
                         <Icon className="h-6 w-6" />
-                        <span className="text-sm font-medium">{option.label}</span>
+                        <span className="text-sm font-medium">
+                          {option.label}
+                        </span>
                       </button>
                     );
                   })}
@@ -432,12 +483,18 @@ export default function SettingsPage() {
               </h2>
               <div className="space-y-3">
                 {[
-                  { id: 'email-completed', label: 'Email when documents complete processing' },
+                  {
+                    id: 'email-completed',
+                    label: 'Email when documents complete processing',
+                  },
                   { id: 'email-failed', label: 'Email when processing fails' },
                   { id: 'weekly-summary', label: 'Weekly analytics summary' },
                   { id: 'quota-warnings', label: 'Quota usage warnings' },
                 ].map((option) => (
-                  <label key={option.id} className="flex items-center gap-3 cursor-pointer">
+                  <label
+                    key={option.id}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
                     <input
                       type="checkbox"
                       className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700"

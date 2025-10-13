@@ -1,10 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { getDocuflowClient } from '@docuflow/shared';
 
-export function useDocumentStatus(documentId: string, options?: {
-  enabled?: boolean;
-  refetchInterval?: number | false;
-}) {
+export function useDocumentStatus(
+  documentId: string,
+  options?: {
+    enabled?: boolean;
+    refetchInterval?: number | false;
+  }
+) {
   const client = getDocuflowClient();
 
   const query = useQuery({

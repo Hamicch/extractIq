@@ -99,7 +99,8 @@ export async function processDocumentUpload(
     await job.updateProgress(75);
 
     // Simulate page count detection (in real scenario, analyze PDF)
-    const pageCount = mimeType === 'application/pdf' ? Math.floor(Math.random() * 20) + 1 : 1;
+    const pageCount =
+      mimeType === 'application/pdf' ? Math.floor(Math.random() * 20) + 1 : 1;
 
     // Emit progress: 100%
     wsClient.emitProgress({
@@ -128,7 +129,8 @@ export async function processDocumentUpload(
       pageCount,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
 
     // Emit failed event
     wsClient.emitFailed({

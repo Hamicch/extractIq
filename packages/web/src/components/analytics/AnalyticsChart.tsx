@@ -31,9 +31,7 @@ export function AnalyticsChart({
           </p>
         )}
       </div>
-      <div className="w-full h-80">
-        {children}
-      </div>
+      <div className="w-full h-80">{children}</div>
     </Card>
   );
 }

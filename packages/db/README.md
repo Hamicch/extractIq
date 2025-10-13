@@ -60,6 +60,7 @@ npm run db:seed
 ```
 
 This creates:
+
 - 3 test tenants (acme-legal, techcorp-finance, startup-ops)
 - 6 API keys (2 per tenant)
 - 50 sample documents with realistic data
@@ -78,13 +79,13 @@ startup-ops:       startup_test_key_789
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run db:generate` | Generate migrations from schema |
-| `npm run db:push` | Push schema to database (dev) |
-| `npm run db:migrate` | Run migrations (production) |
-| `npm run db:studio` | Open Drizzle Studio (database GUI) |
-| `npm run db:seed` | Seed database with test data |
+| Command               | Description                        |
+| --------------------- | ---------------------------------- |
+| `npm run db:generate` | Generate migrations from schema    |
+| `npm run db:push`     | Push schema to database (dev)      |
+| `npm run db:migrate`  | Run migrations (production)        |
+| `npm run db:studio`   | Open Drizzle Studio (database GUI) |
+| `npm run db:seed`     | Seed database with test data       |
 
 ## Drizzle Studio
 

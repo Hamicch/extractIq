@@ -1,8 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  getDocuflowClient,
-  type ExtractedDataUpdate,
-} from '@docuflow/shared';
+import { getDocuflowClient, type ExtractedDataUpdate } from '@docuflow/shared';
 
 export function useExtractedData(documentId: string, enabled = true) {
   const client = getDocuflowClient();

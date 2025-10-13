@@ -12,7 +12,6 @@ describe('Document Processing Integration', () => {
     // Start testcontainers
     // postgresContainer = await new PostgreSqlContainer().start();
     // redisContainer = await new RedisContainer().start();
-
     // Initialize app with test containers
     // app = await createApp({
     //   database: postgresContainer.getConnectionUri(),

@@ -43,10 +43,14 @@ export class Evaluator {
       const batch = samples.slice(i, i + parallelism);
 
       const batchResults = await Promise.all(
-        batch.map(sample => this.evaluateSample(sample))
+        batch.map((sample) => this.evaluateSample(sample))
       );
 
-      results.push(...batchResults.filter(r => r !== null) as DocumentEvaluationResult[]);
+      results.push(
+        ...(batchResults.filter(
+          (r) => r !== null
+        ) as DocumentEvaluationResult[])
+      );
 
       console.log(`Progress: ${results.length}/${samples.length}`);
     }
@@ -66,7 +70,9 @@ export class Evaluator {
   /**
    * Evaluate a single sample
    */
-  private async evaluateSample(sample: GoldenSample): Promise<DocumentEvaluationResult | null> {
+  private async evaluateSample(
+    sample: GoldenSample
+  ): Promise<DocumentEvaluationResult | null> {
     try {
       console.log(`Evaluating: ${sample.name}`);
 
@@ -119,37 +125,44 @@ export class Evaluator {
   /**
    * Generate aggregate report from individual results
    */
-  private generateReport(results: DocumentEvaluationResult[]): EvaluationReport {
+  private generateReport(
+    results: DocumentEvaluationResult[]
+  ): EvaluationReport {
     const successful = results.length;
     const failed = 0; // TODO: Track failures
 
     // Calculate aggregate metrics
-    const accuracies = results.map(r => r.metrics.accuracy);
-    const precisions = results.map(r => r.metrics.fieldPrecision);
-    const recalls = results.map(r => r.metrics.fieldRecall);
-    const f1s = results.map(r => r.metrics.fieldF1);
+    const accuracies = results.map((r) => r.metrics.accuracy);
+    const precisions = results.map((r) => r.metrics.fieldPrecision);
+    const recalls = results.map((r) => r.metrics.fieldRecall);
+    const f1s = results.map((r) => r.metrics.fieldF1);
 
-    const overallAccuracy = accuracies.reduce((sum, a) => sum + a, 0) / accuracies.length || 0;
-    const avgFieldPrecision = precisions.reduce((sum, p) => sum + p, 0) / precisions.length || 0;
-    const avgFieldRecall = recalls.reduce((sum, r) => sum + r, 0) / recalls.length || 0;
+    const overallAccuracy =
+      accuracies.reduce((sum, a) => sum + a, 0) / accuracies.length || 0;
+    const avgFieldPrecision =
+      precisions.reduce((sum, p) => sum + p, 0) / precisions.length || 0;
+    const avgFieldRecall =
+      recalls.reduce((sum, r) => sum + r, 0) / recalls.length || 0;
     const avgFieldF1 = f1s.reduce((sum, f) => sum + f, 0) / f1s.length || 0;
 
     // Performance metrics
-    const latencies = results.map(r => r.performance.latencyMs);
-    const costs = results.map(r => r.performance.estimatedCost);
-    const tokens = results.map(r => r.performance.tokensUsed);
+    const latencies = results.map((r) => r.performance.latencyMs);
+    const costs = results.map((r) => r.performance.estimatedCost);
+    const tokens = results.map((r) => r.performance.tokensUsed);
 
     const totalCost = costs.reduce((sum, c) => sum + c, 0);
     const totalTokens = tokens.reduce((sum, t) => sum + t, 0);
 
     // Confidence analysis
-    const allFieldResults = results.flatMap(r => {
+    const allFieldResults = results.flatMap((r) => {
       const confidences: Array<{ correct: boolean; confidence: number }> = [];
       // Extract all confidence scores and correctness
       const extractConfidences = (obj: any, errors: Array<any>) => {
         if (obj && typeof obj === 'object') {
           if ('value' in obj && 'confidence' in obj) {
-            const hasError = errors.some(e => e.confidence === obj.confidence);
+            const hasError = errors.some(
+              (e) => e.confidence === obj.confidence
+            );
             confidences.push({
               correct: !hasError,
               confidence: obj.confidence,
@@ -165,12 +178,15 @@ export class Evaluator {
       return confidences;
     });
 
-    const avgConfidence = allFieldResults.reduce((sum, r) => sum + r.confidence, 0) / allFieldResults.length || 0;
-    const calibrationError = allFieldResults.length > 0
-      ? allFieldResults.reduce((sum, r) => {
-          return sum + Math.abs(r.confidence - (r.correct ? 1 : 0));
-        }, 0) / allFieldResults.length
-      : 0;
+    const avgConfidence =
+      allFieldResults.reduce((sum, r) => sum + r.confidence, 0) /
+        allFieldResults.length || 0;
+    const calibrationError =
+      allFieldResults.length > 0
+        ? allFieldResults.reduce((sum, r) => {
+            return sum + Math.abs(r.confidence - (r.correct ? 1 : 0));
+          }, 0) / allFieldResults.length
+        : 0;
 
     // Analyze by document type
     const byDocumentType: Record<string, any> = {};
@@ -203,7 +219,9 @@ export class Evaluator {
     // Field analysis
     const allFieldAccuracies: Record<string, number[]> = {};
     for (const result of results) {
-      for (const [field, accuracy] of Object.entries(result.metrics.fieldAccuracy)) {
+      for (const [field, accuracy] of Object.entries(
+        result.metrics.fieldAccuracy
+      )) {
         if (!allFieldAccuracies[field]) {
           allFieldAccuracies[field] = [];
         }
@@ -213,7 +231,8 @@ export class Evaluator {
 
     const avgFieldAccuracies: Record<string, number> = {};
     for (const [field, accuracies] of Object.entries(allFieldAccuracies)) {
-      avgFieldAccuracies[field] = accuracies.reduce((sum, a) => sum + a, 0) / accuracies.length;
+      avgFieldAccuracies[field] =
+        accuracies.reduce((sum, a) => sum + a, 0) / accuracies.length;
     }
 
     return {
@@ -296,7 +315,10 @@ export class Evaluator {
   /**
    * Save CSV report
    */
-  private async saveCsvReport(report: EvaluationReport, csvPath: string): Promise<void> {
+  private async saveCsvReport(
+    report: EvaluationReport,
+    csvPath: string
+  ): Promise<void> {
     const headers = [
       'sample_id',
       'document_type',
@@ -310,7 +332,7 @@ export class Evaluator {
       'error_count',
     ];
 
-    const rows = report.samples.map(s => [
+    const rows = report.samples.map((s) => [
       s.sampleId,
       s.groundTruth.type,
       s.metrics.accuracy.toFixed(4),
@@ -323,7 +345,7 @@ export class Evaluator {
       s.errors.length.toString(),
     ]);
 
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 
     await fs.writeFile(csvPath, csv);
   }
@@ -337,9 +359,15 @@ export class Evaluator {
     console.log(`Total Samples: ${report.summary.totalSamples}`);
     console.log(`Successful: ${report.summary.successfulExtractions}`);
     console.log(`Failed: ${report.summary.failedExtractions}`);
-    console.log(`Overall Accuracy: ${(report.summary.overallAccuracy * 100).toFixed(2)}%`);
-    console.log(`Avg Precision: ${(report.summary.avgFieldPrecision * 100).toFixed(2)}%`);
-    console.log(`Avg Recall: ${(report.summary.avgFieldRecall * 100).toFixed(2)}%`);
+    console.log(
+      `Overall Accuracy: ${(report.summary.overallAccuracy * 100).toFixed(2)}%`
+    );
+    console.log(
+      `Avg Precision: ${(report.summary.avgFieldPrecision * 100).toFixed(2)}%`
+    );
+    console.log(
+      `Avg Recall: ${(report.summary.avgFieldRecall * 100).toFixed(2)}%`
+    );
     console.log(`Avg F1: ${(report.summary.avgFieldF1 * 100).toFixed(2)}%`);
 
     console.log('\nPERFORMANCE');
@@ -348,7 +376,9 @@ export class Evaluator {
     console.log(`P95 Latency: ${report.performance.latency.p95.toFixed(0)}ms`);
     console.log(`P99 Latency: ${report.performance.latency.p99.toFixed(0)}ms`);
     console.log(`Total Cost: $${report.performance.cost.totalCost.toFixed(2)}`);
-    console.log(`Avg Cost/Doc: $${report.performance.cost.avgCostPerDocument.toFixed(4)}`);
+    console.log(
+      `Avg Cost/Doc: $${report.performance.cost.avgCostPerDocument.toFixed(4)}`
+    );
 
     console.log('\nTARGET METRICS');
     console.log('--------------');
@@ -362,15 +392,15 @@ export class Evaluator {
 
     console.log(
       `Accuracy >=${(accuracyTarget * 100).toFixed(0)}%: ${accuracyPass ? '✓ PASS' : '✗ FAIL'} ` +
-      `(${(report.summary.overallAccuracy * 100).toFixed(2)}%)`
+        `(${(report.summary.overallAccuracy * 100).toFixed(2)}%)`
     );
     console.log(
       `P95 Latency <=${latencyTarget}ms: ${latencyPass ? '✓ PASS' : '✗ FAIL'} ` +
-      `(${report.performance.latency.p95.toFixed(0)}ms)`
+        `(${report.performance.latency.p95.toFixed(0)}ms)`
     );
     console.log(
       `Cost <=$${costTarget}: ${costPass ? '✓ PASS' : '✗ FAIL'} ` +
-      `($${report.performance.cost.avgCostPerDocument.toFixed(4)})`
+        `($${report.performance.cost.avgCostPerDocument.toFixed(4)})`
     );
 
     if (!accuracyPass || !latencyPass || !costPass) {

@@ -15,7 +15,10 @@ setupOpenTelemetry();
 wsClient.connect();
 
 // Create queue for adding jobs programmatically
-export const documentQueue = new Queue(QueueNames.DOCUMENT_PROCESSING, queueConfig);
+export const documentQueue = new Queue(
+  QueueNames.DOCUMENT_PROCESSING,
+  queueConfig
+);
 
 // Create worker to process jobs
 const worker = new Worker(
@@ -114,7 +117,9 @@ worker.on('completed', (job: Job) => {
 
 worker.on('failed', (job: Job | undefined, error: Error) => {
   if (job) {
-    console.error(`\n❌ Job ${job.id} (${job.name}) failed after ${job.attemptsMade} attempts`);
+    console.error(
+      `\n❌ Job ${job.id} (${job.name}) failed after ${job.attemptsMade} attempts`
+    );
     console.error(`   Error:`, error.message);
   } else {
     console.error(`\n❌ Job failed:`, error.message);
@@ -151,7 +156,9 @@ process.on('SIGINT', async () => {
 console.log('🔧 Docuflow Worker started');
 console.log(`📡 WebSocket connected: ${wsClient ? 'Yes' : 'No'}`);
 console.log(`⚙️  Concurrency: ${workerConfig.concurrency}`);
-console.log(`🔄 Listening for jobs on queue: ${QueueNames.DOCUMENT_PROCESSING}`);
+console.log(
+  `🔄 Listening for jobs on queue: ${QueueNames.DOCUMENT_PROCESSING}`
+);
 console.log(`\n📋 Supported jobs:`);
 console.log(`   - ${JobNames.DOCUMENT_UPLOAD}`);
 console.log(`   - ${JobNames.DOCUMENT_OCR}`);

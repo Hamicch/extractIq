@@ -2,7 +2,13 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { Resource } from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import { diag, DiagConsoleLogger, DiagLogLevel, trace, SpanStatusCode } from '@opentelemetry/api';
+import {
+  diag,
+  DiagConsoleLogger,
+  DiagLogLevel,
+  trace,
+  SpanStatusCode,
+} from '@opentelemetry/api';
 import type { Span } from '@opentelemetry/api';
 
 // Enable diagnostic logging in development
@@ -39,8 +45,13 @@ export function setupOpenTelemetryEnhanced() {
 }
 
 // Custom span creation helpers
-export function createSpan(name: string, attributes?: Record<string, any>): Span {
-  const tracer = trace.getTracer(process.env.OTEL_SERVICE_NAME || 'docuflow-api');
+export function createSpan(
+  name: string,
+  attributes?: Record<string, any>
+): Span {
+  const tracer = trace.getTracer(
+    process.env.OTEL_SERVICE_NAME || 'docuflow-api'
+  );
   const span = tracer.startSpan(name, {
     attributes,
   });
@@ -52,7 +63,9 @@ export async function traceAsyncOperation<T>(
   operation: () => Promise<T>,
   attributes?: Record<string, any>
 ): Promise<T> {
-  const tracer = trace.getTracer(process.env.OTEL_SERVICE_NAME || 'docuflow-api');
+  const tracer = trace.getTracer(
+    process.env.OTEL_SERVICE_NAME || 'docuflow-api'
+  );
   return tracer.startActiveSpan(name, { attributes }, async (span) => {
     try {
       const result = await operation();

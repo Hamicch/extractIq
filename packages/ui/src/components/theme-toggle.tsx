@@ -46,7 +46,10 @@ export function ThemeToggle() {
         )}
         aria-label={`Switch to ${currentTheme?.label} theme`}
       >
-        <Icon className="h-4 w-4 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />
+        <Icon
+          className="h-4 w-4 text-neutral-700 dark:text-neutral-300"
+          aria-hidden="true"
+        />
       </button>
 
       {/* Tooltip */}

@@ -3,7 +3,11 @@ import { z } from 'zod';
 /**
  * Base schema with confidence scoring for AI-extracted fields
  */
-const ConfidenceScore = z.number().min(0).max(1).describe('Confidence score from 0 to 1');
+const ConfidenceScore = z
+  .number()
+  .min(0)
+  .max(1)
+  .describe('Confidence score from 0 to 1');
 
 const ExtractedFieldWithConfidence = <T extends z.ZodTypeAny>(schema: T) =>
   z.object({
@@ -19,24 +23,32 @@ export const LegalContractSchema = z.object({
   parties: z.array(
     z.object({
       name: ExtractedFieldWithConfidence(z.string()),
-      role: ExtractedFieldWithConfidence(z.enum(['party_a', 'party_b', 'witness', 'notary', 'other'])),
+      role: ExtractedFieldWithConfidence(
+        z.enum(['party_a', 'party_b', 'witness', 'notary', 'other'])
+      ),
       address: ExtractedFieldWithConfidence(z.string().optional()),
     })
   ),
-  effective_date: ExtractedFieldWithConfidence(z.string().describe('ISO 8601 date format')),
-  termination_date: ExtractedFieldWithConfidence(z.string().optional().describe('ISO 8601 date format')),
+  effective_date: ExtractedFieldWithConfidence(
+    z.string().describe('ISO 8601 date format')
+  ),
+  termination_date: ExtractedFieldWithConfidence(
+    z.string().optional().describe('ISO 8601 date format')
+  ),
   payment_terms: z.object({
     amount: ExtractedFieldWithConfidence(z.number().optional()),
     currency: ExtractedFieldWithConfidence(z.string().optional()),
     schedule: ExtractedFieldWithConfidence(z.string().optional()),
   }),
   governing_law: ExtractedFieldWithConfidence(z.string()),
-  key_obligations: z.array(
-    z.object({
-      party: ExtractedFieldWithConfidence(z.string()),
-      obligation: ExtractedFieldWithConfidence(z.string()),
-    })
-  ).optional(),
+  key_obligations: z
+    .array(
+      z.object({
+        party: ExtractedFieldWithConfidence(z.string()),
+        obligation: ExtractedFieldWithConfidence(z.string()),
+      })
+    )
+    .optional(),
   termination_clauses: ExtractedFieldWithConfidence(z.string().optional()),
   dispute_resolution: ExtractedFieldWithConfidence(z.string().optional()),
 });
@@ -49,19 +61,25 @@ export type LegalContractExtraction = z.infer<typeof LegalContractSchema>;
 export const InvoiceSchema = z.object({
   type: z.literal('invoice'),
   invoice_number: ExtractedFieldWithConfidence(z.string()),
-  date: ExtractedFieldWithConfidence(z.string().describe('ISO 8601 date format')),
-  due_date: ExtractedFieldWithConfidence(z.string().optional().describe('ISO 8601 date format')),
+  date: ExtractedFieldWithConfidence(
+    z.string().describe('ISO 8601 date format')
+  ),
+  due_date: ExtractedFieldWithConfidence(
+    z.string().optional().describe('ISO 8601 date format')
+  ),
   vendor: z.object({
     name: ExtractedFieldWithConfidence(z.string()),
     address: ExtractedFieldWithConfidence(z.string().optional()),
     tax_id: ExtractedFieldWithConfidence(z.string().optional()),
     contact: ExtractedFieldWithConfidence(z.string().optional()),
   }),
-  customer: z.object({
-    name: ExtractedFieldWithConfidence(z.string()),
-    address: ExtractedFieldWithConfidence(z.string().optional()),
-    tax_id: ExtractedFieldWithConfidence(z.string().optional()),
-  }).optional(),
+  customer: z
+    .object({
+      name: ExtractedFieldWithConfidence(z.string()),
+      address: ExtractedFieldWithConfidence(z.string().optional()),
+      tax_id: ExtractedFieldWithConfidence(z.string().optional()),
+    })
+    .optional(),
   line_items: z.array(
     z.object({
       description: ExtractedFieldWithConfidence(z.string()),
@@ -86,17 +104,28 @@ export type InvoiceExtraction = z.infer<typeof InvoiceSchema>;
 export const GenericDocumentSchema = z.object({
   type: z.literal('generic'),
   title: ExtractedFieldWithConfidence(z.string()),
-  date: ExtractedFieldWithConfidence(z.string().optional().describe('ISO 8601 date format')),
+  date: ExtractedFieldWithConfidence(
+    z.string().optional().describe('ISO 8601 date format')
+  ),
   author: ExtractedFieldWithConfidence(z.string().optional()),
-  entities: z.array(
-    z.object({
-      name: ExtractedFieldWithConfidence(z.string()),
-      type: ExtractedFieldWithConfidence(
-        z.enum(['person', 'organization', 'location', 'date', 'monetary_value', 'other'])
-      ),
-      context: ExtractedFieldWithConfidence(z.string().optional()),
-    })
-  ).optional(),
+  entities: z
+    .array(
+      z.object({
+        name: ExtractedFieldWithConfidence(z.string()),
+        type: ExtractedFieldWithConfidence(
+          z.enum([
+            'person',
+            'organization',
+            'location',
+            'date',
+            'monetary_value',
+            'other',
+          ])
+        ),
+        context: ExtractedFieldWithConfidence(z.string().optional()),
+      })
+    )
+    .optional(),
   key_points: z.array(
     z.object({
       point: ExtractedFieldWithConfidence(z.string()),
@@ -134,7 +163,9 @@ export type DocumentTypeDetection = z.infer<typeof DocumentTypeDetectionSchema>;
 /**
  * Helper function to get schema by document type
  */
-export function getSchemaForType(type: 'legal_contract' | 'invoice' | 'generic') {
+export function getSchemaForType(
+  type: 'legal_contract' | 'invoice' | 'generic'
+) {
   switch (type) {
     case 'legal_contract':
       return LegalContractSchema;

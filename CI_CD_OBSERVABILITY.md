@@ -25,6 +25,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 **Triggers:** Pull requests and pushes to main/develop
 
 **Jobs:**
+
 - **backend-tests**: Run API and Worker unit tests
 - **frontend-tests**: Run Web component tests
 - **e2e-tests**: Run Playwright end-to-end tests
@@ -36,6 +37,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 - **build-check**: Verify all packages build successfully
 
 **Service Containers:**
+
 - PostgreSQL 15
 - Redis 7
 
@@ -44,6 +46,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 **Triggers:** Pushes to main branch
 
 **Features:**
+
 - Multi-stage Docker builds for api, worker, and web
 - Images tagged with git SHA and `latest`
 - Pushed to GitHub Container Registry (ghcr.io)
@@ -51,6 +54,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 - Security scan results uploaded to GitHub Security
 
 **Images Built:**
+
 - `ghcr.io/{owner}/docuflow-api:{tag}`
 - `ghcr.io/{owner}/docuflow-worker:{tag}`
 - `ghcr.io/{owner}/docuflow-web:{tag}`
@@ -60,6 +64,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 **Trigger:** Manual with environment selection
 
 **Staging Deployment:**
+
 1. Pull Docker images by tag
 2. Run database migrations
 3. Deploy services via Docker Compose
@@ -67,6 +72,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 5. Post Slack notification
 
 **Production Deployment (Blue-Green):**
+
 1. Determine inactive environment (blue/green)
 2. Pull images to inactive environment
 3. Run database migrations with backup
@@ -78,6 +84,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 9. Stop old environment on success
 
 **Required Secrets:**
+
 - `STAGING_SSH_KEY`, `STAGING_HOST`, `STAGING_USER`
 - `PRODUCTION_SSH_KEY`, `PRODUCTION_HOST`, `PRODUCTION_USER`
 - `SLACK_WEBHOOK_URL`
@@ -88,6 +95,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 **Triggers:** PRs affecting extraction code
 
 **Features:**
+
 - Run AI extraction evaluation suite
 - Post results as PR comment
 - Fail if metrics regress below targets
@@ -122,6 +130,7 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 **File:** `docker-compose.production.yml`
 
 **Services:**
+
 - postgres (2 CPU, 2GB RAM)
 - redis (1 CPU, 512MB RAM)
 - api (replicas: 2, 0.5-2 CPU, 512MB-1GB RAM)
@@ -132,12 +141,14 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 - grafana (dashboards)
 
 **Features:**
+
 - Health checks for all services
 - Resource limits and reservations
 - Automatic restart policies
 - Volume persistence
 
 **Usage:**
+
 ```bash
 # Set environment variables
 export IMAGE_TAG=abc1234
@@ -200,18 +211,21 @@ kubectl scale deployment/docuflow-worker --replicas=10 -n docuflow
 ### Horizontal Pod Autoscaler (HPA)
 
 **API HPA:**
+
 - Min replicas: 3
 - Max replicas: 10
 - Target CPU: 70%
 - Target Memory: 80%
 
 **Worker HPA:**
+
 - Min replicas: 3
 - Max replicas: 20
 - Target CPU: 70%
 - Target Memory: 80%
 
 **Scaling Behavior:**
+
 - Scale up: Fast (100% every 15s, max 2 pods)
 - Scale down: Gradual (50% every 60s, 5min stabilization)
 
@@ -226,6 +240,7 @@ kubectl scale deployment/docuflow-worker --replicas=10 -n docuflow
 **File:** `packages/api/src/telemetry-enhanced.ts`
 
 **Features:**
+
 - Automatic HTTP request tracing
 - Express middleware instrumentation
 - PostgreSQL query tracing
@@ -233,6 +248,7 @@ kubectl scale deployment/docuflow-worker --replicas=10 -n docuflow
 - Custom span helpers
 
 **Custom Span Creation:**
+
 ```typescript
 import { traceAsyncOperation } from './telemetry-enhanced';
 
@@ -250,6 +266,7 @@ const result = await traceAsyncOperation(
 ```
 
 **OpenAI Call Tracing:**
+
 ```typescript
 import { createOpenAISpan, recordOpenAIMetrics } from './telemetry-enhanced';
 
@@ -269,6 +286,7 @@ try {
 **File:** `packages/web/src/lib/analytics.ts`
 
 **Features:**
+
 - Web Vitals tracking (CLS, FID, LCP, FCP, TTFB, INP)
 - Page view tracking
 - Custom event tracking
@@ -277,8 +295,13 @@ try {
 - Feature usage tracking
 
 **Usage:**
+
 ```typescript
-import { trackEvent, trackPageView, trackDocumentUpload } from '@/lib/analytics';
+import {
+  trackEvent,
+  trackPageView,
+  trackDocumentUpload,
+} from '@/lib/analytics';
 
 // Track page view
 trackPageView('/documents');
@@ -291,6 +314,7 @@ trackDocumentUpload('started', { fileSize: 1024000, fileType: 'pdf' });
 ```
 
 **Error Boundary:**
+
 ```typescript
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
@@ -302,10 +326,12 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 ### Traces
 
 Viewable in Jaeger UI:
+
 - URL: http://localhost:16686
 - Production: https://jaeger.docuflow.example.com
 
 **Trace Context:**
+
 - service.name
 - trace.id
 - span.id
@@ -387,6 +413,7 @@ rate(cache_requests_total{result="miss"}[5m])
 ### Metrics Endpoint
 
 Prometheus metrics available at:
+
 - http://localhost:9464/metrics (API)
 - http://localhost:9090 (Prometheus UI)
 
@@ -396,7 +423,7 @@ Prometheus metrics available at:
 import {
   recordDocumentProcessed,
   recordDocumentProcessingTime,
-  recordOpenAICall
+  recordOpenAICall,
 } from './metrics';
 
 // Record document processed
@@ -425,6 +452,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 **File:** `monitoring/grafana/dashboards/docuflow-overview.json`
 
 **Panels:**
+
 - Request Rate (req/s)
 - Error Rate (%)
 - P95 Latency (ms)
@@ -435,6 +463,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 - WebSocket Connections
 
 **Variables:**
+
 - Time range
 - Tenant filter
 - Environment filter
@@ -442,6 +471,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 #### 2. Cost Tracking Dashboard
 
 **Metrics:**
+
 - Total OpenAI cost by tenant
 - Cost per document
 - Token usage trends
@@ -450,6 +480,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 #### 3. Performance Dashboard
 
 **Metrics:**
+
 - RED metrics (Rate, Errors, Duration)
 - Database query latencies
 - Redis operation times
@@ -459,6 +490,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 #### 4. Frontend Dashboard
 
 **Metrics:**
+
 - Web Vitals (CLS, FID, LCP)
 - Page load times
 - API call latencies from frontend
@@ -494,8 +526,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is {{ $value | humanizePercentage }}"
+          summary: 'High error rate detected'
+          description: 'Error rate is {{ $value | humanizePercentage }}'
 
       # High latency
       - alert: HighLatency
@@ -504,8 +536,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High P95 latency"
-          description: "P95 latency is {{ $value }}s"
+          summary: 'High P95 latency'
+          description: 'P95 latency is {{ $value }}s'
 
       # Queue growing
       - alert: QueueGrowing
@@ -514,8 +546,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "Queue size growing"
-          description: "Queue size is {{ $value }}"
+          summary: 'Queue size growing'
+          description: 'Queue size is {{ $value }}'
 
       # High OpenAI cost
       - alert: HighOpenAICost
@@ -524,8 +556,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High OpenAI spending"
-          description: "Spending ${{ $value }}/hour"
+          summary: 'High OpenAI spending'
+          description: 'Spending ${{ $value }}/hour'
 
       # Low cache hit rate
       - alert: LowCacheHitRate
@@ -534,13 +566,14 @@ groups:
         labels:
           severity: info
         annotations:
-          summary: "Low cache hit rate"
-          description: "Cache hit rate is {{ $value | humanizePercentage }}"
+          summary: 'Low cache hit rate'
+          description: 'Cache hit rate is {{ $value | humanizePercentage }}'
 ```
 
 ### Notification Channels
 
 Configure in Grafana:
+
 1. Alerting → Notification channels
 2. Add channel (Slack, PagerDuty, Email, etc.)
 3. Test notification
@@ -593,30 +626,35 @@ diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 ## Best Practices
 
 ### 1. Metrics
+
 - Keep cardinality low (avoid high-cardinality labels like user IDs)
 - Use histograms for latencies
 - Use counters for cumulative values
 - Use gauges for current values
 
 ### 2. Tracing
+
 - Add meaningful span names
 - Include relevant attributes
 - Don't trace everything (performance impact)
 - Use sampling in production
 
 ### 3. Logging
+
 - Log structured JSON
 - Include trace IDs in logs
 - Use appropriate log levels
 - Don't log sensitive data
 
 ### 4. Dashboards
+
 - Focus on actionable metrics
 - Use consistent colors
 - Add annotations for deployments
 - Create separate dashboards for different audiences
 
 ### 5. Alerts
+
 - Alert on symptoms, not causes
 - Avoid alert fatigue
 - Include runbook links
