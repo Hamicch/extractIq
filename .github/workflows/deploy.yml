@@ -1,0 +1,303 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      image_tag:
+        description: 'Image tag to deploy (git SHA or "latest")'
+        required: true
+        default: 'latest'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/docuflow
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.environment == 'staging' }}
+    environment:
+      name: staging
+      url: https://staging.docuflow.example.com
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.STAGING_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Pull Docker images
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} << 'EOF'
+            docker pull ${{ env.IMAGE_PREFIX }}-api:${{ github.event.inputs.image_tag }}
+            docker pull ${{ env.IMAGE_PREFIX }}-worker:${{ github.event.inputs.image_tag }}
+            docker pull ${{ env.IMAGE_PREFIX }}-web:${{ github.event.inputs.image_tag }}
+          EOF
+
+      - name: Run database migrations
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} << 'EOF'
+            cd /opt/docuflow
+            docker-compose run --rm api npm run db:push
+          EOF
+
+      - name: Deploy services
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} << 'EOF'
+            cd /opt/docuflow
+            export IMAGE_TAG=${{ github.event.inputs.image_tag }}
+            docker-compose -f docker-compose.production.yml up -d
+          EOF
+
+      - name: Wait for services to be healthy
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} << 'EOF'
+            echo "Waiting for services to be healthy..."
+            for i in {1..30}; do
+              if docker-compose ps | grep -q "healthy"; then
+                echo "Services are healthy"
+                exit 0
+              fi
+              echo "Waiting... ($i/30)"
+              sleep 10
+            done
+            echo "Services did not become healthy in time"
+            exit 1
+          EOF
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests against staging..."
+          curl -f https://staging.docuflow.example.com/health || exit 1
+          curl -f https://staging.docuflow.example.com/api/health || exit 1
+          echo "✅ Smoke tests passed"
+
+      - name: Post deployment notification
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "🚀 Docuflow deployed to staging",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment Successful*\n✅ Environment: staging\n🏷️ Image tag: ${{ github.event.inputs.image_tag }}\n👤 Deployed by: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }'
+
+      - name: Post failure notification
+        if: failure()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "❌ Docuflow staging deployment failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment Failed*\n❌ Environment: staging\n🏷️ Image tag: ${{ github.event.inputs.image_tag }}\n👤 Deployed by: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }'
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.environment == 'production' }}
+    environment:
+      name: production
+      url: https://docuflow.example.com
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Determine inactive environment
+        id: env
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            # Check which environment is currently active
+            ACTIVE=$(cat /opt/docuflow/active_env.txt || echo "blue")
+            if [ "$ACTIVE" = "blue" ]; then
+              echo "INACTIVE=green" >> $GITHUB_OUTPUT
+              echo "ACTIVE=blue" >> $GITHUB_OUTPUT
+            else
+              echo "INACTIVE=blue" >> $GITHUB_OUTPUT
+              echo "ACTIVE=green" >> $GITHUB_OUTPUT
+            fi
+            echo "Deploying to: $INACTIVE"
+            echo "Currently active: $ACTIVE"
+          EOF
+
+      - name: Pull Docker images to inactive environment
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            docker pull ${{ env.IMAGE_PREFIX }}-api:${{ github.event.inputs.image_tag }}
+            docker pull ${{ env.IMAGE_PREFIX }}-worker:${{ github.event.inputs.image_tag }}
+            docker pull ${{ env.IMAGE_PREFIX }}-web:${{ github.event.inputs.image_tag }}
+          EOF
+
+      - name: Run database migrations
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            cd /opt/docuflow
+            # Run migrations with backup
+            docker-compose exec postgres pg_dump -U docuflow docuflow > backup_$(date +%Y%m%d_%H%M%S).sql
+            docker-compose run --rm api npm run db:push
+          EOF
+
+      - name: Deploy to inactive environment
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            cd /opt/docuflow
+            export IMAGE_TAG=${{ github.event.inputs.image_tag }}
+            export ENVIRONMENT=${{ steps.env.outputs.INACTIVE }}
+            docker-compose -f docker-compose.$ENVIRONMENT.yml up -d
+          EOF
+
+      - name: Wait for services to be healthy
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            echo "Waiting for ${{ steps.env.outputs.INACTIVE }} environment to be healthy..."
+            for i in {1..30}; do
+              if docker-compose -f docker-compose.${{ steps.env.outputs.INACTIVE }}.yml ps | grep -q "healthy"; then
+                echo "Services are healthy"
+                exit 0
+              fi
+              echo "Waiting... ($i/30)"
+              sleep 10
+            done
+            echo "Services did not become healthy in time"
+            exit 1
+          EOF
+
+      - name: Run smoke tests on inactive environment
+        id: smoke_tests
+        run: |
+          echo "Running smoke tests..."
+          # Test health endpoints
+          curl -f http://${{ secrets.PRODUCTION_HOST }}:${{ steps.env.outputs.INACTIVE == 'blue' && '8001' || '8002' }}/health || exit 1
+          curl -f http://${{ secrets.PRODUCTION_HOST }}:${{ steps.env.outputs.INACTIVE == 'blue' && '8001' || '8002' }}/api/health || exit 1
+
+          # Test sample document upload
+          curl -X POST -f http://${{ secrets.PRODUCTION_HOST }}:${{ steps.env.outputs.INACTIVE == 'blue' && '8001' || '8002' }}/api/documents \
+            -H "Authorization: Bearer ${{ secrets.API_TEST_TOKEN }}" \
+            -F "file=@test/fixtures/sample.pdf" || exit 1
+
+          echo "✅ Smoke tests passed"
+
+      - name: Switch traffic to new environment
+        if: success()
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            # Update load balancer / reverse proxy to point to new environment
+            echo "${{ steps.env.outputs.INACTIVE }}" > /opt/docuflow/active_env.txt
+            nginx -s reload
+            echo "✅ Traffic switched to ${{ steps.env.outputs.INACTIVE }} environment"
+          EOF
+
+      - name: Monitor error rates
+        id: monitor
+        continue-on-error: true
+        run: |
+          echo "Monitoring error rates for 10 minutes..."
+          sleep 600
+
+          # Query Prometheus for error rate
+          ERROR_RATE=$(curl -s 'http://${{ secrets.PRODUCTION_HOST }}:9090/api/v1/query?query=rate(api_requests_total{status_code=~"5.."}[5m])' | jq -r '.data.result[0].value[1]')
+          P95_LATENCY=$(curl -s 'http://${{ secrets.PRODUCTION_HOST }}:9090/api/v1/query?query=histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))' | jq -r '.data.result[0].value[1]')
+
+          echo "Error rate: $ERROR_RATE"
+          echo "P95 latency: $P95_LATENCY"
+
+          if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
+            echo "❌ Error rate too high: $ERROR_RATE"
+            exit 1
+          fi
+
+          if (( $(echo "$P95_LATENCY > 2" | bc -l) )); then
+            echo "❌ P95 latency too high: ${P95_LATENCY}s"
+            exit 1
+          fi
+
+          echo "✅ Metrics within acceptable ranges"
+
+      - name: Rollback on failure
+        if: failure() && steps.monitor.outcome == 'failure'
+        run: |
+          echo "⚠️ Rolling back to ${{ steps.env.outputs.ACTIVE }} environment"
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            echo "${{ steps.env.outputs.ACTIVE }}" > /opt/docuflow/active_env.txt
+            nginx -s reload
+            echo "✅ Rolled back to ${{ steps.env.outputs.ACTIVE }} environment"
+          EOF
+
+      - name: Stop old environment
+        if: success()
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} << 'EOF'
+            echo "Stopping old ${{ steps.env.outputs.ACTIVE }} environment..."
+            docker-compose -f docker-compose.${{ steps.env.outputs.ACTIVE }}.yml down
+          EOF
+
+      - name: Post deployment notification
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "🚀 Docuflow deployed to production",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Production Deployment Successful*\n✅ Environment: production\n🏷️ Image tag: ${{ github.event.inputs.image_tag }}\n🔄 Blue-green switch: ${{ steps.env.outputs.ACTIVE }} → ${{ steps.env.outputs.INACTIVE }}\n👤 Deployed by: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }'
+
+      - name: Post failure notification
+        if: failure()
+        run: |
+          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "❌ Docuflow production deployment failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Production Deployment Failed*\n❌ Environment: production\n🏷️ Image tag: ${{ github.event.inputs.image_tag }}\n⚠️ Status: Rolled back\n👤 Deployed by: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }'

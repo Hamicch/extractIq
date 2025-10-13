@@ -23,6 +23,15 @@ docuflow/
 └── turbo.json
 ```
 
+## 📚 Documentation
+
+For detailed architecture and implementation guides:
+
+- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Complete system architecture and package documentation
+- **[CI_CD_OBSERVABILITY.md](CI_CD_OBSERVABILITY.md)** - CI/CD pipelines, deployment, and monitoring
+- **[AI_EXTRACTION_IMPLEMENTATION.md](AI_EXTRACTION_IMPLEMENTATION.md)** - AI-powered document extraction features
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Latest implementation details
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js 14 (App Router), React 18, Tailwind CSS, shadcn/ui
