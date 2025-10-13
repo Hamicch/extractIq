@@ -1,20 +1,27 @@
 import { db } from './client';
 import {
   tenants,
+  users,
   documents,
   documentExtractions,
   processingAuditLog,
   apiKeys,
   type NewTenant,
+  type NewUser,
   type NewDocument,
   type NewDocumentExtraction,
   type NewProcessingAuditLog,
   type NewApiKey,
 } from './schema';
 import { createHash } from 'crypto';
+import bcrypt from 'bcrypt';
 
 function hashApiKey(key: string): string {
   return createHash('sha256').update(key).digest('hex');
+}
+
+async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 10);
 }
 
 async function seed() {
@@ -50,6 +57,41 @@ async function seed() {
     .values(testTenants)
     .returning();
   console.log(`✅ Created ${insertedTenants.length} tenants`);
+
+  // Create test users
+  const testUsers: NewUser[] = [
+    {
+      email: 'admin@docuflow.com',
+      name: 'Admin User',
+      passwordHash: await hashPassword('admin123'),
+      role: 'admin',
+      tenantId: null,
+    },
+    {
+      email: 'john@acme-legal.com',
+      name: 'John Doe',
+      passwordHash: await hashPassword('password123'),
+      role: 'user',
+      tenantId: insertedTenants[0].id,
+    },
+    {
+      email: 'sarah@techcorp.io',
+      name: 'Sarah Smith',
+      passwordHash: await hashPassword('password123'),
+      role: 'user',
+      tenantId: insertedTenants[1].id,
+    },
+    {
+      email: 'mike@startup-ops.com',
+      name: 'Mike Johnson',
+      passwordHash: await hashPassword('password123'),
+      role: 'user',
+      tenantId: insertedTenants[2].id,
+    },
+  ];
+
+  const insertedUsers = await db.insert(users).values(testUsers).returning();
+  console.log(`✅ Created ${insertedUsers.length} users`);
 
   // Create API keys for each tenant
   const testApiKeys: NewApiKey[] = insertedTenants.flatMap((tenant) => [
@@ -263,6 +305,7 @@ async function seed() {
   console.log('🎉 Seeding completed successfully!');
   console.log('\n📊 Summary:');
   console.log(`   - Tenants: ${insertedTenants.length}`);
+  console.log(`   - Users: ${insertedUsers.length}`);
   console.log(`   - API Keys: ${insertedApiKeys.length}`);
   console.log(`   - Documents: ${insertedDocuments.length}`);
   console.log(`   - Extractions: ${sampleExtractions.length}`);
@@ -271,6 +314,11 @@ async function seed() {
   console.log(`   - acme-legal: acme_test_key_123`);
   console.log(`   - techcorp-finance: techcorp_test_key_456`);
   console.log(`   - startup-ops: startup_test_key_789`);
+  console.log('\n👤 Test User Accounts:');
+  console.log(`   - Admin: admin@docuflow.com / admin123`);
+  console.log(`   - User 1: john@acme-legal.com / password123`);
+  console.log(`   - User 2: sarah@techcorp.io / password123`);
+  console.log(`   - User 3: mike@startup-ops.com / password123`);
 }
 
 seed()

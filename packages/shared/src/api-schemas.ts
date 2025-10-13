@@ -300,3 +300,78 @@ export const JobDataSchema = z.object({
 });
 
 export type JobData = z.infer<typeof JobDataSchema>;
+
+// Auth Schemas
+export const UserRoleSchema = z.enum(['user', 'admin']);
+
+export const UserSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string(),
+  role: UserRoleSchema,
+  tenantId: z.string().uuid().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export const RegisterRequestSchema = z.object({
+  email: z.string().email().min(1, 'Email is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  name: z.string().min(1, 'Name is required'),
+  tenantId: z.string().uuid().optional(),
+});
+
+export const LoginRequestSchema = z.object({
+  email: z.string().email().min(1, 'Email is required'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+export const AuthResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.object({
+    user: UserSchema,
+    token: z.string(),
+  }),
+});
+
+export const VerifyTokenRequestSchema = z.object({
+  token: z.string().optional(),
+});
+
+export const VerifyTokenResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.object({
+    user: UserSchema,
+  }),
+});
+
+export const RefreshTokenRequestSchema = z.object({
+  refreshToken: z.string(),
+});
+
+export const LogoutResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+});
+
+export const PasswordResetRequestSchema = z.object({
+  email: z.string().email(),
+});
+
+export const PasswordResetConfirmSchema = z.object({
+  token: z.string(),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+// Auth Type Exports
+export type UserRole = z.infer<typeof UserRoleSchema>;
+export type User = z.infer<typeof UserSchema>;
+export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
+export type LoginRequest = z.infer<typeof LoginRequestSchema>;
+export type AuthResponse = z.infer<typeof AuthResponseSchema>;
+export type VerifyTokenRequest = z.infer<typeof VerifyTokenRequestSchema>;
+export type VerifyTokenResponse = z.infer<typeof VerifyTokenResponseSchema>;
+export type RefreshTokenRequest = z.infer<typeof RefreshTokenRequestSchema>;
+export type LogoutResponse = z.infer<typeof LogoutResponseSchema>;
+export type PasswordResetRequest = z.infer<typeof PasswordResetRequestSchema>;
+export type PasswordResetConfirm = z.infer<typeof PasswordResetConfirmSchema>;

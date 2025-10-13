@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore, type User } from '@/lib/store';
+import { initializeDocuflowClient } from '@docuflow/shared/api-client';
 
 interface AuthContextType {
   user: User | null;
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (response.ok) {
           const data = await response.json();
-          setUser(data.user);
+          setUser(data.data.user);
         } else {
           localStorage.removeItem('docuflow_api_key');
         }
@@ -74,11 +75,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
 
-      // Store API key
-      localStorage.setItem('docuflow_api_key', data.apiKey);
+      // Store token as API key
+      localStorage.setItem('docuflow_api_key', data.data.token);
 
       // Set user in store
-      setUser(data.user);
+      setUser(data.data.user);
+
+      // Reinitialize API client with token
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      initializeDocuflowClient({
+        baseURL: apiUrl,
+        apiKey: data.data.token,
+      });
 
       // Redirect to dashboard
       router.push('/documents');
