@@ -1,10 +1,7 @@
 import { Job } from 'bullmq';
 import { db, eq } from '@docuflow/db';
 import { documents, processingAuditLog } from '@docuflow/db/schema';
-import type {
-  DocumentOcrJobData,
-  DocumentOcrResult,
-} from '@docuflow/shared';
+import type { DocumentOcrJobData, DocumentOcrResult } from '@docuflow/shared';
 import { wsClient } from '../websocket/client';
 
 export async function processDocumentOcr(
@@ -75,7 +72,8 @@ export async function processDocumentOcr(
 
     // Simulate extracted text based on mime type
     const extractedText = generateMockExtractedText(mimeType);
-    const pageCount = mimeType === 'application/pdf' ? Math.floor(Math.random() * 20) + 1 : 1;
+    const pageCount =
+      mimeType === 'application/pdf' ? Math.floor(Math.random() * 20) + 1 : 1;
     const confidence = 0.85 + Math.random() * 0.14; // 0.85 to 0.99
 
     // Emit progress: 75%
@@ -132,7 +130,8 @@ export async function processDocumentOcr(
       confidence,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     const durationMs = Date.now() - startTime;
 
     // Log failure to audit

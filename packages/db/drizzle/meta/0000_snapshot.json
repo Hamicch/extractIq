@@ -50,16 +50,12 @@
       "indexes": {
         "api_keys_tenant_idx": {
           "name": "api_keys_tenant_idx",
-          "columns": [
-            "tenant_id"
-          ],
+          "columns": ["tenant_id"],
           "isUnique": false
         },
         "api_keys_hash_idx": {
           "name": "api_keys_hash_idx",
-          "columns": [
-            "key_hash"
-          ],
+          "columns": ["key_hash"],
           "isUnique": false
         }
       },
@@ -68,12 +64,8 @@
           "name": "api_keys_tenant_id_tenants_id_fk",
           "tableFrom": "api_keys",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenant_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -83,9 +75,7 @@
         "api_keys_key_hash_unique": {
           "name": "api_keys_key_hash_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "key_hash"
-          ]
+          "columns": ["key_hash"]
         }
       }
     },
@@ -141,16 +131,12 @@
       "indexes": {
         "extractions_document_idx": {
           "name": "extractions_document_idx",
-          "columns": [
-            "document_id"
-          ],
+          "columns": ["document_id"],
           "isUnique": false
         },
         "extractions_type_idx": {
           "name": "extractions_type_idx",
-          "columns": [
-            "extraction_type"
-          ],
+          "columns": ["extraction_type"],
           "isUnique": false
         }
       },
@@ -159,12 +145,8 @@
           "name": "document_extractions_document_id_documents_id_fk",
           "tableFrom": "document_extractions",
           "tableTo": "documents",
-          "columnsFrom": [
-            "document_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["document_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -249,18 +231,12 @@
       "indexes": {
         "documents_tenant_created_idx": {
           "name": "documents_tenant_created_idx",
-          "columns": [
-            "tenant_id",
-            "created_at"
-          ],
+          "columns": ["tenant_id", "created_at"],
           "isUnique": false
         },
         "documents_tenant_status_idx": {
           "name": "documents_tenant_status_idx",
-          "columns": [
-            "tenant_id",
-            "status"
-          ],
+          "columns": ["tenant_id", "status"],
           "isUnique": false
         }
       },
@@ -269,12 +245,8 @@
           "name": "documents_tenant_id_tenants_id_fk",
           "tableFrom": "documents",
           "tableTo": "tenants",
-          "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tenant_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -333,9 +305,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     },
@@ -393,9 +363,7 @@
       "indexes": {
         "tenants_name_idx": {
           "name": "tenants_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         }
       },
@@ -405,9 +373,7 @@
         "tenants_api_key_hash_unique": {
           "name": "tenants_api_key_hash_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "api_key_hash"
-          ]
+          "columns": ["api_key_hash"]
         }
       }
     },
@@ -469,17 +435,12 @@
       "indexes": {
         "audit_document_stage_idx": {
           "name": "audit_document_stage_idx",
-          "columns": [
-            "document_id",
-            "stage"
-          ],
+          "columns": ["document_id", "stage"],
           "isUnique": false
         },
         "audit_created_idx": {
           "name": "audit_created_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -488,12 +449,8 @@
           "name": "processing_audit_log_document_id_documents_id_fk",
           "tableFrom": "processing_audit_log",
           "tableTo": "documents",
-          "columnsFrom": [
-            "document_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["document_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

@@ -21,7 +21,9 @@ export default function UploadPage() {
   const router = useRouter();
   const selectedTenant = useAppStore((state) => state.selectedTenant);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, UploadProgress>>({});
+  const [uploadProgress, setUploadProgress] = useState<
+    Record<string, UploadProgress>
+  >({});
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFilesSelected = useCallback((files: File[]) => {
@@ -104,7 +106,9 @@ export default function UploadPage() {
         await Promise.all(batch.map((file) => uploadWithTus(file)));
       }
 
-      toast.success(`Successfully uploaded ${selectedFiles.length} document(s)`);
+      toast.success(
+        `Successfully uploaded ${selectedFiles.length} document(s)`
+      );
 
       // Clear selected files after successful upload
       setTimeout(() => {
@@ -117,8 +121,11 @@ export default function UploadPage() {
     }
   };
 
-  const _hasErrors = Object.values(uploadProgress).some((p) => p.status === 'error');
-  const allCompleted = selectedFiles.length > 0 &&
+  const _hasErrors = Object.values(uploadProgress).some(
+    (p) => p.status === 'error'
+  );
+  const allCompleted =
+    selectedFiles.length > 0 &&
     Object.keys(uploadProgress).length === selectedFiles.length &&
     Object.values(uploadProgress).every((p) => p.status === 'completed');
 
@@ -184,8 +191,8 @@ export default function UploadPage() {
                             progress.status === 'error'
                               ? 'bg-red-500'
                               : progress.status === 'completed'
-                              ? 'bg-green-500'
-                              : 'bg-primary'
+                                ? 'bg-green-500'
+                                : 'bg-primary'
                           }`}
                           style={{ width: `${progress.progress}%` }}
                         />
@@ -205,15 +212,20 @@ export default function UploadPage() {
               <div className="flex gap-3 pt-2">
                 <Button
                   onClick={handleUploadAll}
-                  disabled={isUploading || !selectedTenant || selectedFiles.length === 0 || allCompleted}
+                  disabled={
+                    isUploading ||
+                    !selectedTenant ||
+                    selectedFiles.length === 0 ||
+                    allCompleted
+                  }
                   className="flex-1"
                   size="lg"
                 >
                   {isUploading
                     ? 'Uploading...'
                     : allCompleted
-                    ? 'Upload Complete'
-                    : `Upload ${selectedFiles.length} Document${selectedFiles.length > 1 ? 's' : ''}`}
+                      ? 'Upload Complete'
+                      : `Upload ${selectedFiles.length} Document${selectedFiles.length > 1 ? 's' : ''}`}
                 </Button>
 
                 {allCompleted && (
@@ -250,10 +262,16 @@ export default function UploadPage() {
             <div className="text-sm text-neutral-600 dark:text-neutral-400">
               <p className="font-medium mb-1">Processing Information</p>
               <ul className="list-disc list-inside space-y-1">
-                <li>Documents are processed in batches of 3 concurrent uploads</li>
+                <li>
+                  Documents are processed in batches of 3 concurrent uploads
+                </li>
                 <li>Processing typically takes 1-2 minutes per document</li>
-                <li>You can track progress in real-time on the Documents page</li>
-                <li>Uploads are resumable - they will continue even if interrupted</li>
+                <li>
+                  You can track progress in real-time on the Documents page
+                </li>
+                <li>
+                  Uploads are resumable - they will continue even if interrupted
+                </li>
               </ul>
             </div>
           </div>

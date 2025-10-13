@@ -47,7 +47,8 @@ export const useAppStore = create<AppState>()(
       // UI State
       sidebarCollapsed: false,
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      toggleSidebar: () =>
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
     }),
     {
       name: 'docuflow-storage',

@@ -1,6 +1,10 @@
 import { Job } from 'bullmq';
 import { db, eq } from '@docuflow/db';
-import { documents, documentExtractions, processingAuditLog } from '@docuflow/db/schema';
+import {
+  documents,
+  documentExtractions,
+  processingAuditLog,
+} from '@docuflow/db/schema';
 import type {
   DocumentValidateJobData,
   DocumentValidateResult,
@@ -178,7 +182,8 @@ export async function processDocumentValidate(
       validationErrors,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     const durationMs = Date.now() - startTime;
 
     // Log failure to audit
@@ -262,7 +267,11 @@ function validateContract(
     lowConfidenceFields.push('contractNumber');
   }
 
-  if (!data.parties || !Array.isArray(data.parties) || data.parties.length < 2) {
+  if (
+    !data.parties ||
+    !Array.isArray(data.parties) ||
+    data.parties.length < 2
+  ) {
     errors.push('Contract must have at least 2 parties');
     lowConfidenceFields.push('parties');
   }

@@ -22,7 +22,10 @@ interface DocumentCardProps {
   showConfidence?: boolean;
 }
 
-export function DocumentCard({ document, showConfidence = true }: DocumentCardProps) {
+export function DocumentCard({
+  document,
+  showConfidence = true,
+}: DocumentCardProps) {
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -57,7 +60,11 @@ export function DocumentCard({ document, showConfidence = true }: DocumentCardPr
             <div className="flex items-center gap-4 text-xs text-neutral-600 dark:text-neutral-400 mb-3">
               <div className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>{formatDistanceToNow(new Date(document.uploadedAt), { addSuffix: true })}</span>
+                <span>
+                  {formatDistanceToNow(new Date(document.uploadedAt), {
+                    addSuffix: true,
+                  })}
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <File className="h-3.5 w-3.5" />
@@ -69,15 +76,16 @@ export function DocumentCard({ document, showConfidence = true }: DocumentCardPr
             </div>
 
             {/* Confidence Indicator */}
-            {showConfidence && document.extraction?.confidence !== undefined && (
-              <div className="mt-2">
-                <ConfidenceIndicator
-                  confidence={document.extraction.confidence}
-                  size="sm"
-                  variant="bar"
-                />
-              </div>
-            )}
+            {showConfidence &&
+              document.extraction?.confidence !== undefined && (
+                <div className="mt-2">
+                  <ConfidenceIndicator
+                    confidence={document.extraction.confidence}
+                    size="sm"
+                    variant="bar"
+                  />
+                </div>
+              )}
           </div>
         </div>
       </Card>

@@ -1,7 +1,12 @@
 import { Badge } from '@docuflow/ui';
 import { Clock, CheckCircle, XCircle, Upload, Loader } from 'lucide-react';
 
-type DocumentStatus = 'uploading' | 'queued' | 'processing' | 'completed' | 'failed';
+type DocumentStatus =
+  | 'uploading'
+  | 'queued'
+  | 'processing'
+  | 'completed'
+  | 'failed';
 
 interface DocumentStatusBadgeProps {
   status: DocumentStatus;
@@ -12,12 +17,14 @@ const statusConfig = {
   uploading: {
     label: 'Uploading',
     icon: Upload,
-    className: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+    className:
+      'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
   },
   queued: {
     label: 'Queued',
     icon: Loader,
-    className: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+    className:
+      'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
   },
   processing: {
     label: 'Processing',
@@ -27,7 +34,8 @@ const statusConfig = {
   completed: {
     label: 'Completed',
     icon: CheckCircle,
-    className: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+    className:
+      'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
   },
   failed: {
     label: 'Failed',
@@ -36,12 +44,17 @@ const statusConfig = {
   },
 };
 
-export function DocumentStatusBadge({ status, className = '' }: DocumentStatusBadgeProps) {
+export function DocumentStatusBadge({
+  status,
+  className = '',
+}: DocumentStatusBadgeProps) {
   const config = statusConfig[status];
   const Icon = config.icon;
 
   return (
-    <Badge className={`inline-flex items-center gap-1.5 ${config.className} ${className}`}>
+    <Badge
+      className={`inline-flex items-center gap-1.5 ${config.className} ${className}`}
+    >
       <Icon className="h-3.5 w-3.5" />
       <span>{config.label}</span>
     </Badge>

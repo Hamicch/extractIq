@@ -76,9 +76,12 @@ export function useWebSocket(options: WebSocketOptions = {}) {
   }, []);
 
   // Unsubscribe from events
-  const off = useCallback((event: string, handler?: (...args: any[]) => void) => {
-    socketRef.current?.off(event, handler);
-  }, []);
+  const off = useCallback(
+    (event: string, handler?: (...args: any[]) => void) => {
+      socketRef.current?.off(event, handler);
+    },
+    []
+  );
 
   // Emit events
   const emit = useCallback((event: string, ...args: any[]) => {

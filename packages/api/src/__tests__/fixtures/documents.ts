@@ -49,7 +49,7 @@ export const mockExtractions = {
     fields: {
       invoiceNumber: 'INV-2024-001',
       invoiceDate: '2024-01-10',
-      totalAmount: 1250.00,
+      totalAmount: 1250.0,
       vendor: 'Acme Corp',
       items: [
         { description: 'Consulting Services', quantity: 10, unitPrice: 125 },

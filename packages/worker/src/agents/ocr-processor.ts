@@ -80,14 +80,19 @@ export class OCRProcessor {
         durationMs: Date.now() - startTime,
       });
 
-      throw new Error(`OCR extraction failed: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `OCR extraction failed: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 
   /**
    * Assess the quality of extracted text
    */
-  private assessTextQuality(text: string, pageCount: number): OCRResult['quality'] {
+  private assessTextQuality(
+    text: string,
+    pageCount: number
+  ): OCRResult['quality'] {
     const hasText = text.length > 0;
 
     if (!hasText) {
@@ -114,7 +119,8 @@ export class OCRProcessor {
       textPerPage > 200, // At least 200 chars per page
     ];
 
-    const qualityScore = qualityIndicators.filter(Boolean).length / qualityIndicators.length;
+    const qualityScore =
+      qualityIndicators.filter(Boolean).length / qualityIndicators.length;
 
     let estimatedQuality: 'high' | 'medium' | 'low';
     let confidence: number;
@@ -171,7 +177,7 @@ export class OCRProcessor {
     );
 
     processed = lines
-      .filter(line => !repeatedLines.has(line.trim()))
+      .filter((line) => !repeatedLines.has(line.trim()))
       .join('\n');
 
     return processed;

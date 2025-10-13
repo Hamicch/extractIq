@@ -23,6 +23,15 @@ docuflow/
 └── turbo.json
 ```
 
+## 📚 Documentation
+
+For detailed architecture and implementation guides:
+
+- **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - Complete system architecture and package documentation
+- **[CI_CD_OBSERVABILITY.md](CI_CD_OBSERVABILITY.md)** - CI/CD pipelines, deployment, and monitoring
+- **[AI_EXTRACTION_IMPLEMENTATION.md](AI_EXTRACTION_IMPLEMENTATION.md)** - AI-powered document extraction features
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Latest implementation details
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js 14 (App Router), React 18, Tailwind CSS, shadcn/ui
@@ -72,6 +81,7 @@ docker-compose up -d
 ```
 
 This starts:
+
 - PostgreSQL (port 5432)
 - Redis (port 6379)
 - Jaeger (UI on port 16686)
@@ -90,20 +100,21 @@ npm run dev
 ```
 
 This starts all services concurrently:
+
 - Web app: http://localhost:3000
 - API: http://localhost:3001
 - Worker: Background process
 
 ## 📜 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start all services in development mode |
-| `npm run build` | Build all packages |
-| `npm run lint` | Lint all packages |
-| `npm run type-check` | Type check all packages |
-| `npm run test` | Run all tests |
-| `npm run format` | Format code with Prettier |
+| Command              | Description                            |
+| -------------------- | -------------------------------------- |
+| `npm run dev`        | Start all services in development mode |
+| `npm run build`      | Build all packages                     |
+| `npm run lint`       | Lint all packages                      |
+| `npm run type-check` | Type check all packages                |
+| `npm run test`       | Run all tests                          |
+| `npm run format`     | Format code with Prettier              |
 
 ## 📦 Package Scripts
 
@@ -135,16 +146,19 @@ npm run db:studio
 ## 🐳 Docker Services
 
 Start services:
+
 ```bash
 docker-compose up -d
 ```
 
 Stop services:
+
 ```bash
 docker-compose down
 ```
 
 View logs:
+
 ```bash
 docker-compose logs -f
 ```
@@ -152,6 +166,7 @@ docker-compose logs -f
 ## 📊 Observability
 
 Access Jaeger UI for distributed tracing:
+
 - http://localhost:16686
 
 All services are instrumented with OpenTelemetry.
@@ -180,6 +195,7 @@ cat openapi.yaml
 See [.env.example](.env.example) for all required environment variables.
 
 Key variables:
+
 - `DATABASE_URL`: PostgreSQL connection string
 - `REDIS_URL`: Redis connection string
 - `OPENAI_API_KEY`: OpenAI API key for document intelligence
@@ -200,6 +216,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 ## 🙏 Acknowledgments
 
 Built with:
+
 - [Next.js](https://nextjs.org/)
 - [Express](https://expressjs.com/)
 - [Drizzle ORM](https://orm.drizzle.team/)

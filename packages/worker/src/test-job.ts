@@ -48,7 +48,9 @@ async function testDocumentProcessing() {
 
   console.log('\n🔄 Job is now processing...');
   console.log('   Check the worker logs for real-time updates');
-  console.log('   The job will chain through: Upload → OCR → Extract → Validate');
+  console.log(
+    '   The job will chain through: Upload → OCR → Extract → Validate'
+  );
 
   // Wait a bit then close
   setTimeout(async () => {

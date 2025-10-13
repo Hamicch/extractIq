@@ -9,8 +9,21 @@ export function calculateDocumentMetrics(
   _latencyMs: number,
   _tokensUsed: number,
   _estimatedCost: number
-): { accuracy: number; fieldPrecision: number; fieldRecall: number; fieldF1: number; fieldAccuracy: Record<string, number>; confidenceCalibration: { avgConfidence: number; calibrationError: number }; errors: Array<any> } {
-  const errors: Array<{ field: string; expected: any; actual: any; confidence: number }> = [];
+): {
+  accuracy: number;
+  fieldPrecision: number;
+  fieldRecall: number;
+  fieldF1: number;
+  fieldAccuracy: Record<string, number>;
+  confidenceCalibration: { avgConfidence: number; calibrationError: number };
+  errors: Array<any>;
+} {
+  const errors: Array<{
+    field: string;
+    expected: any;
+    actual: any;
+    confidence: number;
+  }> = [];
   const fieldResults: Array<{ correct: boolean; confidence: number }> = [];
 
   // Flatten both objects for comparison
@@ -31,8 +44,12 @@ export function calculateDocumentMetrics(
     const truthValue = groundTruthFlat[field];
 
     // Extract value and confidence if it's a confidence object
-    const predVal = predictedValue?.value !== undefined ? predictedValue.value : predictedValue;
-    const truthVal = truthValue?.value !== undefined ? truthValue.value : truthValue;
+    const predVal =
+      predictedValue?.value !== undefined
+        ? predictedValue.value
+        : predictedValue;
+    const truthVal =
+      truthValue?.value !== undefined ? truthValue.value : truthValue;
     const confidence = predictedValue?.confidence || 1.0;
 
     const isCorrect = deepEqual(predVal, truthVal);
@@ -62,25 +79,32 @@ export function calculateDocumentMetrics(
   }
 
   // Calculate precision, recall, F1
-  const truePositives = fieldResults.filter(r => r.correct).length;
+  const truePositives = fieldResults.filter((r) => r.correct).length;
   const falsePositives = Object.keys(predictedFlat).length - truePositives;
   const falseNegatives = Object.keys(groundTruthFlat).length - truePositives;
 
   const precision = truePositives / (truePositives + falsePositives) || 0;
   const recall = truePositives / (truePositives + falseNegatives) || 0;
-  const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
+  const f1 =
+    precision + recall > 0
+      ? (2 * precision * recall) / (precision + recall)
+      : 0;
 
   // Overall accuracy (exact match)
   const accuracy = errors.length === 0 ? 1 : truePositives / allFields.size;
 
   // Normalize field accuracy
   for (const key in fieldAccuracy) {
-    const totalFields = Array.from(allFields).filter(f => f.startsWith(key)).length;
+    const totalFields = Array.from(allFields).filter((f) =>
+      f.startsWith(key)
+    ).length;
     fieldAccuracy[key] = fieldAccuracy[key] / totalFields;
   }
 
   // Calculate confidence calibration
-  const avgConfidence = fieldResults.reduce((sum, r) => sum + r.confidence, 0) / fieldResults.length;
+  const avgConfidence =
+    fieldResults.reduce((sum, r) => sum + r.confidence, 0) /
+    fieldResults.length;
   const calibrationError = calculateCalibrationError(fieldResults);
 
   return {
@@ -111,14 +135,21 @@ function calculateCalibrationError(
     const lower = i * bucketSize;
     const upper = (i + 1) * bucketSize;
 
-    const bucketResults = results.filter(r => r.confidence >= lower && r.confidence < upper);
+    const bucketResults = results.filter(
+      (r) => r.confidence >= lower && r.confidence < upper
+    );
 
     if (bucketResults.length === 0) continue;
 
-    const avgConfidence = bucketResults.reduce((sum, r) => sum + r.confidence, 0) / bucketResults.length;
-    const accuracy = bucketResults.filter(r => r.correct).length / bucketResults.length;
+    const avgConfidence =
+      bucketResults.reduce((sum, r) => sum + r.confidence, 0) /
+      bucketResults.length;
+    const accuracy =
+      bucketResults.filter((r) => r.correct).length / bucketResults.length;
 
-    totalError += Math.abs(avgConfidence - accuracy) * (bucketResults.length / results.length);
+    totalError +=
+      Math.abs(avgConfidence - accuracy) *
+      (bucketResults.length / results.length);
   }
 
   return totalError;
@@ -211,7 +242,7 @@ function deepEqual(a: any, b: any): boolean {
 
     if (keysA.length !== keysB.length) return false;
 
-    return keysA.every(key => deepEqual(a[key], b[key]));
+    return keysA.every((key) => deepEqual(a[key], b[key]));
   }
 
   return false;
@@ -231,14 +262,15 @@ export function analyzeConfidenceBuckets(
     { range: '0.9-1.0', lower: 0.9, upper: 1.0 },
   ];
 
-  return buckets.map(bucket => {
+  return buckets.map((bucket) => {
     const bucketResults = results.filter(
-      r => r.confidence >= bucket.lower && r.confidence < bucket.upper
+      (r) => r.confidence >= bucket.lower && r.confidence < bucket.upper
     );
 
-    const accuracy = bucketResults.length > 0
-      ? bucketResults.filter(r => r.correct).length / bucketResults.length
-      : 0;
+    const accuracy =
+      bucketResults.length > 0
+        ? bucketResults.filter((r) => r.correct).length / bucketResults.length
+        : 0;
 
     return {
       range: bucket.range,
@@ -258,7 +290,9 @@ export function getTopFields(
 ): Array<{ field: string; accuracy: number }> {
   const sorted = Object.entries(fieldAccuracies)
     .map(([field, accuracy]) => ({ field, accuracy }))
-    .sort((a, b) => (ascending ? a.accuracy - b.accuracy : b.accuracy - a.accuracy));
+    .sort((a, b) =>
+      ascending ? a.accuracy - b.accuracy : b.accuracy - a.accuracy
+    );
 
   return sorted.slice(0, n);
 }

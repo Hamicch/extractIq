@@ -3,7 +3,15 @@
 import { use, useState } from 'react';
 import { useDocument, useExtractedData } from '@/hooks/api';
 import { Card, Button } from '@docuflow/ui';
-import { ArrowLeft, FileText, Calendar, Database, Activity, Code, Download } from 'lucide-react';
+import {
+  ArrowLeft,
+  FileText,
+  Calendar,
+  Database,
+  Activity,
+  Code,
+  Download,
+} from 'lucide-react';
 import Link from 'next/link';
 import { DocumentStatusBadge } from '@/components/documents/DocumentStatusBadge';
 import { ConfidenceIndicator } from '@/components/documents/ConfidenceIndicator';
@@ -20,7 +28,8 @@ export default function DocumentDetailPage({
   const { id } = use(params);
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const { data: document, isLoading: docLoading, refetch } = useDocument(id);
-  const { data: extraction, isLoading: extractionLoading } = useExtractedData(id);
+  const { data: extraction, isLoading: extractionLoading } =
+    useExtractedData(id);
 
   // WebSocket for real-time updates
   useWebSocket({
@@ -74,21 +83,36 @@ export default function DocumentDetailPage({
     {
       id: '2',
       stage: 'ocr' as const,
-      status: document.status === 'completed' ? ('completed' as const) : document.status === 'processing' ? ('processing' as const) : ('pending' as const),
+      status:
+        document.status === 'completed'
+          ? ('completed' as const)
+          : document.status === 'processing'
+            ? ('processing' as const)
+            : ('pending' as const),
       timestamp: document.processedAt || undefined,
-      message: document.status === 'completed' ? 'OCR processing completed' : undefined,
+      message:
+        document.status === 'completed'
+          ? 'OCR processing completed'
+          : undefined,
     },
     {
       id: '3',
       stage: 'extract' as const,
-      status: extraction ? ('completed' as const) : document.status === 'processing' ? ('processing' as const) : ('pending' as const),
+      status: extraction
+        ? ('completed' as const)
+        : document.status === 'processing'
+          ? ('processing' as const)
+          : ('pending' as const),
       timestamp: extraction?.extractedAt || undefined,
       message: extraction ? 'Data extraction completed' : undefined,
     },
     {
       id: '4',
       stage: 'validate' as const,
-      status: document.status === 'completed' ? ('completed' as const) : ('pending' as const),
+      status:
+        document.status === 'completed'
+          ? ('completed' as const)
+          : ('pending' as const),
       timestamp: document.processedAt || undefined,
     },
   ];
@@ -128,7 +152,11 @@ export default function DocumentDetailPage({
               )}
             </div>
           </div>
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
             <Download className="h-4 w-4" />
             Download
           </Button>
@@ -171,21 +199,27 @@ export default function DocumentDetailPage({
 
               <dl className="space-y-3 text-sm">
                 <div>
-                  <dt className="text-neutral-500 dark:text-neutral-400">Status</dt>
+                  <dt className="text-neutral-500 dark:text-neutral-400">
+                    Status
+                  </dt>
                   <dd className="mt-1">
                     <DocumentStatusBadge status={document.status} />
                   </dd>
                 </div>
 
                 <div>
-                  <dt className="text-neutral-500 dark:text-neutral-400">File Size</dt>
+                  <dt className="text-neutral-500 dark:text-neutral-400">
+                    File Size
+                  </dt>
                   <dd className="mt-1 text-neutral-900 dark:text-neutral-100">
                     {(document.size / 1024 / 1024).toFixed(2)} MB
                   </dd>
                 </div>
 
                 <div>
-                  <dt className="text-neutral-500 dark:text-neutral-400">Pages</dt>
+                  <dt className="text-neutral-500 dark:text-neutral-400">
+                    Pages
+                  </dt>
                   <dd className="mt-1 text-neutral-900 dark:text-neutral-100">
                     {(document.metadata as any)?.pageCount || 'N/A'}
                   </dd>
@@ -203,7 +237,9 @@ export default function DocumentDetailPage({
 
                 {document.processedAt && (
                   <div>
-                    <dt className="text-neutral-500 dark:text-neutral-400">Processed</dt>
+                    <dt className="text-neutral-500 dark:text-neutral-400">
+                      Processed
+                    </dt>
                     <dd className="mt-1 text-neutral-900 dark:text-neutral-100">
                       {new Date(document.processedAt).toLocaleString()}
                     </dd>
@@ -212,7 +248,9 @@ export default function DocumentDetailPage({
 
                 {extraction && (
                   <div>
-                    <dt className="text-neutral-500 dark:text-neutral-400">Confidence</dt>
+                    <dt className="text-neutral-500 dark:text-neutral-400">
+                      Confidence
+                    </dt>
                     <dd className="mt-2">
                       <ConfidenceIndicator
                         confidence={extraction.confidence}
@@ -246,36 +284,48 @@ export default function DocumentDetailPage({
             {extractionLoading ? (
               <div className="animate-pulse space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-12 bg-neutral-200 dark:bg-neutral-800 rounded" />
+                  <div
+                    key={i}
+                    className="h-12 bg-neutral-200 dark:bg-neutral-800 rounded"
+                  />
                 ))}
               </div>
             ) : extraction ? (
               <div className="space-y-4">
                 {/* Editable Fields */}
                 <div className="space-y-3">
-                  {Object.entries(extraction.fields || {}).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 block">
-                            {key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-                          </label>
-                          <p className="text-neutral-900 dark:text-neutral-100">
-                            {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
-                          </p>
+                  {Object.entries(extraction.fields || {}).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2 block">
+                              {key
+                                .replace(/_/g, ' ')
+                                .replace(/\b\w/g, (l) => l.toUpperCase())}
+                            </label>
+                            <p className="text-neutral-900 dark:text-neutral-100">
+                              {typeof value === 'object'
+                                ? JSON.stringify(value, null, 2)
+                                : String(value)}
+                            </p>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            Edit
+                          </Button>
                         </div>
-                        <Button variant="ghost" size="sm">Edit</Button>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-700">
                   <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                    Extracted: {new Date(extraction.extractedAt).toLocaleString()}
+                    Extracted:{' '}
+                    {new Date(extraction.extractedAt).toLocaleString()}
                   </div>
                   <ConfidenceIndicator
                     confidence={extraction.confidence}
@@ -292,8 +342,8 @@ export default function DocumentDetailPage({
                   {document.status === 'processing'
                     ? 'Extraction in progress...'
                     : document.status === 'failed'
-                    ? 'Extraction failed'
-                    : 'No extracted data available'}
+                      ? 'Extraction failed'
+                      : 'No extracted data available'}
                 </p>
               </div>
             )}

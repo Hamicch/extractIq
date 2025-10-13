@@ -2,7 +2,13 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AppShell, Navigation, TenantSwitcher, ThemeToggle, UserMenu } from '@docuflow/ui';
+import {
+  AppShell,
+  Navigation,
+  TenantSwitcher,
+  ThemeToggle,
+  UserMenu,
+} from '@docuflow/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppStore } from '@/lib/store';
 
@@ -33,7 +39,8 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
-  const { selectedTenant, setSelectedTenant, sidebarCollapsed, toggleSidebar } = useAppStore();
+  const { selectedTenant, setSelectedTenant, sidebarCollapsed, toggleSidebar } =
+    useAppStore();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -53,7 +60,9 @@ export default function DashboardLayout({
       <div className="flex h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950">
         <div className="text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent" />
-          <p className="mt-4 text-neutral-600 dark:text-neutral-400">Loading...</p>
+          <p className="mt-4 text-neutral-600 dark:text-neutral-400">
+            Loading...
+          </p>
         </div>
       </div>
     );

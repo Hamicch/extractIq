@@ -107,7 +107,8 @@ const EXTRACTION_SCHEMAS = {
 export async function processDocumentExtract(
   job: Job<DocumentExtractJobData>
 ): Promise<DocumentExtractResult> {
-  const { documentId, tenantId, extractedText, extractionType, modelVersion } = job.data;
+  const { documentId, tenantId, extractedText, extractionType, modelVersion } =
+    job.data;
   const startTime = Date.now();
 
   try {
@@ -124,7 +125,9 @@ export async function processDocumentExtract(
       .limit(1);
 
     if (existingExtraction.length > 0) {
-      console.log(`⏭️  Extraction already exists for document ${documentId} with model ${modelVersion}`);
+      console.log(
+        `⏭️  Extraction already exists for document ${documentId} with model ${modelVersion}`
+      );
 
       const extraction = existingExtraction[0];
       return {
@@ -166,7 +169,8 @@ export async function processDocumentExtract(
     await job.updateProgress(25);
 
     // Get extraction schema
-    const schema = EXTRACTION_SCHEMAS[extractionType as keyof typeof EXTRACTION_SCHEMAS];
+    const schema =
+      EXTRACTION_SCHEMAS[extractionType as keyof typeof EXTRACTION_SCHEMAS];
     const systemPrompt = `You are an AI document extraction expert. Extract structured data from the provided document text according to the JSON schema. Return only valid JSON matching the schema. Be precise and extract all available information.`;
 
     const userPrompt = `Extract data from this ${extractionType} document:
@@ -215,7 +219,9 @@ ${JSON.stringify(schema, null, 2)}`;
           const jitter = Math.random() * 1000; // 0-1s random jitter
           const delay = baseDelay + jitter;
 
-          console.log(`⏳ Rate limited, retrying in ${Math.floor(delay)}ms (attempt ${attemptCount}/${maxAttempts})`);
+          console.log(
+            `⏳ Rate limited, retrying in ${Math.floor(delay)}ms (attempt ${attemptCount}/${maxAttempts})`
+          );
 
           await new Promise((resolve) => setTimeout(resolve, delay));
           continue;
@@ -242,7 +248,9 @@ ${JSON.stringify(schema, null, 2)}`;
     await job.updateProgress(75);
 
     // Parse extracted data
-    const extractedData = JSON.parse(completion.choices[0].message.content || '{}');
+    const extractedData = JSON.parse(
+      completion.choices[0].message.content || '{}'
+    );
 
     // Calculate token usage
     const tokensUsed = {
@@ -252,10 +260,12 @@ ${JSON.stringify(schema, null, 2)}`;
     };
 
     // Calculate cost in cents
-    const modelPricing = TOKEN_PRICING[modelVersion as keyof typeof TOKEN_PRICING] || TOKEN_PRICING['gpt-4-turbo'];
+    const modelPricing =
+      TOKEN_PRICING[modelVersion as keyof typeof TOKEN_PRICING] ||
+      TOKEN_PRICING['gpt-4-turbo'];
     const costCents = Math.ceil(
       (tokensUsed.prompt / 1000) * modelPricing.prompt +
-      (tokensUsed.completion / 1000) * modelPricing.completion
+        (tokensUsed.completion / 1000) * modelPricing.completion
     );
 
     // Calculate confidence score (based on completeness of required fields)
@@ -318,7 +328,8 @@ ${JSON.stringify(schema, null, 2)}`;
       costCents,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     const durationMs = Date.now() - startTime;
 
     // Log failure to audit
@@ -351,7 +362,10 @@ ${JSON.stringify(schema, null, 2)}`;
   }
 }
 
-function calculateConfidenceScore(data: Record<string, any>, schema: any): number {
+function calculateConfidenceScore(
+  data: Record<string, any>,
+  schema: any
+): number {
   const requiredFields = schema.required || [];
   const totalFields = Object.keys(schema.properties || {}).length;
 
@@ -361,7 +375,11 @@ function calculateConfidenceScore(data: Record<string, any>, schema: any): numbe
   let filledOptionalFields = 0;
 
   for (const field of requiredFields) {
-    if (data[field] !== undefined && data[field] !== null && data[field] !== '') {
+    if (
+      data[field] !== undefined &&
+      data[field] !== null &&
+      data[field] !== ''
+    ) {
       filledRequiredFields++;
     }
   }
@@ -371,14 +389,24 @@ function calculateConfidenceScore(data: Record<string, any>, schema: any): numbe
   );
 
   for (const field of optionalFields) {
-    if (data[field] !== undefined && data[field] !== null && data[field] !== '') {
+    if (
+      data[field] !== undefined &&
+      data[field] !== null &&
+      data[field] !== ''
+    ) {
       filledOptionalFields++;
     }
   }
 
   // Weight required fields at 70%, optional at 30%
-  const requiredScore = requiredFields.length > 0 ? (filledRequiredFields / requiredFields.length) * 0.7 : 0.7;
-  const optionalScore = optionalFields.length > 0 ? (filledOptionalFields / optionalFields.length) * 0.3 : 0.3;
+  const requiredScore =
+    requiredFields.length > 0
+      ? (filledRequiredFields / requiredFields.length) * 0.7
+      : 0.7;
+  const optionalScore =
+    optionalFields.length > 0
+      ? (filledOptionalFields / optionalFields.length) * 0.3
+      : 0.3;
 
   return Math.min(requiredScore + optionalScore, 0.99);
 }

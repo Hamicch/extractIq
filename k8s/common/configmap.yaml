@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docuflow-config
+  namespace: docuflow
+data:
+  NODE_ENV: "production"
+  DATABASE_URL: "postgresql://docuflow:$(POSTGRES_PASSWORD)@postgres:5432/docuflow"
+  REDIS_URL: "redis://redis:6379"
+  WORKER_CONCURRENCY: "5"
+  JAEGER_ENDPOINT: "http://jaeger:4318/v1/traces"
+  AWS_REGION: "us-east-1"

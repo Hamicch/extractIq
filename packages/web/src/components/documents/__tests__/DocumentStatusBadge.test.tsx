@@ -51,13 +51,9 @@ describe('DocumentStatusBadge', () => {
   });
 
   it('should render appropriate icon for each status', () => {
-    const statuses: Array<'uploading' | 'queued' | 'processing' | 'completed' | 'failed'> = [
-      'uploading',
-      'queued',
-      'processing',
-      'completed',
-      'failed',
-    ];
+    const statuses: Array<
+      'uploading' | 'queued' | 'processing' | 'completed' | 'failed'
+    > = ['uploading', 'queued', 'processing', 'completed', 'failed'];
 
     statuses.forEach((status) => {
       const { container } = render(<DocumentStatusBadge status={status} />);
@@ -68,13 +64,9 @@ describe('DocumentStatusBadge', () => {
 
   // Snapshot test
   it('should match snapshot for all statuses', () => {
-    const statuses: Array<'uploading' | 'queued' | 'processing' | 'completed' | 'failed'> = [
-      'uploading',
-      'queued',
-      'processing',
-      'completed',
-      'failed',
-    ];
+    const statuses: Array<
+      'uploading' | 'queued' | 'processing' | 'completed' | 'failed'
+    > = ['uploading', 'queued', 'processing', 'completed', 'failed'];
 
     statuses.forEach((status) => {
       const { container } = render(<DocumentStatusBadge status={status} />);

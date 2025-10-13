@@ -18,7 +18,10 @@ export default function Error({
   return (
     <div className="flex items-center justify-center min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6">
       <Card className="p-8 max-w-lg text-center">
-        <AlertTriangle className="h-12 w-12 mx-auto text-error mb-4" aria-hidden="true" />
+        <AlertTriangle
+          className="h-12 w-12 mx-auto text-error mb-4"
+          aria-hidden="true"
+        />
         <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
           Something went wrong
         </h1>
@@ -27,7 +30,10 @@ export default function Error({
         </p>
         <div className="flex gap-3 justify-center">
           <Button onClick={reset}>Try again</Button>
-          <Button variant="outline" onClick={() => (window.location.href = '/')}>
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = '/')}
+          >
             Go home
           </Button>
         </div>

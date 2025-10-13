@@ -38,6 +38,7 @@ packages/worker/test-data/
 You can use any PDF files initially to test the system:
 
 1. Create the directories:
+
 ```bash
 cd packages/worker
 mkdir -p test-data/invoices test-data/contracts test-data/generic
@@ -52,6 +53,7 @@ mkdir -p test-data/invoices test-data/contracts test-data/generic
 Use a PDF generation library or online tool to create sample documents:
 
 **Simple Invoice Example:**
+
 ```
 INVOICE
 
@@ -99,6 +101,7 @@ npm run eval:watch
 After running evaluation with real PDFs:
 
 **Console Output:**
+
 ```
 === EVALUATION COMPLETE ===
 
@@ -123,6 +126,7 @@ Cost <=$0.5: ✓ PASS ($0.23)
 ```
 
 **Generated Files:**
+
 - `eval-results/latest.json` - Full detailed report
 - `eval-results/eval-[timestamp].json` - Historical report
 - `eval-results/eval-[timestamp].csv` - Spreadsheet format
@@ -135,11 +139,11 @@ Edit evaluation settings in `src/eval/run-eval.ts`:
 const config: EvaluationConfig = {
   datasetPath: './src/eval/golden-dataset.json',
   outputPath: './eval-results',
-  parallelism: 1,  // Increase for faster processing
+  parallelism: 1, // Increase for faster processing
   targetMetrics: {
-    minAccuracy: 0.90,        // 90% required
-    maxP95Latency: 30000,     // 30 seconds max
-    maxCostPerDocument: 0.50, // $0.50 max per doc
+    minAccuracy: 0.9, // 90% required
+    maxP95Latency: 30000, // 30 seconds max
+    maxCostPerDocument: 0.5, // $0.50 max per doc
   },
 };
 ```
@@ -154,14 +158,10 @@ import { DocumentExtractor } from './agents/document-extractor';
 const extractor = new DocumentExtractor();
 
 // Extract from a PDF buffer
-const result = await extractor.extractFromDocument(
-  pdfBuffer,
-  documentId,
-  {
-    confidenceThreshold: 0.7,
-    maxRetries: 2
-  }
-);
+const result = await extractor.extractFromDocument(pdfBuffer, documentId, {
+  confidenceThreshold: 0.7,
+  maxRetries: 2,
+});
 
 if (result.success) {
   console.log('Extracted data:', result.extraction);
@@ -186,18 +186,22 @@ if (result.success) {
 ## 🐛 Troubleshooting
 
 **Error: ENOENT (file not found)**
+
 - Create test-data directories
 - Add PDF files matching golden-dataset.json paths
 
 **Error: DATABASE_URL not set**
+
 - Fixed! Scripts now use `dotenv -e ../../.env`
 
 **Error: OpenAI API error**
+
 - Check OPENAI_API_KEY is set in .env
 - Verify API key has sufficient credits
 - Check rate limits
 
 **Low accuracy scores**
+
 - Adjust confidence threshold
 - Improve few-shot examples in document-extractor.ts
 - Ensure ground truth in golden-dataset.json is accurate

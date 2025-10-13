@@ -39,20 +39,21 @@ export function FileUploadZone({
     [onFilesSelected]
   );
 
-  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
-    onDrop,
-    accept,
-    maxSize,
-    maxFiles,
-    disabled,
-  });
+  const { getRootProps, getInputProps, isDragActive, fileRejections } =
+    useDropzone({
+      onDrop,
+      accept,
+      maxSize,
+      maxFiles,
+      disabled,
+    });
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
   return (
@@ -62,9 +63,10 @@ export function FileUploadZone({
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
           transition-colors duration-200
-          ${isDragActive
-            ? 'border-primary bg-primary/5'
-            : 'border-neutral-300 dark:border-neutral-700 hover:border-primary/50'
+          ${
+            isDragActive
+              ? 'border-primary bg-primary/5'
+              : 'border-neutral-300 dark:border-neutral-700 hover:border-primary/50'
           }
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         `}
@@ -82,7 +84,8 @@ export function FileUploadZone({
               or click to browse
             </p>
             <p className="text-xs text-neutral-500 dark:text-neutral-500">
-              Supported: PDF, PNG, JPG • Max size: {formatFileSize(maxSize)} • Max files: {maxFiles}
+              Supported: PDF, PNG, JPG • Max size: {formatFileSize(maxSize)} •
+              Max files: {maxFiles}
             </p>
           </>
         )}
@@ -96,7 +99,7 @@ export function FileUploadZone({
           <ul className="text-xs text-red-700 dark:text-red-400 space-y-1">
             {fileRejections.map(({ file, errors }) => (
               <li key={file.name}>
-                {file.name}: {errors.map(e => e.message).join(', ')}
+                {file.name}: {errors.map((e) => e.message).join(', ')}
               </li>
             ))}
           </ul>

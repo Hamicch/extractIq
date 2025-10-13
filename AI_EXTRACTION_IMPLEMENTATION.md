@@ -9,6 +9,7 @@ Comprehensive AI document extraction system with evaluation framework for Docufl
 ### 1. Multi-Stage Extraction Pipeline
 
 **OCR Stage** (`packages/worker/src/agents/ocr-processor.ts`):
+
 - PDF text extraction using `pdf-parse`
 - Text quality assessment (high/medium/low)
 - Multi-column layout handling
@@ -16,17 +17,20 @@ Comprehensive AI document extraction system with evaluation framework for Docufl
 - Audit trail logging
 
 **Type Detection**:
+
 - GPT-4 powered document classification
 - Confidence scoring
 - Supports: Legal contracts, invoices, generic documents
 
 **Schema-Guided Extraction**:
+
 - Zod schemas with confidence scores per field
 - Few-shot prompting with examples
 - Temperature=0 for consistency
 - JSON mode for structured output
 
 **Validation & Self-Correction**:
+
 - Confidence threshold validation (default 0.7)
 - Cross-field validation (e.g., invoice math)
 - Max 2 retry attempts with error feedback
@@ -35,6 +39,7 @@ Comprehensive AI document extraction system with evaluation framework for Docufl
 ### 2. Document Type Schemas
 
 **Legal Contract** (`packages/worker/src/schemas/extraction-schemas.ts`):
+
 - Parties with roles
 - Effective/termination dates
 - Payment terms
@@ -43,6 +48,7 @@ Comprehensive AI document extraction system with evaluation framework for Docufl
 - Dispute resolution
 
 **Invoice**:
+
 - Invoice number, dates
 - Vendor/customer information
 - Line items with calculations
@@ -50,6 +56,7 @@ Comprehensive AI document extraction system with evaluation framework for Docufl
 - Currency and payment terms
 
 **Generic Document**:
+
 - Title, date, author
 - Named entities (people, orgs, locations)
 - Key points with categories
@@ -60,6 +67,7 @@ All fields include confidence scores (0-1 scale).
 ### 3. Evaluation Framework
 
 **Golden Dataset** (`packages/worker/src/eval/golden-dataset.json`):
+
 - 10 annotated samples:
   - 3 legal contracts
   - 4 invoices
@@ -68,6 +76,7 @@ All fields include confidence scores (0-1 scale).
 - Difficulty ratings (easy/medium/hard)
 
 **Metrics Calculated** (`packages/worker/src/eval/metrics.ts`):
+
 - **Accuracy**: Exact match rate
 - **Precision/Recall/F1**: Per-field metrics
 - **Confidence Calibration**: How well confidence predicts correctness
@@ -75,6 +84,7 @@ All fields include confidence scores (0-1 scale).
 - **Cost**: Token usage and estimated costs
 
 **Target Thresholds**:
+
 - Field Accuracy: ≥90%
 - P95 Latency: ≤30s
 - Cost per Document: ≤$0.50
@@ -82,6 +92,7 @@ All fields include confidence scores (0-1 scale).
 ### 4. Reporting
 
 **JSON Report**:
+
 - Complete metrics breakdown
 - Per-sample results
 - Field analysis (most/least accurate)
@@ -89,6 +100,7 @@ All fields include confidence scores (0-1 scale).
 - By document type and difficulty
 
 **CSV Report**:
+
 - Per-document results
 - Suitable for spreadsheet analysis
 - Time-series tracking
@@ -120,15 +132,11 @@ import { DocumentExtractor } from './agents/document-extractor';
 
 const extractor = new DocumentExtractor();
 
-const result = await extractor.extractFromDocument(
-  documentBuffer,
-  documentId,
-  {
-    maxRetries: 2,
-    confidenceThreshold: 0.7,
-    temperature: 0
-  }
-);
+const result = await extractor.extractFromDocument(documentBuffer, documentId, {
+  maxRetries: 2,
+  confidenceThreshold: 0.7,
+  temperature: 0,
+});
 
 console.log(result.extraction); // Structured data
 console.log(result.metadata.requiresHumanReview); // true if low confidence
@@ -180,6 +188,7 @@ Cost <=$0.50: ✓ PASS ($0.42)
 ## 🔄 CI/CD Integration
 
 **GitHub Actions** (`.github/workflows/eval.yml`):
+
 - Triggers on changes to extraction code
 - Runs full evaluation suite
 - Posts results as PR comment
@@ -187,15 +196,18 @@ Cost <=$0.50: ✓ PASS ($0.42)
 - Fails if metrics regress
 
 **PR Comment Example**:
+
 ```markdown
 ## 🤖 Model Evaluation Results
 
 ### Summary
+
 - **Overall Accuracy**: 92.50%
 - **Avg Precision**: 91.20%
 - **Avg F1 Score**: 91.00%
 
 ### Performance
+
 - **P95 Latency**: 28500ms
 - **Avg Cost/Doc**: $0.42
 ```
@@ -228,6 +240,7 @@ Cost <=$0.50: ✓ PASS ($0.42)
 ### Unit Tests
 
 Test individual components:
+
 ```bash
 npm test -- ocr-processor.test.ts
 npm test -- metrics.test.ts
@@ -236,6 +249,7 @@ npm test -- metrics.test.ts
 ### Integration Tests
 
 Test full extraction pipeline:
+
 ```bash
 npm test -- document-extractor.test.ts
 ```
@@ -243,6 +257,7 @@ npm test -- document-extractor.test.ts
 ### Evaluation
 
 Test against golden dataset:
+
 ```bash
 npm run eval
 ```
@@ -261,7 +276,7 @@ npm run eval
   "filePath": "./test-data/invoices/complex-005.pdf",
   "groundTruth": {
     "type": "invoice",
-    "invoice_number": { "value": "INV-2024-005", "confidence": 0.95 },
+    "invoice_number": { "value": "INV-2024-005", "confidence": 0.95 }
     // ... complete extraction
   },
   "metadata": {
@@ -283,6 +298,7 @@ DATABASE_URL=postgresql://... # For audit logging
 **Note:** Evaluation scripts automatically load environment variables from the root `.env` file using `dotenv-cli`. No additional setup needed.
 
 **Scripts updated:**
+
 - `npm run eval` → Uses `dotenv -e ../../.env -- tsx src/eval/run-eval.ts`
 - `npm run eval:watch` → Uses `dotenv -e ../../.env -- tsx watch src/eval/run-eval.ts`
 
@@ -334,6 +350,7 @@ cat eval-results/latest.json | jq '.confidenceAnalysis'
 ### Alerts
 
 Set up alerts for:
+
 - Accuracy drops below 85%
 - P95 latency exceeds 35s
 - Cost per doc exceeds $0.60
@@ -372,6 +389,7 @@ Set up alerts for:
 ## 🤝 Contributing
 
 When modifying extraction code:
+
 1. Run evaluation: `npm run eval`
 2. Ensure metrics meet targets
 3. Document prompt changes
@@ -383,6 +401,7 @@ When modifying extraction code:
 **Implementation Status**: ✅ Complete
 
 All components implemented and building successfully. Ready for:
+
 1. Adding test PDF files
 2. Running first evaluation
 3. Tuning based on results

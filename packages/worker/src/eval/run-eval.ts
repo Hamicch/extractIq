@@ -12,9 +12,9 @@ async function main() {
     outputPath: './eval-results',
     parallelism: 1, // Sequential for consistency
     targetMetrics: {
-      minAccuracy: 0.90, // 90% field accuracy
+      minAccuracy: 0.9, // 90% field accuracy
       maxP95Latency: 30000, // 30 seconds
-      maxCostPerDocument: 0.50, // $0.50 per document
+      maxCostPerDocument: 0.5, // $0.50 per document
     },
   };
 

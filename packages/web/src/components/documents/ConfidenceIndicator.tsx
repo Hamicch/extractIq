@@ -41,7 +41,9 @@ export function ConfidenceIndicator({
           title={`${percentage}% confidence`}
         />
         {showLabel && (
-          <span className={`font-medium ${getTextColorClass()} ${sizeClasses[size].text}`}>
+          <span
+            className={`font-medium ${getTextColorClass()} ${sizeClasses[size].text}`}
+          >
             {percentage}%
           </span>
         )}
@@ -51,14 +53,18 @@ export function ConfidenceIndicator({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <div className={`flex-1 bg-neutral-200 dark:bg-neutral-700 rounded-full ${sizeClasses[size].height} overflow-hidden`}>
+      <div
+        className={`flex-1 bg-neutral-200 dark:bg-neutral-700 rounded-full ${sizeClasses[size].height} overflow-hidden`}
+      >
         <div
           className={`${getColorClass()} ${sizeClasses[size].height} transition-all duration-300`}
           style={{ width: `${percentage}%` }}
         />
       </div>
       {showLabel && (
-        <span className={`font-medium ${getTextColorClass()} ${sizeClasses[size].text} min-w-[3rem] text-right`}>
+        <span
+          className={`font-medium ${getTextColorClass()} ${sizeClasses[size].text} min-w-[3rem] text-right`}
+        >
           {percentage}%
         </span>
       )}

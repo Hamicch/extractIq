@@ -22,7 +22,10 @@ const stageLabels = {
   validate: 'Validation',
 };
 
-export function ProcessingTimeline({ events, className = '' }: ProcessingTimelineProps) {
+export function ProcessingTimeline({
+  events,
+  className = '',
+}: ProcessingTimelineProps) {
   const getStatusIcon = (status: TimelineEvent['status']) => {
     switch (status) {
       case 'completed':
@@ -32,7 +35,9 @@ export function ProcessingTimeline({ events, className = '' }: ProcessingTimelin
       case 'processing':
         return <Clock className="h-5 w-5 text-blue-500 animate-pulse" />;
       case 'pending':
-        return <Circle className="h-5 w-5 text-neutral-300 dark:text-neutral-600" />;
+        return (
+          <Circle className="h-5 w-5 text-neutral-300 dark:text-neutral-600" />
+        );
     }
   };
 
@@ -84,7 +89,9 @@ export function ProcessingTimeline({ events, className = '' }: ProcessingTimelin
                     </h4>
                     {event.timestamp && (
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                        {formatDistanceToNow(new Date(event.timestamp), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(event.timestamp), {
+                          addSuffix: true,
+                        })}
                       </p>
                     )}
                   </div>
@@ -95,10 +102,10 @@ export function ProcessingTimeline({ events, className = '' }: ProcessingTimelin
                       event.status === 'completed'
                         ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
                         : event.status === 'failed'
-                        ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                        : event.status === 'processing'
-                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                        : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
+                          ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                          : event.status === 'processing'
+                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                            : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'
                     }`}
                   >
                     {event.status}
@@ -113,7 +120,9 @@ export function ProcessingTimeline({ events, className = '' }: ProcessingTimelin
                 )}
                 {event.error && (
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mt-2">
-                    <p className="text-sm text-red-700 dark:text-red-400">{event.error}</p>
+                    <p className="text-sm text-red-700 dark:text-red-400">
+                      {event.error}
+                    </p>
                   </div>
                 )}
               </div>

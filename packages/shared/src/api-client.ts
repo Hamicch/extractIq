@@ -111,10 +111,7 @@ export class DocuflowClient {
       (config) => {
         // Add tenant ID to path if needed
         if (config.url?.includes('{tenantId}')) {
-          config.url = config.url.replace(
-            '{tenantId}',
-            this.config.tenantId
-          );
+          config.url = config.url.replace('{tenantId}', this.config.tenantId);
         }
         return config;
       },
@@ -196,9 +193,7 @@ export class DocuflowClient {
 
   public setApiKey(apiKey: string): void {
     this.config.apiKey = apiKey;
-    this.client.defaults.headers.common[
-      'Authorization'
-    ] = `Bearer ${apiKey}`;
+    this.client.defaults.headers.common['Authorization'] = `Bearer ${apiKey}`;
   }
 
   public setTenantId(tenantId: string): void {
@@ -258,9 +253,7 @@ export class DocuflowClient {
     return response.data;
   }
 
-  async getDocumentStatus(
-    documentId: string
-  ): Promise<DocumentStatusResponse> {
+  async getDocumentStatus(documentId: string): Promise<DocumentStatusResponse> {
     const response = await this.client.get<DocumentStatusResponse>(
       `/tenants/{tenantId}/documents/${documentId}/status`
     );
@@ -286,9 +279,7 @@ export class DocuflowClient {
   }
 
   async deleteDocument(documentId: string): Promise<void> {
-    await this.client.delete(
-      `/tenants/{tenantId}/documents/${documentId}`
-    );
+    await this.client.delete(`/tenants/{tenantId}/documents/${documentId}`);
   }
 
   // Webhooks API

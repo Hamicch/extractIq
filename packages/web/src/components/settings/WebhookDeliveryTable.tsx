@@ -15,10 +15,15 @@ interface WebhookDeliveryTableProps {
   className?: string;
 }
 
-export function WebhookDeliveryTable({ deliveries, className = '' }: WebhookDeliveryTableProps) {
+export function WebhookDeliveryTable({
+  deliveries,
+  className = '',
+}: WebhookDeliveryTableProps) {
   const getStatusIcon = (statusCode: number) => {
     if (statusCode >= 200 && statusCode < 300) {
-      return <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />;
+      return (
+        <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+      );
     }
     if (statusCode >= 500) {
       return <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />;
@@ -68,9 +73,14 @@ export function WebhookDeliveryTable({ deliveries, className = '' }: WebhookDeli
         </thead>
         <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
           {deliveries.map((delivery) => (
-            <tr key={delivery.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800">
+            <tr
+              key={delivery.id}
+              className="hover:bg-neutral-50 dark:hover:bg-neutral-800"
+            >
               <td className="px-4 py-3 text-sm text-neutral-900 dark:text-neutral-100">
-                {formatDistanceToNow(new Date(delivery.timestamp), { addSuffix: true })}
+                {formatDistanceToNow(new Date(delivery.timestamp), {
+                  addSuffix: true,
+                })}
               </td>
               <td className="px-4 py-3 text-sm text-neutral-900 dark:text-neutral-100 font-mono">
                 {delivery.event}
@@ -78,7 +88,9 @@ export function WebhookDeliveryTable({ deliveries, className = '' }: WebhookDeli
               <td className="px-4 py-3">
                 <div className="flex items-center gap-2">
                   {getStatusIcon(delivery.statusCode)}
-                  <span className={`text-sm font-medium ${getStatusColor(delivery.statusCode)}`}>
+                  <span
+                    className={`text-sm font-medium ${getStatusColor(delivery.statusCode)}`}
+                  >
                     {delivery.statusCode}
                   </span>
                 </div>
@@ -90,7 +102,9 @@ export function WebhookDeliveryTable({ deliveries, className = '' }: WebhookDeli
                     <span>{delivery.retryCount}</span>
                   </div>
                 )}
-                {delivery.retryCount === 0 && <span className="text-neutral-500">-</span>}
+                {delivery.retryCount === 0 && (
+                  <span className="text-neutral-500">-</span>
+                )}
               </td>
               <td className="px-4 py-3 text-sm text-neutral-900 dark:text-neutral-100">
                 {delivery.responseTime ? `${delivery.responseTime}ms` : '-'}

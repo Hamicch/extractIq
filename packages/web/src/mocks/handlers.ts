@@ -34,7 +34,8 @@ const mockDocuments: Document[] = [
     tenantId: '123e4567-e89b-12d3-a456-426614174001',
     name: 'contract-draft.docx',
     size: 1524000,
-    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    mimeType:
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     status: 'processing',
     uploadedAt: '2024-01-15T11:00:00Z',
     s3Key: 'documents/223e4567-e89b-12d3-a456-426614174000.docx',
@@ -76,7 +77,9 @@ export const handlers = [
         prevCursor: null,
         hasNext: !cursor,
         hasPrev: false,
-        nextUrl: cursor ? null : `${BASE_URL}/tenants/tenant-id/documents?cursor=next-cursor-token`,
+        nextUrl: cursor
+          ? null
+          : `${BASE_URL}/tenants/tenant-id/documents?cursor=next-cursor-token`,
         prevUrl: null,
       },
     };
@@ -91,169 +94,188 @@ export const handlers = [
   }),
 
   // Get document
-  http.get(`${BASE_URL}/tenants/:tenantId/documents/:documentId`, ({ params }) => {
-    const { documentId } = params;
-    const document = mockDocuments.find((d) => d.id === documentId);
+  http.get(
+    `${BASE_URL}/tenants/:tenantId/documents/:documentId`,
+    ({ params }) => {
+      const { documentId } = params;
+      const document = mockDocuments.find((d) => d.id === documentId);
 
-    if (!document) {
-      return HttpResponse.json(
-        {
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Document not found',
+      if (!document) {
+        return HttpResponse.json(
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Document not found',
+            },
           },
-        },
-        { status: 404 }
-      );
-    }
+          { status: 404 }
+        );
+      }
 
-    return HttpResponse.json(document);
-  }),
+      return HttpResponse.json(document);
+    }
+  ),
 
   // Get document status
-  http.get(`${BASE_URL}/tenants/:tenantId/documents/:documentId/status`, ({ params }) => {
-    const { documentId } = params;
-    const document = mockDocuments.find((d) => d.id === documentId);
+  http.get(
+    `${BASE_URL}/tenants/:tenantId/documents/:documentId/status`,
+    ({ params }) => {
+      const { documentId } = params;
+      const document = mockDocuments.find((d) => d.id === documentId);
 
-    if (!document) {
-      return HttpResponse.json(
-        {
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Document not found',
+      if (!document) {
+        return HttpResponse.json(
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Document not found',
+            },
           },
-        },
-        { status: 404 }
-      );
+          { status: 404 }
+        );
+      }
+
+      const response: DocumentStatusResponse = {
+        documentId: document.id,
+        status: document.status,
+        progress: document.status === 'processing' ? 65 : 100,
+        estimatedCompletionAt:
+          document.status === 'processing'
+            ? new Date(Date.now() + 30000).toISOString()
+            : undefined,
+      };
+
+      return HttpResponse.json(response);
     }
-
-    const response: DocumentStatusResponse = {
-      documentId: document.id,
-      status: document.status,
-      progress: document.status === 'processing' ? 65 : 100,
-      estimatedCompletionAt: document.status === 'processing'
-        ? new Date(Date.now() + 30000).toISOString()
-        : undefined,
-    };
-
-    return HttpResponse.json(response);
-  }),
+  ),
 
   // Get extracted data
-  http.get(`${BASE_URL}/tenants/:tenantId/documents/:documentId/extracted-data`, ({ params }) => {
-    const { documentId } = params;
-    const document = mockDocuments.find((d) => d.id === documentId);
+  http.get(
+    `${BASE_URL}/tenants/:tenantId/documents/:documentId/extracted-data`,
+    ({ params }) => {
+      const { documentId } = params;
+      const document = mockDocuments.find((d) => d.id === documentId);
 
-    if (!document) {
-      return HttpResponse.json(
-        {
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Document not found',
+      if (!document) {
+        return HttpResponse.json(
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Document not found',
+            },
+          },
+          { status: 404 }
+        );
+      }
+
+      if (document.status !== 'completed') {
+        return HttpResponse.json(
+          {
+            error: {
+              code: 'PROCESSING_NOT_COMPLETED',
+              message: 'Document processing not completed yet',
+            },
+          },
+          { status: 409 }
+        );
+      }
+
+      const response: ExtractedData = {
+        documentId: document.id,
+        extractedAt: document.processedAt!,
+        fields: {
+          invoiceNumber: {
+            value: 'INV-2024-001',
+            confidence: 0.98,
+            page: 1,
+          },
+          totalAmount: {
+            value: 1250.0,
+            confidence: 0.95,
+            page: 1,
+          },
+          dueDate: {
+            value: '2024-02-15',
+            confidence: 0.92,
+            page: 1,
+          },
+          vendor: {
+            value: 'Acme Corporation',
+            confidence: 0.99,
+            page: 1,
           },
         },
-        { status: 404 }
-      );
+        rawText: 'Invoice\nINV-2024-001\nTotal: $1,250.00\nDue: 02/15/2024...',
+        confidence: 0.96,
+        pageCount: 2,
+      };
+
+      return HttpResponse.json(response);
     }
-
-    if (document.status !== 'completed') {
-      return HttpResponse.json(
-        {
-          error: {
-            code: 'PROCESSING_NOT_COMPLETED',
-            message: 'Document processing not completed yet',
-          },
-        },
-        { status: 409 }
-      );
-    }
-
-    const response: ExtractedData = {
-      documentId: document.id,
-      extractedAt: document.processedAt!,
-      fields: {
-        invoiceNumber: {
-          value: 'INV-2024-001',
-          confidence: 0.98,
-          page: 1,
-        },
-        totalAmount: {
-          value: 1250.00,
-          confidence: 0.95,
-          page: 1,
-        },
-        dueDate: {
-          value: '2024-02-15',
-          confidence: 0.92,
-          page: 1,
-        },
-        vendor: {
-          value: 'Acme Corporation',
-          confidence: 0.99,
-          page: 1,
-        },
-      },
-      rawText: 'Invoice\nINV-2024-001\nTotal: $1,250.00\nDue: 02/15/2024...',
-      confidence: 0.96,
-      pageCount: 2,
-    };
-
-    return HttpResponse.json(response);
-  }),
+  ),
 
   // Update extracted data
-  http.patch(`${BASE_URL}/tenants/:tenantId/documents/:documentId/extracted-data`, async ({ request, params }) => {
-    const { documentId } = params;
-    const update = await request.json();
+  http.patch(
+    `${BASE_URL}/tenants/:tenantId/documents/:documentId/extracted-data`,
+    async ({ request, params }) => {
+      const { documentId } = params;
+      const update = await request.json();
 
-    const response: ExtractedData = {
-      documentId: String(documentId),
-      extractedAt: new Date().toISOString(),
-      fields: {
-        ...(update as any).fields,
-      },
-      confidence: 0.96,
-      pageCount: 2,
-    };
+      const response: ExtractedData = {
+        documentId: String(documentId),
+        extractedAt: new Date().toISOString(),
+        fields: {
+          ...(update as any).fields,
+        },
+        confidence: 0.96,
+        pageCount: 2,
+      };
 
-    return HttpResponse.json(response);
-  }),
+      return HttpResponse.json(response);
+    }
+  ),
 
   // Delete document
-  http.delete(`${BASE_URL}/tenants/:tenantId/documents/:documentId`, ({ params }) => {
-    const { documentId } = params;
-    const document = mockDocuments.find((d) => d.id === documentId);
+  http.delete(
+    `${BASE_URL}/tenants/:tenantId/documents/:documentId`,
+    ({ params }) => {
+      const { documentId } = params;
+      const document = mockDocuments.find((d) => d.id === documentId);
 
-    if (!document) {
-      return HttpResponse.json(
-        {
-          error: {
-            code: 'NOT_FOUND',
-            message: 'Document not found',
+      if (!document) {
+        return HttpResponse.json(
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: 'Document not found',
+            },
           },
-        },
-        { status: 404 }
-      );
-    }
+          { status: 404 }
+        );
+      }
 
-    return new HttpResponse(null, { status: 204 });
-  }),
+      return new HttpResponse(null, { status: 204 });
+    }
+  ),
 
   // Create webhook
-  http.post(`${BASE_URL}/tenants/:tenantId/webhooks`, async ({ request, params }) => {
-    const { tenantId } = params;
-    const config = await request.json();
+  http.post(
+    `${BASE_URL}/tenants/:tenantId/webhooks`,
+    async ({ request, params }) => {
+      const { tenantId } = params;
+      const config = await request.json();
 
-    const response: Webhook = {
-      id: '423e4567-e89b-12d3-a456-426614174000',
-      tenantId: String(tenantId),
-      createdAt: new Date().toISOString(),
-      lastTriggeredAt: null,
-      ...(config as any),
-    };
+      const response: Webhook = {
+        id: '423e4567-e89b-12d3-a456-426614174000',
+        tenantId: String(tenantId),
+        createdAt: new Date().toISOString(),
+        lastTriggeredAt: null,
+        ...(config as any),
+      };
 
-    return HttpResponse.json(response, { status: 201 });
-  }),
+      return HttpResponse.json(response, { status: 201 });
+    }
+  ),
 
   // Get analytics
   http.get(`${BASE_URL}/tenants/:tenantId/analytics`, ({ request }) => {
@@ -284,7 +306,9 @@ export const handlers = [
           failureCount: 1,
         },
         {
-          timestamp: new Date(new Date(startDate).getTime() + 86400000).toISOString(),
+          timestamp: new Date(
+            new Date(startDate).getTime() + 86400000
+          ).toISOString(),
           count: 48,
           cost: 4.89,
           successCount: 47,

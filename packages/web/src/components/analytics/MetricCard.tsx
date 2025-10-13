@@ -39,7 +39,8 @@ export function MetricCard({
   };
 
   const getTrendColor = () => {
-    if (!trend || trend.value === 0) return 'text-neutral-600 dark:text-neutral-400';
+    if (!trend || trend.value === 0)
+      return 'text-neutral-600 dark:text-neutral-400';
     return trend.isPositive
       ? 'text-green-600 dark:text-green-400'
       : 'text-red-600 dark:text-red-400';
