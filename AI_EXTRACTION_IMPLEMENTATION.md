@@ -280,6 +280,12 @@ OPENAI_API_KEY=sk-...        # Required for GPT-4
 DATABASE_URL=postgresql://... # For audit logging
 ```
 
+**Note:** Evaluation scripts automatically load environment variables from the root `.env` file using `dotenv-cli`. No additional setup needed.
+
+**Scripts updated:**
+- `npm run eval` → Uses `dotenv -e ../../.env -- tsx src/eval/run-eval.ts`
+- `npm run eval:watch` → Uses `dotenv -e ../../.env -- tsx watch src/eval/run-eval.ts`
+
 ### Evaluation Config
 
 ```typescript
