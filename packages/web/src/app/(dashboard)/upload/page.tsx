@@ -7,7 +7,7 @@ import { Card, Button } from '@extractiq/ui';
 import { AlertCircle, DollarSign } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { FileUploadZone } from '@/components/documents/FileUploadZone';
+import { FileUploadZone } from '@/features/documents';
 import * as tus from 'tus-js-client';
 
 interface UploadProgress {

@@ -11,12 +11,8 @@ import {
   Clock,
   Download,
 } from 'lucide-react';
-import { MetricCard } from '@/components/analytics/MetricCard';
-import {
-  AnalyticsChart,
-  getChartColors,
-} from '@/components/analytics/AnalyticsChart';
-import { DateRangePicker } from '@/components/analytics/DateRangePicker';
+import { MetricCard, AnalyticsChart, DateRangePicker } from '@/features/analytics';
+import { getChartColors } from '@/features/analytics/components/AnalyticsChart';
 import { subDays } from 'date-fns';
 import {
   LineChart,

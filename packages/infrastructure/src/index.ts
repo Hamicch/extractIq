@@ -14,6 +14,13 @@ export { UserMapper } from './database/mappers/user.mapper';
 export { OpenAIExtractorService } from './ai/openai/extractor.service.impl';
 export { getOpenAIClient, resetOpenAIClient } from './ai/openai/client';
 
+// AI Provider Abstraction (NEW)
+export { AiExtractorFactory } from './ai/factory';
+export { AiProvider, AiModelConfig, AI_MODELS, getAiModelConfig } from './ai/types';
+export { BaseAiExtractorService } from './ai/base/base-extractor.service';
+export { OpenAIExtractorService as NewOpenAIExtractorService } from './ai/providers/openai-extractor.service';
+export { AnthropicExtractorService } from './ai/providers/anthropic-extractor.service';
+
 // Storage Services
 export { LocalFileStorageService } from './storage/local/storage.service.impl';
 

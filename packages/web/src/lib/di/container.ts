@@ -7,13 +7,14 @@ import { db } from '@extractiq/infrastructure';
 import {
   DrizzleDocumentRepository,
   DrizzleUserRepository,
-  OpenAIExtractorService,
+  AiExtractorFactory,
   LocalFileStorageService,
   BullMQQueueService,
   BcryptPasswordHasherService,
   JwtTokenService,
   ConsoleNotificationService,
 } from '@extractiq/infrastructure';
+import { AiExtractorService } from '@extractiq/core';
 
 import {
   UploadDocumentUseCase,
@@ -28,7 +29,7 @@ import {
 // Singleton instances
 let documentRepository: DrizzleDocumentRepository | null = null;
 let userRepository: DrizzleUserRepository | null = null;
-let aiExtractor: OpenAIExtractorService | null = null;
+let aiExtractor: AiExtractorService | null = null;
 let fileStorage: LocalFileStorageService | null = null;
 let queueService: BullMQQueueService | null = null;
 let passwordHasher: BcryptPasswordHasherService | null = null;
@@ -66,10 +67,11 @@ export function getUserRepository(): DrizzleUserRepository {
 
 /**
  * Get AI Extractor Service
+ * Uses factory to automatically select provider based on environment
  */
-export function getAiExtractor(): OpenAIExtractorService {
+export function getAiExtractor(): AiExtractorService {
   if (!aiExtractor) {
-    aiExtractor = new OpenAIExtractorService();
+    aiExtractor = AiExtractorFactory.create();
   }
   return aiExtractor;
 }

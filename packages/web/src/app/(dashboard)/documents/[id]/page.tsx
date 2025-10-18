@@ -13,9 +13,11 @@ import {
   Download,
 } from 'lucide-react';
 import Link from 'next/link';
-import { DocumentStatusBadge } from '@/components/documents/DocumentStatusBadge';
-import { ConfidenceIndicator } from '@/components/documents/ConfidenceIndicator';
-import { ProcessingTimeline } from '@/components/documents/ProcessingTimeline';
+import {
+  DocumentStatusBadge,
+  ConfidenceIndicator,
+  ProcessingTimeline
+} from '@/features/documents';
 import { useWebSocket } from '@/hooks/useWebSocket';
 
 type TabType = 'overview' | 'extracted' | 'audit' | 'raw';
