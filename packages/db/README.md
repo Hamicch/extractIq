@@ -1,4 +1,4 @@
-# @docuflow/db
+# @extractiq/db
 
 Database layer for Docuflow using Drizzle ORM and PostgreSQL.
 
@@ -109,7 +109,7 @@ import {
   NewDocument,
   DocumentExtraction,
   ProcessingAuditLog
-} from '@docuflow/db';
+} from '@extractiq/db';
 
 // Use in your application
 const tenant: Tenant = { ... };
@@ -119,8 +119,8 @@ const newDoc: NewDocument = { ... };
 ## Querying
 
 ```typescript
-import { db } from '@docuflow/db';
-import { documents, tenants } from '@docuflow/db';
+import { db } from '@extractiq/db';
+import { documents, tenants } from '@extractiq/db';
 import { eq, and, desc } from 'drizzle-orm';
 
 // Get documents for a tenant

@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { getDocuflowClient, type WebhookConfig } from '@docuflow/shared';
+import { getDocuflowClient, type WebhookConfig } from '@extractiq/shared';
 
 export function useCreateWebhook() {
   const client = getDocuflowClient();

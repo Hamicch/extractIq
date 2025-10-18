@@ -4,7 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import { queryClient } from '@/lib/query-client';
-import { initializeDocuflowClient } from '@docuflow/shared/api-client';
+import { initializeDocuflowClient } from '@extractiq/shared/api-client';
 import { useEffect } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {

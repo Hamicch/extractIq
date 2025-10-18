@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getDocuflowClient, type GetAnalyticsRequest } from '@docuflow/shared';
+import { getDocuflowClient, type GetAnalyticsRequest } from '@extractiq/shared';
 
 export function useAnalytics(params: GetAnalyticsRequest) {
   const client = getDocuflowClient();

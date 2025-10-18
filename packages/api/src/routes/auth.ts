@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { db, eq } from '@docuflow/db';
-import { users } from '@docuflow/db/schema';
+import { db, eq } from '@extractiq/db';
+import { users } from '@extractiq/db/schema';
 import {
   RegisterRequestSchema,
   LoginRequestSchema,
@@ -9,7 +9,7 @@ import {
   type AuthResponse,
   type VerifyTokenResponse,
   type LogoutResponse,
-} from '@docuflow/shared/api-schemas';
+} from '@extractiq/shared/api-schemas';
 import {
   signToken,
   hashPassword,

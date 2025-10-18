@@ -5,7 +5,7 @@ This document outlines the comprehensive testing infrastructure for Docuflow.
 ## Test Structure
 
 ```
-docuflow/
+extractiq/
 ├── packages/
 │   ├── api/
 │   │   └── src/__tests__/
@@ -35,29 +35,29 @@ docuflow/
 
 ```bash
 # Run all API tests
-npm run test --workspace=@docuflow/api
+npm run test --workspace=@extractiq/api
 
 # Run in watch mode
-npm run test:watch --workspace=@docuflow/api
+npm run test:watch --workspace=@extractiq/api
 
 # Run with coverage
-npm run test:ci --workspace=@docuflow/api
+npm run test:ci --workspace=@extractiq/api
 
 # Run worker tests
-npm run test --workspace=@docuflow/worker
+npm run test --workspace=@extractiq/worker
 ```
 
 ### Frontend Tests
 
 ```bash
 # Run all frontend tests
-npm run test --workspace=@docuflow/web
+npm run test --workspace=@extractiq/web
 
 # Run in watch mode
-npm run test:watch --workspace=@docuflow/web
+npm run test:watch --workspace=@extractiq/web
 
 # Run specific test file
-npm run test --workspace=@docuflow/web FileUploadZone.test.tsx
+npm run test --workspace=@extractiq/web FileUploadZone.test.tsx
 ```
 
 ### E2E Tests
@@ -123,7 +123,7 @@ Uses **testcontainers** for isolated database and Redis instances.
 docker ps
 
 # Run integration tests
-npm run test --workspace=@docuflow/api
+npm run test --workspace=@extractiq/api
 ```
 
 ### Frontend Component Tests

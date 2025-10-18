@@ -1,11 +1,11 @@
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@docuflow/ui';
+} from '@extractiq/ui';
 import { FileText, Sparkles, Zap } from 'lucide-react';
 
 export default function Home() {

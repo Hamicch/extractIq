@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { Queue } from 'bullmq';
-import { QueueNames, JobNames, DocumentUploadJobData } from '@docuflow/shared';
-import { db } from '@docuflow/db';
-import { documents } from '@docuflow/db/schema';
+import { QueueNames, JobNames, DocumentUploadJobData } from '@extractiq/shared';
+import { db } from '@extractiq/db';
+import { documents } from '@extractiq/db/schema';
 import { queueConfig } from './queue/config';
 
 async function testDocumentProcessing() {

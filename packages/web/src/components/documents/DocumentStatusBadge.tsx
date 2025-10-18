@@ -1,4 +1,4 @@
-import { Badge } from '@docuflow/ui';
+import { Badge } from '@extractiq/ui';
 import { Clock, CheckCircle, XCircle, Upload, Loader } from 'lucide-react';
 
 type DocumentStatus =

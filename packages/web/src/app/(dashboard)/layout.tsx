@@ -8,7 +8,7 @@ import {
   TenantSwitcher,
   ThemeToggle,
   UserMenu,
-} from '@docuflow/ui';
+} from '@extractiq/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppStore } from '@/lib/store';
 

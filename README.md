@@ -11,7 +11,7 @@ AI-native document intelligence platform that transforms your documents into act
 This is a TypeScript monorepo powered by npm workspaces and Turborepo.
 
 ```
-docuflow/
+extractiq/
 ├── packages/
 │   ├── api/          # Express REST API with OpenAPI
 │   ├── worker/       # BullMQ background job processor
@@ -57,7 +57,7 @@ For detailed architecture and implementation guides:
 
 ```bash
 git clone <your-repo-url>
-cd docuflow
+cd extractiq
 ```
 
 2. **Install dependencies**

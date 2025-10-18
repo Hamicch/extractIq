@@ -1,4 +1,4 @@
-import { cn } from '@docuflow/ui';
+import { cn } from '@extractiq/ui';
 
 interface SkeletonProps {
   className?: string;

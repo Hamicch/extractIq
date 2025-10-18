@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAnalytics } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 import {
   FileText,
   CheckCircle,

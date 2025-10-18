@@ -1,5 +1,5 @@
 {
-  "name": "@docuflow/web",
+  "name": "@extractiq/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,8 +13,8 @@
     "test:ci": "jest --coverage --ci"
   },
   "dependencies": {
-    "@docuflow/shared": "*",
-    "@docuflow/ui": "*",
+    "@extractiq/shared": "*",
+    "@extractiq/ui": "*",
     "@tanstack/react-query": "^5.17.19",
     "axios": "^1.6.5",
     "date-fns": "^4.1.0",

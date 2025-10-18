@@ -1,10 +1,10 @@
 import { Job } from 'bullmq';
-import { db, eq } from '@docuflow/db';
-import { documents } from '@docuflow/db/schema';
+import { db, eq } from '@extractiq/db';
+import { documents } from '@extractiq/db/schema';
 import type {
   DocumentUploadJobData,
   DocumentUploadResult,
-} from '@docuflow/shared';
+} from '@extractiq/shared';
 import { wsClient } from '../websocket/client';
 
 export async function processDocumentUpload(

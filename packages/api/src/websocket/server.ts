@@ -1,7 +1,7 @@
 import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { db } from '@docuflow/db';
-import { apiKeys } from '@docuflow/db/schema';
+import { db } from '@extractiq/db';
+import { apiKeys } from '@extractiq/db/schema';
 import { eq } from 'drizzle-orm';
 import { createHash } from 'crypto';
 

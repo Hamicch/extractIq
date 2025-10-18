@@ -31,7 +31,7 @@ Docuflow now has a **fully functional JWT-based authentication system** with use
 
 | Email                  | Password      | Role  | Description               |
 | ---------------------- | ------------- | ----- | ------------------------- |
-| `admin@docuflow.com`   | `admin123`    | admin | Full access administrator |
+| `admin@extractiq.com`   | `admin123`    | admin | Full access administrator |
 | `john@acme-legal.com`  | `password123` | user  | Acme Legal tenant user    |
 | `sarah@techcorp.io`    | `password123` | user  | TechCorp tenant user      |
 | `mike@startup-ops.com` | `password123` | user  | Startup Ops tenant user   |
@@ -60,17 +60,17 @@ Docuflow now has a **fully functional JWT-based authentication system** with use
 
 ```bash
 # Start API server (port 4000)
-npm run dev --workspace=@docuflow/api
+npm run dev --workspace=@extractiq/api
 
 # Start web app (port 3000)
-npm run dev --workspace=@docuflow/web
+npm run dev --workspace=@extractiq/web
 ```
 
 ### 2. Login
 
 1. Open http://localhost:3000/login
 2. Enter credentials:
-   - Email: `admin@docuflow.com`
+   - Email: `admin@extractiq.com`
    - Password: `admin123`
 3. Click "Sign in"
 4. You'll be redirected to the dashboard
@@ -141,7 +141,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000
 ```bash
 curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@docuflow.com","password":"admin123"}'
+  -d '{"email":"admin@extractiq.com","password":"admin123"}'
 ```
 
 ### Test Token Verification

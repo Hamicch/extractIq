@@ -1,5 +1,5 @@
 import { Worker, Queue, Job } from 'bullmq';
-import { QueueNames, JobNames } from '@docuflow/shared';
+import { QueueNames, JobNames } from '@extractiq/shared';
 import { queueConfig, workerConfig } from './queue/config';
 import { wsClient } from './websocket/client';
 import { processDocumentUpload } from './jobs/document-upload';

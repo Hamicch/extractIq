@@ -1,6 +1,6 @@
 import pdf_parse from 'pdf-parse';
-import { db } from '@docuflow/db';
-import { processingAuditLog } from '@docuflow/db/schema';
+import { db } from '@extractiq/db';
+import { processingAuditLog } from '@extractiq/db/schema';
 
 // Handle ESM/CJS compatibility
 const pdf = pdf_parse as any;

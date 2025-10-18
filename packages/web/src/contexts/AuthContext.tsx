@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore, type User } from '@/lib/store';
-import { initializeDocuflowClient } from '@docuflow/shared/api-client';
+import { initializeDocuflowClient } from '@extractiq/shared/api-client';
 
 interface AuthContextType {
   user: User | null;

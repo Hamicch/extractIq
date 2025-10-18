@@ -1,4 +1,4 @@
-import type { JobData } from '@docuflow/shared';
+import type { JobData } from '@extractiq/shared';
 
 export async function processDocumentJob(data: JobData) {
   console.log(`Processing document ${data.documentId} for user ${data.userId}`);

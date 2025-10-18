@@ -1,11 +1,11 @@
 import { Job } from 'bullmq';
-import { db, eq, and } from '@docuflow/db';
-import { documentExtractions, processingAuditLog } from '@docuflow/db/schema';
+import { db, eq, and } from '@extractiq/db';
+import { documentExtractions, processingAuditLog } from '@extractiq/db/schema';
 import OpenAI from 'openai';
 import type {
   DocumentExtractJobData,
   DocumentExtractResult,
-} from '@docuflow/shared';
+} from '@extractiq/shared';
 import { wsClient } from '../websocket/client';
 
 const openai = new OpenAI({

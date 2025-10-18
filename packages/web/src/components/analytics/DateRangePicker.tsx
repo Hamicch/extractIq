@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 

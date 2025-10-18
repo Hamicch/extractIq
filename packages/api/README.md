@@ -52,7 +52,7 @@ This creates `packages/shared/src/api-types.ts` with all types from the OpenAPI 
 
 ## Client Usage
 
-See `@docuflow/shared` package for the API client and React Query hooks.
+See `@extractiq/shared` package for the API client and React Query hooks.
 
 ## Development
 

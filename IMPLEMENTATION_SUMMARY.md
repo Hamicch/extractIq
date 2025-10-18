@@ -64,7 +64,7 @@ This document summarizes the complete CI/CD pipeline and observability infrastru
 
 #### **common/** (NEW)
 
-- `namespace.yaml` - docuflow namespace
+- `namespace.yaml` - extractiq namespace
 - `configmap.yaml` - Environment configuration
 - `secrets.yaml` - Sensitive data (template)
 - `ingress.yaml` - TLS ingress with cert-manager
@@ -230,7 +230,7 @@ Prometheus datasource auto-provisioning.
 
 #### **Grafana Dashboard** (NEW)
 
-**File:** `monitoring/grafana/dashboards/docuflow-overview.json`
+**File:** `monitoring/grafana/dashboards/extractiq-overview.json`
 
 Overview dashboard with 8 panels:
 
@@ -298,7 +298,7 @@ Overview dashboard with 8 panels:
 
 - `monitoring/prometheus.yml`
 - `monitoring/grafana/datasources/prometheus.yml`
-- `monitoring/grafana/dashboards/docuflow-overview.json`
+- `monitoring/grafana/dashboards/extractiq-overview.json`
 
 **Documentation:**
 
@@ -348,7 +348,7 @@ kubectl apply -f k8s/worker/
 kubectl apply -f k8s/web/
 
 # Check status
-kubectl get all -n docuflow
+kubectl get all -n extractiq
 ```
 
 #### GitHub Actions:

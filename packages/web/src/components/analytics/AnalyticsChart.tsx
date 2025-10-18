@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@docuflow/ui';
+import { Card } from '@extractiq/ui';
 import { useTheme } from 'next-themes';
 import { ReactNode } from 'react';
 

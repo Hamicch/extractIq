@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { db } from '@docuflow/db';
-import { processingAuditLog } from '@docuflow/db/schema';
+import { db } from '@extractiq/db';
+import { processingAuditLog } from '@extractiq/db/schema';
 import {
   DocumentExtraction,
   DocumentTypeDetection,

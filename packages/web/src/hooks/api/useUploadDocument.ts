@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getDocuflowClient, type ExtractionConfig } from '@docuflow/shared';
+import { getDocuflowClient, type ExtractionConfig } from '@extractiq/shared';
 
 interface UploadDocumentOptions {
   extractionConfig?: ExtractionConfig;

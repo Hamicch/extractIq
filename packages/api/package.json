@@ -1,5 +1,5 @@
 {
-  "name": "@docuflow/api",
+  "name": "@extractiq/api",
   "version": "0.1.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,8 +14,8 @@
     "test:ci": "jest --coverage --ci"
   },
   "dependencies": {
-    "@docuflow/db": "*",
-    "@docuflow/shared": "*",
+    "@extractiq/db": "*",
+    "@extractiq/shared": "*",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.47.0",
     "@opentelemetry/sdk-node": "^0.47.0",

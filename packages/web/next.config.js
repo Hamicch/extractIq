@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@docuflow/shared', '@docuflow/ui'],
+  transpilePackages: ['@extractiq/shared', '@extractiq/ui'],
   reactStrictMode: true,
 };
 

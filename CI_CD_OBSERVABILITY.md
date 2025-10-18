@@ -55,9 +55,9 @@ Complete CI/CD pipeline with GitHub Actions workflows, Docker deployment, Kubern
 
 **Images Built:**
 
-- `ghcr.io/{owner}/docuflow-api:{tag}`
-- `ghcr.io/{owner}/docuflow-worker:{tag}`
-- `ghcr.io/{owner}/docuflow-web:{tag}`
+- `ghcr.io/{owner}/extractiq-api:{tag}`
+- `ghcr.io/{owner}/extractiq-worker:{tag}`
+- `ghcr.io/{owner}/extractiq-web:{tag}`
 
 ### 3. Deploy Workflow (`.github/workflows/deploy.yml`)
 
@@ -174,7 +174,7 @@ docker-compose -f docker-compose.production.yml up -d --scale worker=5
 ```
 k8s/
 ├── common/
-│   ├── namespace.yaml          # docuflow namespace
+│   ├── namespace.yaml          # extractiq namespace
 │   ├── configmap.yaml          # Environment config
 │   ├── secrets.yaml            # Sensitive data
 │   └── ingress.yaml            # TLS ingress
@@ -199,13 +199,13 @@ kubectl apply -f k8s/worker/
 kubectl apply -f k8s/web/
 
 # Check status
-kubectl get all -n docuflow
+kubectl get all -n extractiq
 
 # View logs
-kubectl logs -n docuflow -l app=docuflow-api -f
+kubectl logs -n extractiq -l app=extractiq-api -f
 
 # Scale manually
-kubectl scale deployment/docuflow-worker --replicas=10 -n docuflow
+kubectl scale deployment/extractiq-worker --replicas=10 -n extractiq
 ```
 
 ### Horizontal Pod Autoscaler (HPA)
@@ -328,7 +328,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 Viewable in Jaeger UI:
 
 - URL: http://localhost:16686
-- Production: https://jaeger.docuflow.example.com
+- Production: https://jaeger.extractiq.example.com
 
 **Trace Context:**
 
@@ -449,7 +449,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 
 #### 1. Docuflow Overview Dashboard
 
-**File:** `monitoring/grafana/dashboards/docuflow-overview.json`
+**File:** `monitoring/grafana/dashboards/extractiq-overview.json`
 
 **Panels:**
 
@@ -516,7 +516,7 @@ recordOpenAICall(tenantId, 'gpt-4', 'completion', 0.05, 2.3, 'success');
 
 ```yaml
 groups:
-  - name: docuflow_alerts
+  - name: extractiq_alerts
     interval: 30s
     rules:
       # High error rate
@@ -591,15 +591,15 @@ docker-compose ps
 docker-compose logs api
 
 # Kubernetes
-kubectl get pods -n docuflow
-kubectl describe pod <pod-name> -n docuflow
-kubectl logs -n docuflow -l app=docuflow-api --tail=100
+kubectl get pods -n extractiq
+kubectl describe pod <pod-name> -n extractiq
+kubectl logs -n extractiq -l app=extractiq-api --tail=100
 ```
 
 ### View Traces
 
 1. Open Jaeger UI
-2. Select service (docuflow-api, docuflow-worker)
+2. Select service (extractiq-api, extractiq-worker)
 3. Search by operation or tags
 4. Analyze slow traces
 

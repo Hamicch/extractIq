@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { db, eq } from '@docuflow/db';
-import { users } from '@docuflow/db/schema';
+import { db, eq } from '@extractiq/db';
+import { users } from '@extractiq/db/schema';
 import {
   extractTokenFromHeader,
   verifyToken,

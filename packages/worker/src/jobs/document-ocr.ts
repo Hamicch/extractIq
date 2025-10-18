@@ -1,7 +1,7 @@
 import { Job } from 'bullmq';
-import { db, eq } from '@docuflow/db';
-import { documents, processingAuditLog } from '@docuflow/db/schema';
-import type { DocumentOcrJobData, DocumentOcrResult } from '@docuflow/shared';
+import { db, eq } from '@extractiq/db';
+import { documents, processingAuditLog } from '@extractiq/db/schema';
+import type { DocumentOcrJobData, DocumentOcrResult } from '@extractiq/shared';
 import { wsClient } from '../websocket/client';
 
 export async function processDocumentOcr(

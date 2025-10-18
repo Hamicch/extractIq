@@ -1,4 +1,4 @@
-import { Card } from '@docuflow/ui';
+import { Card } from '@extractiq/ui';
 import { LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
 

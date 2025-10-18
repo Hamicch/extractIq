@@ -1,7 +1,7 @@
 'use client';
 
 import { Component, ReactNode } from 'react';
-import { Card, Button } from '@docuflow/ui';
+import { Card, Button } from '@extractiq/ui';
 import { AlertTriangle } from 'lucide-react';
 
 interface Props {

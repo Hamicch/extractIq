@@ -2,7 +2,7 @@
 
 import { use, useState } from 'react';
 import { useDocument, useExtractedData } from '@/hooks/api';
-import { Card, Button } from '@docuflow/ui';
+import { Card, Button } from '@extractiq/ui';
 import {
   ArrowLeft,
   FileText,

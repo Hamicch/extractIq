@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useUploadDocument as _useUploadDocument } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Card, Button } from '@docuflow/ui';
+import { Card, Button } from '@extractiq/ui';
 import { AlertCircle, DollarSign } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';

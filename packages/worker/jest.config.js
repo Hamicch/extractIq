@@ -6,7 +6,7 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
-    '^@docuflow/(.*)$': '<rootDir>/../$1/src',
+    '^@extractiq/(.*)$': '<rootDir>/../$1/src',
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

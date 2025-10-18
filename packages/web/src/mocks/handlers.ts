@@ -7,7 +7,7 @@ import type {
   ExtractedData,
   Webhook,
   Analytics,
-} from '@docuflow/shared';
+} from '@extractiq/shared';
 
 const BASE_URL = 'http://localhost:3001/v1';
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 import { toast } from 'sonner';
 
 export default function SignupPage() {

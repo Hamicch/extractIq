@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY packages/worker/package*.json ./packages/worker/
 COPY packages/shared/package*.json ./packages/shared/
 COPY packages/db/package*.json ./packages/db/
-RUN npm ci --workspace=@docuflow/worker --workspace=@docuflow/shared --workspace=@docuflow/db
+RUN npm ci --workspace=@extractiq/worker --workspace=@extractiq/shared --workspace=@extractiq/db
 
 # Build source code
 FROM base AS builder
@@ -18,9 +18,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build packages
-RUN npm run build --workspace=@docuflow/shared
-RUN npm run build --workspace=@docuflow/db
-RUN npm run build --workspace=@docuflow/worker
+RUN npm run build --workspace=@extractiq/shared
+RUN npm run build --workspace=@extractiq/db
+RUN npm run build --workspace=@extractiq/worker
 
 # Production image
 FROM base AS runner
@@ -42,7 +42,7 @@ COPY --from=builder --chown=workeruser:nodejs /app/packages/db/package*.json ./p
 COPY --from=builder --chown=workeruser:nodejs /app/package*.json ./
 
 # Install production dependencies only
-RUN npm ci --omit=dev --workspace=@docuflow/worker
+RUN npm ci --omit=dev --workspace=@extractiq/worker
 
 USER workeruser
 

@@ -4,7 +4,7 @@ import type {
   DocumentProgressEvent,
   DocumentCompletedEvent,
   DocumentFailedEvent,
-} from '@docuflow/shared';
+} from '@extractiq/shared';
 
 class WebSocketClient {
   private socket: Socket | null = null;

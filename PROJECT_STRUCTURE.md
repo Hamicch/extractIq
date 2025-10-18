@@ -35,7 +35,7 @@ Monorepo (npm workspaces + Turbo)
 
 ## 📦 Workspace Packages
 
-### 1. **@docuflow/api** - Backend API Server
+### 1. **@extractiq/api** - Backend API Server
 
 **Location:** `packages/api/`
 
@@ -88,12 +88,12 @@ packages/api/src/
 
 **Dependencies:**
 
-- `@docuflow/db` - Database access
-- `@docuflow/shared` - Shared types/utils
+- `@extractiq/db` - Database access
+- `@extractiq/shared` - Shared types/utils
 
 ---
 
-### 2. **@docuflow/worker** - Background Job Processor
+### 2. **@extractiq/worker** - Background Job Processor
 
 **Location:** `packages/worker/`
 
@@ -169,15 +169,15 @@ packages/worker/src/
 
 **Dependencies:**
 
-- `@docuflow/db` - Database access
-- `@docuflow/shared` - Shared types
+- `@extractiq/db` - Database access
+- `@extractiq/shared` - Shared types
 - `openai` - GPT-4 API
 - `pdf-parse` - PDF processing
 - `bullmq` - Job queue
 
 ---
 
-### 3. **@docuflow/web** - Frontend Web Application
+### 3. **@extractiq/web** - Frontend Web Application
 
 **Location:** `packages/web/`
 
@@ -203,7 +203,7 @@ packages/web/src/
 │   ├── documents/              # Document pages
 │   └── settings/               # Settings pages
 ├── components/                 # React components
-│   ├── ui/                     # UI components (from @docuflow/ui)
+│   ├── ui/                     # UI components (from @extractiq/ui)
 │   ├── DocumentUpload.tsx      # Upload component
 │   ├── DocumentList.tsx        # List view
 │   ├── AnalyticsDashboard.tsx  # Analytics
@@ -248,14 +248,14 @@ packages/web/src/
 
 **Dependencies:**
 
-- `@docuflow/shared` - Shared types
-- `@docuflow/ui` - UI component library
+- `@extractiq/shared` - Shared types
+- `@extractiq/ui` - UI component library
 - `next` - Framework
 - `socket.io-client` - Real-time
 
 ---
 
-### 4. **@docuflow/db** - Database Layer
+### 4. **@extractiq/db** - Database Layer
 
 **Location:** `packages/db/`
 
@@ -306,7 +306,7 @@ packages/db/src/
 **Database Connection:**
 
 ```typescript
-import { db } from '@docuflow/db';
+import { db } from '@extractiq/db';
 
 // Use anywhere in api/worker packages
 const documents = await db.select().from(documentsTable);
@@ -314,7 +314,7 @@ const documents = await db.select().from(documentsTable);
 
 ---
 
-### 5. **@docuflow/shared** - Shared Types & Utilities
+### 5. **@extractiq/shared** - Shared Types & Utilities
 
 **Location:** `packages/shared/`
 
@@ -368,7 +368,7 @@ export enum DocumentStatus {
 
 ---
 
-### 6. **@docuflow/ui** - UI Component Library
+### 6. **@extractiq/ui** - UI Component Library
 
 **Location:** `packages/ui/`
 
@@ -398,7 +398,7 @@ packages/ui/src/
 **Usage in Web:**
 
 ```tsx
-import { Button, Card } from '@docuflow/ui';
+import { Button, Card } from '@extractiq/ui';
 
 <Button variant="primary">Upload</Button>;
 ```
@@ -507,9 +507,9 @@ cd packages/web && npm run dev
 npm test
 
 # Run specific package tests
-npm test --workspace=@docuflow/api
-npm test --workspace=@docuflow/worker
-npm test --workspace=@docuflow/web
+npm test --workspace=@extractiq/api
+npm test --workspace=@extractiq/worker
+npm test --workspace=@extractiq/web
 
 # E2E tests
 npx playwright test
@@ -525,13 +525,13 @@ cd packages/worker && npm run eval
 npm run build
 
 # Build specific package
-npm run build --workspace=@docuflow/api
+npm run build --workspace=@extractiq/api
 
 # Production build order (Turbo handles automatically):
-# 1. @docuflow/shared
-# 2. @docuflow/db
-# 3. @docuflow/ui
-# 4. @docuflow/api, @docuflow/worker, @docuflow/web
+# 1. @extractiq/shared
+# 2. @extractiq/db
+# 3. @extractiq/ui
+# 4. @extractiq/api, @extractiq/worker, @extractiq/web
 ```
 
 ---
@@ -677,7 +677,7 @@ OpenTelemetry traces automatically capture:
 
    ```bash
    # Unit tests in __tests__/ directories
-   npm test --workspace=@docuflow/api
+   npm test --workspace=@extractiq/api
    ```
 
 4. **Run checks locally**

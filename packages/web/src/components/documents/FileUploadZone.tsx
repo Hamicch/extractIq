@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, X } from 'lucide-react';
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 
 interface FileWithPreview extends File {
   preview?: string;

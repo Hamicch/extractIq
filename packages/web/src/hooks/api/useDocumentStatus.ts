@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getDocuflowClient } from '@docuflow/shared';
+import { getDocuflowClient } from '@extractiq/shared';
 
 export function useDocumentStatus(
   documentId: string,

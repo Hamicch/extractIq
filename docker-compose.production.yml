@@ -3,17 +3,17 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: docuflow-postgres
+    container_name: extractiq-postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-docuflow}
+      POSTGRES_USER: ${POSTGRES_USER:-extractiq}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-docuflow}
+      POSTGRES_DB: ${POSTGRES_DB:-extractiq}
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-docuflow}']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-extractiq}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,7 +29,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: docuflow-redis
+    container_name: extractiq-redis
     command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
     ports:
       - '6379:6379'
@@ -48,11 +48,11 @@ services:
           memory: 512M
 
   api:
-    image: ${IMAGE_PREFIX:-ghcr.io/docuflow}/docuflow-api:${IMAGE_TAG:-latest}
-    container_name: docuflow-api
+    image: ${IMAGE_PREFIX:-ghcr.io/extractiq}/extractiq-api:${IMAGE_TAG:-latest}
+    container_name: extractiq-api
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-docuflow}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-docuflow}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-extractiq}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-extractiq}
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN}
@@ -61,7 +61,7 @@ services:
       AWS_REGION: ${AWS_REGION}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       JAEGER_ENDPOINT: http://jaeger:4318/v1/traces
-      OTEL_SERVICE_NAME: docuflow-api
+      OTEL_SERVICE_NAME: extractiq-api
     ports:
       - '3001:3001'
     depends_on:
@@ -87,11 +87,11 @@ services:
           memory: 512M
 
   worker:
-    image: ${IMAGE_PREFIX:-ghcr.io/docuflow}/docuflow-worker:${IMAGE_TAG:-latest}
-    container_name: docuflow-worker
+    image: ${IMAGE_PREFIX:-ghcr.io/extractiq}/extractiq-worker:${IMAGE_TAG:-latest}
+    container_name: extractiq-worker
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-docuflow}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-docuflow}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-extractiq}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-extractiq}
       REDIS_URL: redis://redis:6379
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
@@ -100,7 +100,7 @@ services:
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-5}
       JAEGER_ENDPOINT: http://jaeger:4318/v1/traces
-      OTEL_SERVICE_NAME: docuflow-worker
+      OTEL_SERVICE_NAME: extractiq-worker
     depends_on:
       postgres:
         condition: service_healthy
@@ -118,8 +118,8 @@ services:
           memory: 1G
 
   web:
-    image: ${IMAGE_PREFIX:-ghcr.io/docuflow}/docuflow-web:${IMAGE_TAG:-latest}
-    container_name: docuflow-web
+    image: ${IMAGE_PREFIX:-ghcr.io/extractiq}/extractiq-web:${IMAGE_TAG:-latest}
+    container_name: extractiq-web
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
@@ -147,7 +147,7 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:1.51
-    container_name: docuflow-jaeger
+    container_name: extractiq-jaeger
     environment:
       COLLECTOR_OTLP_ENABLED: true
     ports:
@@ -169,7 +169,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: docuflow-prometheus
+    container_name: extractiq-prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -189,7 +189,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: docuflow-grafana
+    container_name: extractiq-grafana
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: false

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Card } from '@docuflow/ui';
+import { Card } from '@extractiq/ui';
 import { FileText, Calendar, File } from 'lucide-react';
 import { DocumentStatusBadge } from './DocumentStatusBadge';
 import { ConfidenceIndicator } from './ConfidenceIndicator';

@@ -1,14 +1,14 @@
 import { Job } from 'bullmq';
-import { db, eq } from '@docuflow/db';
+import { db, eq } from '@extractiq/db';
 import {
   documents,
   documentExtractions,
   processingAuditLog,
-} from '@docuflow/db/schema';
+} from '@extractiq/db/schema';
 import type {
   DocumentValidateJobData,
   DocumentValidateResult,
-} from '@docuflow/shared';
+} from '@extractiq/shared';
 import { wsClient } from '../websocket/client';
 
 const CONFIDENCE_THRESHOLD = 0.75;

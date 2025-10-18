@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY packages/web/package*.json ./packages/web/
 COPY packages/shared/package*.json ./packages/shared/
 COPY packages/ui/package*.json ./packages/ui/
-RUN npm ci --workspace=@docuflow/web --workspace=@docuflow/shared --workspace=@docuflow/ui
+RUN npm ci --workspace=@extractiq/web --workspace=@extractiq/shared --workspace=@extractiq/ui
 
 # Build source code
 FROM base AS builder
@@ -18,9 +18,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build packages
-RUN npm run build --workspace=@docuflow/shared
-RUN npm run build --workspace=@docuflow/ui
-RUN npm run build --workspace=@docuflow/web
+RUN npm run build --workspace=@extractiq/shared
+RUN npm run build --workspace=@extractiq/ui
+RUN npm run build --workspace=@extractiq/web
 
 # Production image
 FROM base AS runner

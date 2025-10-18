@@ -261,7 +261,7 @@ After running database seed, the following test accounts are available:
 
 | Email                | Password    | Role  | Tenant           |
 | -------------------- | ----------- | ----- | ---------------- |
-| admin@docuflow.com   | admin123    | admin | None             |
+| admin@extractiq.com   | admin123    | admin | None             |
 | john@acme-legal.com  | password123 | user  | acme-legal       |
 | sarah@techcorp.io    | password123 | user  | techcorp-finance |
 | mike@startup-ops.com | password123 | user  | startup-ops      |
@@ -375,7 +375,7 @@ curl -X POST http://localhost:3001/api/auth/register \
 curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "admin@docuflow.com",
+    "email": "admin@extractiq.com",
     "password": "admin123"
   }'
 ```
@@ -410,7 +410,7 @@ If you need to reapply the schema:
 
 ```bash
 # Add columns manually
-docker exec docuflow-postgres psql -U docuflow -d docuflow -c "
+docker exec extractiq-postgres psql -U extractiq -d extractiq -c "
 ALTER TABLE users
   ADD COLUMN IF NOT EXISTS tenant_id uuid REFERENCES tenants(id),
   ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'user';
@@ -450,7 +450,7 @@ npm run db:seed
 All auth functionality is fully typed:
 
 ```typescript
-// From @docuflow/shared/api-schemas
+// From @extractiq/shared/api-schemas
 import type {
   User,
   UserRole,
@@ -458,10 +458,10 @@ import type {
   LoginRequest,
   AuthResponse,
   VerifyTokenResponse,
-} from '@docuflow/shared/api-schemas';
+} from '@extractiq/shared/api-schemas';
 
-// From @docuflow/db/schema
-import type { User as DBUser, NewUser } from '@docuflow/db/schema';
+// From @extractiq/db/schema
+import type { User as DBUser, NewUser } from '@extractiq/db/schema';
 
 // JWT Payload
 interface JWTPayload {

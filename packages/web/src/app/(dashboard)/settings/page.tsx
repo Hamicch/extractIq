@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Button, Input } from '@docuflow/ui';
+import { Card, Button, Input } from '@extractiq/ui';
 import {
   Building,
   Webhook,
