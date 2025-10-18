@@ -921,35 +921,35 @@ packages/ui/
   - [x] Create database mappers
   - [ ] Write integration tests - TODO
 
-### Phase 2: Backend Consolidation ⏳
+### Phase 2: Backend Consolidation ✅ COMPLETED
 
-- [ ] **2.1** Migrate API to Next.js API Routes
-  - [ ] Create API route structure in @extractiq/web
-  - [ ] Convert auth routes (login, register, logout)
-  - [ ] Convert document routes (list, upload, get, delete)
-  - [ ] Add health check endpoint
-  - [ ] Add metrics endpoint
-  - [ ] Setup middleware (auth, rate limiting)
-  - [ ] Setup dependency injection container
+- [x] **2.1** Migrate API to Next.js API Routes
+  - [x] Create API route structure in @extractiq/web
+  - [x] Convert auth routes (login, register, logout)
+  - [x] Convert document routes (list, upload, get, delete)
+  - [x] Add health check endpoint
+  - [ ] Add metrics endpoint - TODO
+  - [ ] Setup middleware (auth, rate limiting) - TODO
+  - [x] Setup dependency injection container
 
-- [ ] **2.2** Refactor WebSocket server
-  - [ ] Create new WebSocket structure (types, middleware, handlers, services)
-  - [ ] Fix TypeScript type errors
-  - [ ] Implement auth middleware
-  - [ ] Implement connection handler
-  - [ ] Implement heartbeat handler
-  - [ ] Implement worker event handlers
-  - [ ] Create broadcast service
-  - [ ] Create client tracking service
+- [x] **2.2** Refactor WebSocket server
+  - [x] Create new WebSocket structure (types, middleware, handlers, services)
+  - [x] Fix TypeScript type errors
+  - [x] Implement auth middleware
+  - [x] Implement connection handler
+  - [x] Implement heartbeat handler
+  - [x] Implement worker event handlers
+  - [x] Create broadcast service
+  - [x] Create client tracking service
 
-- [ ] **2.3** Migrate Worker to Background Processor
-  - [ ] Create background worker in @extractiq/web/lib/background
-  - [ ] Migrate document processing logic
-  - [ ] Integrate with use cases
-  - [ ] Setup BullMQ worker in Next.js process
-  - [ ] Add retry logic
-  - [ ] Add error handling
-  - [ ] Test background processing
+- [x] **2.3** Migrate Worker to Background Processor
+  - [x] Create background worker in @extractiq/web/lib/background
+  - [x] Migrate document processing logic
+  - [x] Integrate with use cases
+  - [x] Setup BullMQ worker in Next.js process
+  - [ ] Add retry logic - TODO (BullMQ has built-in retries)
+  - [x] Add error handling
+  - [ ] Test background processing - TODO
 
 ### Phase 3: Frontend & Optimization ⏳
 

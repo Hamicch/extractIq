@@ -13,8 +13,12 @@
     "test:ci": "jest --coverage --ci"
   },
   "dependencies": {
+    "@extractiq/core": "*",
+    "@extractiq/db": "*",
+    "@extractiq/infrastructure": "*",
     "@extractiq/shared": "*",
     "@extractiq/ui": "*",
+    "socket.io": "^4.7.2",
     "@tanstack/react-query": "^5.17.19",
     "axios": "^1.6.5",
     "date-fns": "^4.1.0",
