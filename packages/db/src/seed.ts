@@ -13,7 +13,7 @@ import {
   type NewProcessingAuditLog,
   type NewApiKey,
 } from './schema';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
 
 function hashApiKey(key: string): string {
@@ -61,32 +61,36 @@ async function seed() {
   // Create test users
   const testUsers: NewUser[] = [
     {
+      id: randomUUID(),
       email: 'admin@docuflow.com',
-      name: 'Admin User',
       passwordHash: await hashPassword('admin123'),
       role: 'admin',
-      tenantId: null,
+      tenantId: insertedTenants[0].id, // Assign to first tenant instead of null
+      profile: { firstName: 'Admin', lastName: 'User' },
     },
     {
+      id: randomUUID(),
       email: 'john@acme-legal.com',
-      name: 'John Doe',
       passwordHash: await hashPassword('password123'),
       role: 'user',
       tenantId: insertedTenants[0].id,
+      profile: { firstName: 'John', lastName: 'Doe' },
     },
     {
+      id: randomUUID(),
       email: 'sarah@techcorp.io',
-      name: 'Sarah Smith',
       passwordHash: await hashPassword('password123'),
       role: 'user',
       tenantId: insertedTenants[1].id,
+      profile: { firstName: 'Sarah', lastName: 'Smith' },
     },
     {
+      id: randomUUID(),
       email: 'mike@startup-ops.com',
-      name: 'Mike Johnson',
       passwordHash: await hashPassword('password123'),
       role: 'user',
       tenantId: insertedTenants[2].id,
+      profile: { firstName: 'Mike', lastName: 'Johnson' },
     },
   ];
 

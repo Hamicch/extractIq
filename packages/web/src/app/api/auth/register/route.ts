@@ -25,18 +25,26 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Get or create tenant for user
+    let userTenantId = tenantId;
+    if (!userTenantId) {
+      // Use default tenant for new registrations (in production, create a new tenant per organization)
+      // This is the ID of the 'acme-legal' tenant from the seed data
+      userTenantId = process.env.DEFAULT_TENANT_ID || '61079324-b102-42e8-aec3-3aad2f2233e4';
+    }
+
     // Execute use case
     const registerUseCase = getRegisterUseCase();
-    const result = await registerUseCase.execute({
+    const useCaseResult = await registerUseCase.execute({
       email,
       password,
-      tenantId: tenantId || 'default', // TODO: Implement proper tenant creation
+      tenantId: userTenantId,
       firstName,
       lastName,
     });
 
-    if (result.isFailure) {
-      const error = result.getError();
+    if (useCaseResult.isFailure) {
+      const error = useCaseResult.getError();
 
       if (error instanceof ConflictError) {
         return conflictResponse(error.message);
@@ -49,14 +57,13 @@ export async function POST(req: NextRequest) {
       return internalErrorResponse(error.message);
     }
 
-    const data = result.getValue();
+    const data = useCaseResult.getValue();
 
     return successResponse(
       {
-        user: {
-          id: data.userId,
-          email: data.email,
-        },
+        user: data.user,
+        token: data.accessToken,
+        refreshToken: data.refreshToken,
       },
       201
     );

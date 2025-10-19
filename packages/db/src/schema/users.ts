@@ -1,15 +1,28 @@
-import { pgTable, uuid, varchar, timestamp, text } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp, pgEnum, jsonb } from 'drizzle-orm/pg-core';
 import { tenants } from './tenants';
 
+export const userRoleEnum = pgEnum('user_role', ['admin', 'user']);
+
 export const users = pgTable('users', {
-  id: uuid('id').defaultRandom().primaryKey(),
+  id: uuid('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
-  tenantId: uuid('tenant_id').references(() => tenants.id),
-  role: text('role').notNull().default('user'),
+  tenantId: uuid('tenant_id')
+    .notNull()
+    .references(() => tenants.id, { onDelete: 'cascade' }),
+  role: userRoleEnum('role').notNull().default('user'),
+
+  // Profile (JSONB for flexibility)
+  profile: jsonb('profile').$type<{
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+  }>(),
+
+  // Timestamps
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  lastLoginAt: timestamp('last_login_at'),
 });
 
 export type User = typeof users.$inferSelect;

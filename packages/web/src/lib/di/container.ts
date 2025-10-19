@@ -197,7 +197,8 @@ export function getRegisterUseCase(): RegisterUseCase {
   if (!registerUseCase) {
     registerUseCase = new RegisterUseCase(
       getUserRepository(),
-      getPasswordHasher()
+      getPasswordHasher(),
+      getTokenService()
     );
   }
   return registerUseCase;

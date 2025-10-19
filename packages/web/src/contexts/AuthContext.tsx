@@ -9,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -43,7 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (response.ok) {
           const data = await response.json();
-          setUser(data.data.user);
+          // Map fullName to name for UI compatibility
+          setUser({
+            id: data.data.user.id,
+            email: data.data.user.email,
+            name: data.data.user.fullName || data.data.user.email,
+            role: data.data.user.role,
+          });
         } else {
           localStorage.removeItem('docuflow_api_key');
         }
@@ -79,8 +85,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Store token as API key
       localStorage.setItem('docuflow_api_key', data.data.token);
 
-      // Set user in store
-      setUser(data.data.user);
+      // Set user in store (map fullName to name for UI compatibility)
+      setUser({
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.fullName || data.data.user.email,
+        role: data.data.user.role,
+      });
 
       // Reinitialize API client with token
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -97,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
@@ -106,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password, name }),
+          body: JSON.stringify({ email, password, firstName, lastName }),
         }
       );
 
@@ -120,8 +131,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Store token as API key
       localStorage.setItem('docuflow_api_key', data.data.token);
 
-      // Set user in store
-      setUser(data.data.user);
+      // Set user in store (map fullName to name for UI compatibility)
+      setUser({
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.fullName || data.data.user.email,
+        role: data.data.user.role,
+      });
 
       // Reinitialize API client with token
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
