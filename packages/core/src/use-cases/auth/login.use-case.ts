@@ -1,6 +1,6 @@
 import { UserRepository } from '../../ports/repositories/user.repository';
 import { PasswordHasherService } from '../../ports/services/password-hasher.service';
-import { TokenService, TokenPair } from '../../ports/services/token.service';
+import { TokenService } from '../../ports/services/token.service';
 import { Result } from '../../types/result';
 import { UnauthorizedError } from '../../types/errors';
 

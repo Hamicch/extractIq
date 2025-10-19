@@ -1,10 +1,8 @@
 import { Socket } from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';
+type ExtendedError = Error & { data?: unknown };
 import { AuthenticatedSocket, SocketAuthData } from '../types/socket.types';
 import { createHash } from 'crypto';
-import { db } from '@extractiq/db';
-import { apiKeys } from '@extractiq/db/schema';
-import { eq } from 'drizzle-orm';
+import { db, apiKeys, eq } from '@extractiq/db';
 
 /**
  * WebSocket authentication middleware

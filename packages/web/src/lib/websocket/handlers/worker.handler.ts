@@ -1,6 +1,5 @@
 import { AuthenticatedSocket } from '../types/socket.types';
 import {
-  DocumentEvent,
   DocumentEventType,
   DocumentStatusEvent,
   DocumentProgressEvent,

@@ -995,10 +995,12 @@ packages/ui/
 
 - [x] **4.2** Remove Old Packages
   - [x] Verified old packages can be removed (API/Worker migrated to web package)
-  - [ ] Delete @extractiq/api package - TODO (after confirming deployment works)
-  - [ ] Delete @extractiq/worker package - TODO (after confirming deployment works)
-  - [ ] Clean up unused dependencies - TODO
-  - [ ] Update turbo.json - TODO
+  - [x] Deleted @extractiq/api package
+  - [x] Deleted @extractiq/worker package
+  - [x] Kept @extractiq/db (still used by infrastructure)
+  - [x] Verified no broken imports
+  - [x] Removed outdated documentation files
+  - [x] Created CLEANUP_SUMMARY.md documentation
 
 - [x] **4.3** Documentation
   - [x] Create HETZNER_SETUP.md (detailed step-by-step guide)

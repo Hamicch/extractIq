@@ -3,7 +3,6 @@ import {
   uuid,
   text,
   bigint,
-  integer,
   timestamp,
   pgEnum,
   index,

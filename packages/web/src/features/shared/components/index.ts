@@ -3,5 +3,5 @@
  * Reusable components used across multiple features
  */
 
-export { default as ErrorBoundary } from './error-boundary';
-export { default as LoadingSkeleton } from './loading-skeleton';
+export { ErrorBoundary } from './error-boundary';
+export { PageLoadingSkeleton } from './loading-skeleton';

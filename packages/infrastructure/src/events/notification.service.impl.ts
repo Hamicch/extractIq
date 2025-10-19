@@ -7,7 +7,7 @@ import { NotificationService, DocumentNotification, Result } from '@extractiq/co
 export class ConsoleNotificationService implements NotificationService {
   async notify(notification: DocumentNotification): Promise<Result<void, Error>> {
     console.log('[NOTIFICATION]', notification.type, notification);
-    return Result.ok();
+    return Result.ok(undefined);
   }
 
   async notifyUser(
@@ -15,10 +15,10 @@ export class ConsoleNotificationService implements NotificationService {
     notification: DocumentNotification
   ): Promise<Result<void, Error>> {
     console.log('[USER NOTIFICATION]', userId, notification.type, notification);
-    return Result.ok();
+    return Result.ok(undefined);
   }
 
-  async getConnectedClientsCount(tenantId: string): Promise<number> {
+  async getConnectedClientsCount(_tenantId: string): Promise<number> {
     return 0; // No clients connected in console mode
   }
 }

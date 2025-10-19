@@ -69,19 +69,20 @@ export class WebSocketServer {
    * Setup Socket.IO event handlers
    */
   private setupEventHandlers(): void {
-    this.io.on('connection', (socket: AuthenticatedSocket) => {
+    this.io.on('connection', (socket) => {
+      const authSocket = socket as AuthenticatedSocket;
       // Handle connection
-      this.connectionHandler.handleConnection(socket);
+      this.connectionHandler.handleConnection(authSocket);
 
       // Setup heartbeat
-      this.heartbeatHandler.setupHeartbeat(socket);
+      this.heartbeatHandler.setupHeartbeat(authSocket);
 
       // Setup worker events (only for worker sockets)
-      this.workerHandler.setupWorkerEvents(socket);
+      this.workerHandler.setupWorkerEvents(authSocket);
 
       // Handle disconnection
-      socket.on('disconnect', (reason) => {
-        this.connectionHandler.handleDisconnection(socket, reason);
+      authSocket.on('disconnect', (reason) => {
+        this.connectionHandler.handleDisconnection(authSocket, reason);
       });
     });
   }

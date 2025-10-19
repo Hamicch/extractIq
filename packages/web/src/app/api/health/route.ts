@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@extractiq/db';
-import { sql } from 'drizzle-orm';
+import { db, sql } from '@extractiq/db';
 
 /**
  * GET /api/health

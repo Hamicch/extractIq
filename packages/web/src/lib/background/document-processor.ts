@@ -1,6 +1,5 @@
 import { Job } from 'bullmq';
 import { getProcessDocumentUseCase } from '../di/container';
-import { DocumentNotFoundError } from '@extractiq/core/domain/document/errors';
 
 /**
  * Background processor for document processing jobs
@@ -19,7 +18,7 @@ export class DocumentProcessor {
    * Called by BullMQ worker for each job in the queue
    */
   async processJob(job: Job<DocumentProcessorJob>): Promise<void> {
-    const { documentId, tenantId, userId } = job.data;
+    const { documentId, tenantId } = job.data;
 
     console.log(`📄 Processing document ${documentId} for tenant ${tenantId}`);
 
@@ -31,18 +30,10 @@ export class DocumentProcessor {
       const processUseCase = getProcessDocumentUseCase();
       const result = await processUseCase.execute({
         documentId,
-        tenantId,
-        userId,
       });
 
       if (result.isFailure) {
         const error = result.getError();
-
-        if (error instanceof DocumentNotFoundError) {
-          console.error(`❌ Document ${documentId} not found`);
-          throw new Error(`Document not found: ${documentId}`);
-        }
-
         console.error(`❌ Processing failed for document ${documentId}:`, error.message);
         throw error;
       }

@@ -111,7 +111,7 @@ export class ProcessDocumentUseCase {
         },
       });
 
-      return Result.ok();
+      return Result.ok(undefined);
     } catch (error) {
       return Result.fail(error as Error);
     }

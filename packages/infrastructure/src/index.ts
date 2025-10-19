@@ -19,7 +19,8 @@ export { AiExtractorFactory } from './ai/factory';
 export { AiProvider, AiModelConfig, AI_MODELS, getAiModelConfig } from './ai/types';
 export { BaseAiExtractorService } from './ai/base/base-extractor.service';
 export { OpenAIExtractorService as NewOpenAIExtractorService } from './ai/providers/openai-extractor.service';
-export { AnthropicExtractorService } from './ai/providers/anthropic-extractor.service';
+// Uncomment when you install @anthropic-ai/sdk:
+// export { AnthropicExtractorService } from './ai/providers/anthropic-extractor.service';
 
 // Storage Services
 export { LocalFileStorageService } from './storage/local/storage.service.impl';

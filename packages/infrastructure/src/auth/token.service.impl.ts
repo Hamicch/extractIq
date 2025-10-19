@@ -17,7 +17,7 @@ export class JwtTokenService implements TokenService {
     try {
       const token = jwt.sign(payload, this.secret, {
         expiresIn: this.accessTokenExpiry,
-      });
+      } as jwt.SignOptions);
       return Result.ok(token);
     } catch (error) {
       return Result.fail(error as Error);
@@ -28,7 +28,7 @@ export class JwtTokenService implements TokenService {
     try {
       const token = jwt.sign(payload, this.secret, {
         expiresIn: this.refreshTokenExpiry,
-      });
+      } as jwt.SignOptions);
       return Result.ok(token);
     } catch (error) {
       return Result.fail(error as Error);

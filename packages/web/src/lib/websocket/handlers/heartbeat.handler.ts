@@ -10,7 +10,7 @@ export class HeartbeatHandler {
    * Setup heartbeat listeners for a socket
    */
   setupHeartbeat(socket: AuthenticatedSocket): void {
-    socket.on('ping', (data: PingEvent) => {
+    socket.on('ping', (_data: PingEvent) => {
       const pongData: PongEvent = {
         timestamp: Date.now(),
       };

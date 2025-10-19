@@ -62,7 +62,7 @@ export class LocalFileStorageService implements FileStorageService {
         // Ignore error if directory not empty
       }
 
-      return Result.ok();
+      return Result.ok(undefined);
     } catch (error) {
       return Result.fail(error as Error);
     }

@@ -44,7 +44,7 @@ export class DeleteDocumentUseCase {
       // 4. Delete document from database
       await this.documentRepository.delete(document.id);
 
-      return Result.ok();
+      return Result.ok(undefined);
     } catch (error) {
       return Result.fail(error as Error);
     }

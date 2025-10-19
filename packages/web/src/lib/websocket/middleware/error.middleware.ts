@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';
+type ExtendedError = Error & { data?: unknown };
 
 /**
  * WebSocket error handling middleware

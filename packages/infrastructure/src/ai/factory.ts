@@ -1,7 +1,6 @@
 import { AiExtractorService } from '@extractiq/core';
 import { AiProvider, AiModelConfig, getAiModelConfig } from './types';
 import { OpenAIExtractorService } from './providers/openai-extractor.service';
-import { AnthropicExtractorService } from './providers/anthropic-extractor.service';
 
 /**
  * Factory for creating AI Extractor services
@@ -25,7 +24,9 @@ export class AiExtractorFactory {
         return new OpenAIExtractorService(config);
 
       case AiProvider.ANTHROPIC:
-        return new AnthropicExtractorService(config);
+        // TODO: Install @anthropic-ai/sdk and create anthropic-extractor.service.ts
+        // See OpenAIExtractorService for implementation example
+        throw new Error('Anthropic provider not yet implemented. Install @anthropic-ai/sdk and add the provider file.');
 
       case AiProvider.OLLAMA:
         // TODO: Implement Ollama provider for local models

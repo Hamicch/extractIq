@@ -7,8 +7,13 @@ import {
   Result,
 } from '@extractiq/core';
 import { AiModelConfig } from '../types';
-import * as pdf from 'pdf-parse';
 import * as fs from 'fs/promises';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pdf = require('pdf-parse');
+import * as invoicePrompts from '../prompts/invoice-extraction.prompt';
+import * as contractPrompts from '../prompts/contract-extraction.prompt';
+import * as genericPrompts from '../prompts/generic-extraction.prompt';
+import * as typeDetectionPrompts from '../prompts/type-detection.prompt';
 
 /**
  * Base AI Extractor Service
@@ -71,44 +76,23 @@ export abstract class BaseAiExtractorService implements AiExtractorService {
     systemPrompt: string;
     extractionUserPrompt: (text: string) => string;
   } {
-    // Import prompts dynamically to avoid circular dependencies
-    const {
-      TYPE_DETECTION_SYSTEM_PROMPT,
-      TYPE_DETECTION_USER_PROMPT,
-    } = require('../prompts/type-detection.prompt');
-
-    const {
-      INVOICE_EXTRACTION_SYSTEM_PROMPT,
-      INVOICE_EXTRACTION_USER_PROMPT,
-    } = require('../prompts/invoice-extraction.prompt');
-
-    const {
-      CONTRACT_EXTRACTION_SYSTEM_PROMPT,
-      CONTRACT_EXTRACTION_USER_PROMPT,
-    } = require('../prompts/contract-extraction.prompt');
-
-    const {
-      GENERIC_EXTRACTION_SYSTEM_PROMPT,
-      GENERIC_EXTRACTION_USER_PROMPT,
-    } = require('../prompts/generic-extraction.prompt');
-
     switch (type) {
       case DocumentType.INVOICE:
         return {
-          systemPrompt: INVOICE_EXTRACTION_SYSTEM_PROMPT,
-          extractionUserPrompt: INVOICE_EXTRACTION_USER_PROMPT,
+          systemPrompt: invoicePrompts.INVOICE_EXTRACTION_SYSTEM_PROMPT,
+          extractionUserPrompt: invoicePrompts.INVOICE_EXTRACTION_USER_PROMPT,
         };
       case DocumentType.CONTRACT:
         return {
-          systemPrompt: CONTRACT_EXTRACTION_SYSTEM_PROMPT,
-          extractionUserPrompt: CONTRACT_EXTRACTION_USER_PROMPT,
+          systemPrompt: contractPrompts.CONTRACT_EXTRACTION_SYSTEM_PROMPT,
+          extractionUserPrompt: contractPrompts.CONTRACT_EXTRACTION_USER_PROMPT,
         };
       case DocumentType.GENERIC:
       case DocumentType.RECEIPT:
       default:
         return {
-          systemPrompt: GENERIC_EXTRACTION_SYSTEM_PROMPT,
-          extractionUserPrompt: GENERIC_EXTRACTION_USER_PROMPT,
+          systemPrompt: genericPrompts.GENERIC_EXTRACTION_SYSTEM_PROMPT,
+          extractionUserPrompt: genericPrompts.GENERIC_EXTRACTION_USER_PROMPT,
         };
     }
   }
@@ -117,14 +101,9 @@ export abstract class BaseAiExtractorService implements AiExtractorService {
     systemPrompt: string;
     userPrompt: (text: string) => string;
   } {
-    const {
-      TYPE_DETECTION_SYSTEM_PROMPT,
-      TYPE_DETECTION_USER_PROMPT,
-    } = require('../prompts/type-detection.prompt');
-
     return {
-      systemPrompt: TYPE_DETECTION_SYSTEM_PROMPT,
-      userPrompt: TYPE_DETECTION_USER_PROMPT,
+      systemPrompt: typeDetectionPrompts.TYPE_DETECTION_SYSTEM_PROMPT,
+      userPrompt: typeDetectionPrompts.TYPE_DETECTION_USER_PROMPT,
     };
   }
 }

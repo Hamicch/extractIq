@@ -70,7 +70,7 @@ export class BullMQQueueService implements QueueService {
         id: bullJob.id!,
         name: bullJob.name,
         data: bullJob.data,
-        progress: bullJob.progress,
+        progress: typeof bullJob.progress === 'number' ? bullJob.progress : 0,
         attemptsMade: bullJob.attemptsMade,
         failedReason: bullJob.failedReason,
       });
@@ -85,7 +85,7 @@ export class BullMQQueueService implements QueueService {
       if (job) {
         await job.remove();
       }
-      return Result.ok();
+      return Result.ok(undefined);
     } catch (error) {
       return Result.fail(error as Error);
     }
@@ -115,7 +115,7 @@ export class BullMQQueueService implements QueueService {
       }
 
       await job.retry();
-      return Result.ok();
+      return Result.ok(undefined);
     } catch (error) {
       return Result.fail(error as Error);
     }

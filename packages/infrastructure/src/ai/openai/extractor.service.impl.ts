@@ -7,8 +7,9 @@ import {
   Result,
 } from '@extractiq/core';
 import { getOpenAIClient } from './client';
-import * as pdf from 'pdf-parse';
 import * as fs from 'fs/promises';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pdf = require('pdf-parse');
 import {
   TYPE_DETECTION_SYSTEM_PROMPT,
   TYPE_DETECTION_USER_PROMPT,
