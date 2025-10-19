@@ -6,6 +6,8 @@ const nextConfig = {
     serverComponentsExternalPackages: ['pdf-parse', 'drizzle-orm'],
     instrumentationHook: true, // Enable instrumentation for background worker
   },
+  // Enable standalone output for Docker deployment
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

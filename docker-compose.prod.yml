@@ -1,0 +1,132 @@
+# Production Docker Compose for ExtractIQ
+# For deployment on Hetzner VPS or any Linux server
+
+version: '3.8'
+
+services:
+  # Next.js Web Application (includes background worker)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: extractiq-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Node Environment
+      - NODE_ENV=production
+      - PORT=3000
+
+      # Database
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/extractiq
+
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+      # AI Provider (OpenAI GPT-4o-mini by default)
+      - AI_PROVIDER=${AI_PROVIDER:-openai}
+      - AI_MODEL=${AI_MODEL:-gpt-4o-mini}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+      # Authentication
+      - JWT_SECRET=${JWT_SECRET}
+      - API_KEY_SECRET=${API_KEY_SECRET}
+
+      # App Configuration
+      - NEXT_PUBLIC_APP_URL=${APP_URL:-http://localhost:3000}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+
+      # Worker Configuration
+      - WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-5}
+      - WORKER_RATE_LIMIT_MAX=${WORKER_RATE_LIMIT_MAX:-10}
+      - WORKER_RATE_LIMIT_DURATION=${WORKER_RATE_LIMIT_DURATION:-1000}
+
+      # Upload Configuration
+      - UPLOAD_DIR=/app/uploads
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE:-52428800}
+
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - extractiq-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: extractiq-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=extractiq
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - extractiq-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (for BullMQ job queue)
+  redis:
+    image: redis:7-alpine
+    container_name: extractiq-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - extractiq-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Caddy (Reverse Proxy with automatic HTTPS)
+  caddy:
+    image: caddy:2-alpine
+    container_name: extractiq-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - extractiq-network
+    depends_on:
+      - app
+
+networks:
+  extractiq-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local

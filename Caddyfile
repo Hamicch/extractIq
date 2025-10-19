@@ -1,0 +1,41 @@
+# Caddyfile for ExtractIQ
+# Automatic HTTPS with Let's Encrypt
+
+{
+    # Email for Let's Encrypt notifications
+    email {$ADMIN_EMAIL}
+}
+
+# Replace with your actual domain
+{$DOMAIN:localhost} {
+    # Reverse proxy to Next.js app
+    reverse_proxy app:3000
+
+    # Enable compression
+    encode gzip
+
+    # Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent MIME sniffing
+        X-Content-Type-Options "nosniff"
+        # Enable XSS protection
+        X-Frame-Options "SAMEORIGIN"
+        # Remove server header
+        -Server
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}
+
+# Health check endpoint (no SSL required)
+:80 {
+    handle /health {
+        reverse_proxy app:3000
+    }
+}
