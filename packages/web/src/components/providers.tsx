@@ -13,7 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
     const apiKey =
       typeof window !== 'undefined'
-        ? localStorage.getItem('docuflow_api_key') || undefined
+        ? localStorage.getItem('extract_iq_api_key') || undefined
         : undefined;
 
     initializeDocuflowClient({

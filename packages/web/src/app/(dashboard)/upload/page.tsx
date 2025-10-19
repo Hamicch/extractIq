@@ -51,7 +51,7 @@ export default function UploadPage() {
           tenantId: selectedTenant?.id || '',
         },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('docuflow_api_key')}`,
+          Authorization: `Bearer ${localStorage.getItem('extract_iq_api_key')}`,
         },
         onError: (error) => {
           setUploadProgress((prev) => ({

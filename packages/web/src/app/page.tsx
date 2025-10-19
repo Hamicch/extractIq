@@ -1,5 +1,5 @@
-import { Button } from '@extractiq/ui';
 import {
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -14,7 +14,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-interactive bg-clip-text text-transparent">
-            Docuflow
+            Extract IQ
           </h1>
           <p className="text-2xl text-foreground mb-8">
             Flow from upload to insight
