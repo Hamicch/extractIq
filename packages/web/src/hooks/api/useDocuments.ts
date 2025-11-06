@@ -1,5 +1,5 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
-import { getDocuflowClient, type ListDocumentsRequest } from '@docuflow/shared';
+import { getDocuflowClient, type ListDocumentsRequest } from '@extractiq/shared';
 
 export function useDocuments(params?: ListDocumentsRequest) {
   const client = getDocuflowClient();

@@ -3,11 +3,11 @@
 import { useState, useCallback } from 'react';
 import { useUploadDocument as _useUploadDocument } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Card, Button } from '@docuflow/ui';
+import { Card, Button } from '@extractiq/ui';
 import { AlertCircle, DollarSign } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { FileUploadZone } from '@/components/documents/FileUploadZone';
+import { FileUploadZone } from '@/features/documents';
 import * as tus from 'tus-js-client';
 
 interface UploadProgress {
@@ -51,7 +51,7 @@ export default function UploadPage() {
           tenantId: selectedTenant?.id || '',
         },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('docuflow_api_key')}`,
+          Authorization: `Bearer ${localStorage.getItem('extract_iq_api_key')}`,
         },
         onError: (error) => {
           setUploadProgress((prev) => ({

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getDocuflowClient } from '@docuflow/shared';
+import { getDocuflowClient } from '@extractiq/shared';
 
 export function useDocument(documentId: string, enabled = true) {
   const client = getDocuflowClient();

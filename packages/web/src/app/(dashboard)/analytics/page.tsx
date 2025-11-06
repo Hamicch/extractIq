@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAnalytics } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 import {
   FileText,
   CheckCircle,
@@ -11,12 +11,8 @@ import {
   Clock,
   Download,
 } from 'lucide-react';
-import { MetricCard } from '@/components/analytics/MetricCard';
-import {
-  AnalyticsChart,
-  getChartColors,
-} from '@/components/analytics/AnalyticsChart';
-import { DateRangePicker } from '@/components/analytics/DateRangePicker';
+import { MetricCard, AnalyticsChart, DateRangePicker } from '@/features/analytics';
+import { getChartColors } from '@/features/analytics/components/AnalyticsChart';
 import { subDays } from 'date-fns';
 import {
   LineChart,

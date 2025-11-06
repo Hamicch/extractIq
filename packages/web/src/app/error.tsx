@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Button, Card } from '@docuflow/ui';
+import { Button, Card } from '@extractiq/ui';
 import { AlertTriangle } from 'lucide-react';
 
 export default function Error({

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@docuflow/ui';
+import { Button } from '@extractiq/ui';
 import { toast } from 'sonner';
 
 export default function LoginPage() {
@@ -19,7 +19,8 @@ export default function LoginPage() {
       await login(email, password);
       toast.success('Logged in successfully');
     } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
+        toast.error('Login failed. Please check your credentials.');
+        console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -30,10 +31,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            Docuflow
+            ExtractIQ
           </h1>
           <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-            Flow from upload to insight
+            From upload to insight
           </p>
         </div>
 
@@ -56,6 +57,8 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+                title="Please enter a valid email address"
                 className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="you@example.com"
               />

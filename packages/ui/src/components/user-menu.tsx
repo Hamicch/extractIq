@@ -91,7 +91,7 @@ export function UserMenu({
           />
 
           {/* Dropdown */}
-          <div className="absolute bottom-full right-0 mb-2 w-56 z-50 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-lg animate-scale-in">
+          <div className="absolute top-full right-0 mt-2 w-56 z-50 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-lg animate-scale-in">
             {/* User Info */}
             <div className="px-3 py-2 border-b border-neutral-200 dark:border-neutral-700">
               <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
@@ -147,6 +147,7 @@ export function UserMenu({
                   <div className="my-1 border-t border-neutral-200 dark:border-neutral-700" />
                   <button
                     onClick={() => {
+                      console.log('Logout button clicked!');
                       onLogout();
                       setIsOpen(false);
                     }}

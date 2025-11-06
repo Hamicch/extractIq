@@ -3,10 +3,10 @@
 import { useState, useMemo } from 'react';
 import { useDocuments } from '@/hooks/api';
 import { useAppStore } from '@/lib/store';
-import { Card, Button, Input } from '@docuflow/ui';
+import { Card, Button, Input } from '@extractiq/ui';
 import { Search, SlidersHorizontal, Trash2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import { DocumentCard } from '@/components/documents/DocumentCard';
+import { DocumentCard } from '@/features/documents';
 import { useWebSocket } from '@/hooks/useWebSocket';
 
 type SortField = 'uploadedAt' | 'size' | 'name';

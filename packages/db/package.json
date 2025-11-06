@@ -1,5 +1,5 @@
 {
-  "name": "@docuflow/db",
+  "name": "@extractiq/db",
   "version": "0.1.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,15 +8,15 @@
     "dev": "tsc --watch",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate:pg",
-    "db:push": "drizzle-kit push:pg",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "DATABASE_URL=postgresql://docuflow:docuflow_dev@localhost:5433/docuflow tsx src/seed.ts",
+    "db:seed": "DATABASE_URL=postgresql://extractiq:extractiq_dev@localhost:5433/extractiq tsx src/seed.ts",
     "db:migrate": "drizzle-kit migrate",
     "test": "echo \"No tests yet\""
   },
   "dependencies": {
-    "@docuflow/shared": "*",
+    "@extractiq/shared": "*",
     "dotenv": "^16.4.1",
     "drizzle-orm": "^0.33.0",
     "pg": "^8.11.3",

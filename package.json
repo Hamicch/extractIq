@@ -1,5 +1,5 @@
 {
-  "name": "docuflow",
+  "name": "extractiq",
   "version": "0.1.0",
   "private": true,
   "description": "Flow from upload to insight - AI-native document intelligence platform",
@@ -16,8 +16,14 @@
     "prepare": "husky install",
     "db:generate": "turbo run db:generate",
     "db:push": "turbo run db:push",
+    "db:migrate": "cd packages/db && npm run db:migrate",
     "db:seed": "turbo run db:seed",
-    "db:studio": "turbo run db:studio"
+    "db:studio": "turbo run db:studio",
+    "docker:build": "docker build -t extractiq:latest .",
+    "docker:run": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:stop": "docker-compose -f docker-compose.prod.yml down",
+    "docker:logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "deploy": "git pull && docker-compose -f docker-compose.prod.yml up -d --build"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.1",

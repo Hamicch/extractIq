@@ -1,9 +1,9 @@
 {
-  "name": "@docuflow/web",
+  "name": "@extractiq/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,8 +13,12 @@
     "test:ci": "jest --coverage --ci"
   },
   "dependencies": {
-    "@docuflow/shared": "*",
-    "@docuflow/ui": "*",
+    "@extractiq/core": "*",
+    "@extractiq/db": "*",
+    "@extractiq/infrastructure": "*",
+    "@extractiq/shared": "*",
+    "@extractiq/ui": "*",
+    "socket.io": "^4.7.2",
     "@tanstack/react-query": "^5.17.19",
     "axios": "^1.6.5",
     "date-fns": "^4.1.0",

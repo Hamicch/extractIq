@@ -21,10 +21,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@docuflow/shared": ["../shared/src"],
-      "@docuflow/shared/*": ["../shared/src/*"],
-      "@docuflow/ui": ["../ui/src"],
-      "@docuflow/ui/*": ["../ui/src/*"]
+      "@extractiq/shared": ["../shared/src"],
+      "@extractiq/shared/*": ["../shared/src/*"],
+      "@extractiq/ui": ["../ui/src"],
+      "@extractiq/ui/*": ["../ui/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

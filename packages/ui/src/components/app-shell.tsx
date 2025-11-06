@@ -32,7 +32,7 @@ export function AppShell({
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
         <header
-          className="flex-shrink-0 h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
+          className="flex-shrink-0 h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 relative z-50"
           role="banner"
         >
           {header}

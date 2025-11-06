@@ -3,13 +3,18 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore, type User } from '@/lib/store';
-import { initializeDocuflowClient } from '@docuflow/shared/api-client';
+import { initializeDocuflowClient } from '@extractiq/shared/api-client';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -25,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check for existing session on mount
     const checkAuth = async () => {
       try {
-        const apiKey = localStorage.getItem('docuflow_api_key');
+        const apiKey = localStorage.getItem('extract_iq_api_key');
         if (!apiKey) {
           setIsLoading(false);
           return;
@@ -43,9 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (response.ok) {
           const data = await response.json();
-          setUser(data.data.user);
+          // Map fullName to name for UI compatibility
+          setUser({
+            id: data.data.user.id,
+            email: data.data.user.email,
+            name: data.data.user.fullName || data.data.user.email,
+            role: data.data.user.role,
+          });
         } else {
-          localStorage.removeItem('docuflow_api_key');
+          localStorage.removeItem('extract_iq_api_key');
         }
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -77,10 +88,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       // Store token as API key
-      localStorage.setItem('docuflow_api_key', data.data.token);
+      localStorage.setItem('extract_iq_api_key', data.data.token);
 
-      // Set user in store
-      setUser(data.data.user);
+      // Set user in store (map fullName to name for UI compatibility)
+      setUser({
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.fullName || data.data.user.email,
+        role: data.data.user.role,
+      });
 
       // Reinitialize API client with token
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -97,7 +113,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
@@ -106,7 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email, password, name }),
+          body: JSON.stringify({ email, password, firstName, lastName }),
         }
       );
 
@@ -118,10 +139,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       // Store token as API key
-      localStorage.setItem('docuflow_api_key', data.data.token);
+      localStorage.setItem('extract_iq_api_key', data.data.token);
 
-      // Set user in store
-      setUser(data.data.user);
+      // Set user in store (map fullName to name for UI compatibility)
+      setUser({
+        id: data.data.user.id,
+        email: data.data.user.email,
+        name: data.data.user.fullName || data.data.user.email,
+        role: data.data.user.role,
+      });
 
       // Reinitialize API client with token
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -140,8 +166,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      // Call logout endpoint (for analytics/logging)
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('extract_iq_api_key')}`,
+          },
+        });
+      } catch (error) {
+        // Ignore API errors - still logout client-side
+        console.warn('Logout API call failed:', error);
+      }
+
       // Clear API key
-      localStorage.removeItem('docuflow_api_key');
+      localStorage.removeItem('extract_iq_api_key');
 
       // Clear user
       setUser(null);
