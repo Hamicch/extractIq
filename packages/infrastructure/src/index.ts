@@ -1,3 +1,6 @@
+// Config - exported first to allow validation before other dependencies initialize
+export { authConfig } from './config/auth.config';
+
 // Database
 export * from './database/drizzle/client';
 export * from './database/drizzle/schema';
@@ -34,6 +37,3 @@ export { JwtTokenService } from './auth/token.service.impl';
 
 // Notification Services
 export { ConsoleNotificationService } from './events/notification.service.impl';
-
-// Config
-export { authConfig } from './config/auth.config';

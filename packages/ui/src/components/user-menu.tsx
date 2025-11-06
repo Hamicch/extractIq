@@ -147,8 +147,7 @@ export function UserMenu({
                   <div className="my-1 border-t border-neutral-200 dark:border-neutral-700" />
                   <button
                     onClick={() => {
-                      console.log('Logout button clicked!');
-                      onLogout();
+                      onLogout?.();
                       setIsOpen(false);
                     }}
                     className={cn(

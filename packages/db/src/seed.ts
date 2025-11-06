@@ -156,7 +156,7 @@ async function seed() {
     sampleDocuments.push({
       tenantId: tenant.id,
       status,
-      fileUrl: `https://s3.amazonaws.com/docuflow-storage/${tenant.name}/${docType.type}-${i + 1}${extension}`,
+        fileUrl: `https://s3.amazonaws.com/extractiq-storage/${tenant.name}/${docType.type}-${i + 1}${extension}`,
       fileName: `${docType.type}-${String(i + 1).padStart(4, '0')}${extension}`,
       fileSizeBytes: Math.floor(Math.random() * 5000000) + 100000, // 100KB to 5MB
       mimeType: docType.mime,

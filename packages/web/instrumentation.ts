@@ -7,12 +7,17 @@
 export async function register() {
   // Only run in Node.js runtime (not Edge)
   if (process.env.NEXT_RUNTIME === 'nodejs') {
+      // Validate JWT_SECRET at startup (importing authConfig triggers validation)
+      // This will throw if JWT_SECRET is missing or invalid, preventing startup
+      const { authConfig } = await import('@extractiq/infrastructure');
+      if (!authConfig.jwt.secret) {
+          throw new Error('JWT_SECRET validation failed at startup');
+      }
+
     const { startWorker, stopWorker } = await import('./src/lib/background/worker');
 
-    // Start the background worker
     await startWorker();
 
-    // Graceful shutdown handlers
     const shutdown = async () => {
       console.log('📋 Graceful shutdown initiated...');
       await stopWorker();
