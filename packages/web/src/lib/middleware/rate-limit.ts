@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Redis from 'ioredis';
+import humanizeDuration from 'humanize-duration';
 
 export interface RateLimitConfig {
   maxRequests: number;
@@ -153,7 +154,7 @@ export function createRateLimitMiddleware(
             code: isRedisError ? 'RATE_LIMIT_SERVICE_UNAVAILABLE' : 'RATE_LIMIT_EXCEEDED',
             message: isRedisError
               ? 'Rate limiting service is temporarily unavailable. Please try again later.'
-              : `Too many requests. Please try again after ${result.retryAfter} seconds.`,
+                  : `Too many requests. Please try again after ${humanizeDuration((result.retryAfter || 0) * 1000)}.`,
           },
         },
         { status: isRedisError ? 503 : 429 }
