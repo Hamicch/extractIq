@@ -48,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (response.ok) {
           const data = await response.json();
-          // Map fullName to name for UI compatibility
           setUser({
             id: data.data.user.id,
             email: data.data.user.email,
@@ -87,10 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
 
-      // Store token as API key
       localStorage.setItem('extract_iq_api_key', data.data.token);
 
-      // Set user in store (map fullName to name for UI compatibility)
       setUser({
         id: data.data.user.id,
         email: data.data.user.email,
@@ -105,7 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         apiKey: data.data.token,
       });
 
-      // Redirect to dashboard
       router.push('/documents');
     } catch (error) {
       console.error('Login error:', error);
@@ -138,10 +134,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
 
-      // Store token as API key
       localStorage.setItem('extract_iq_api_key', data.data.token);
 
-      // Set user in store (map fullName to name for UI compatibility)
       setUser({
         id: data.data.user.id,
         email: data.data.user.email,
@@ -156,8 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         apiKey: data.data.token,
       });
 
-      // Redirect to dashboard
-      router.push('/documents');
+      router.replace('/documents');
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -166,7 +159,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      // Call logout endpoint (for analytics/logging)
       try {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
           method: 'POST',
@@ -180,14 +172,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn('Logout API call failed:', error);
       }
 
-      // Clear API key
       localStorage.removeItem('extract_iq_api_key');
 
-      // Clear user
       setUser(null);
 
-      // Redirect to login
-      router.push('/login');
+      // Redirect to login (replace to prevent back button to dashboard)
+      router.replace('/login');
     } catch (error) {
       console.error('Logout error:', error);
       throw error;

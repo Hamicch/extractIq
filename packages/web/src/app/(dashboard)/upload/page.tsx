@@ -6,6 +6,7 @@ import { useAppStore } from '@/lib/store';
 import { Card, Button } from '@extractiq/ui';
 import { AlertCircle, DollarSign } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { FileUploadZone } from '@/features/documents';
 import * as tus from 'tus-js-client';
@@ -229,13 +230,14 @@ export default function UploadPage() {
                 </Button>
 
                 {allCompleted && (
-                  <Button
-                    onClick={() => router.push('/documents')}
-                    variant="outline"
-                    size="lg"
-                  >
-                    View Documents
-                  </Button>
+                  <Link href="/documents">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                    >
+                      View Documents
+                    </Button>
+                  </Link>
                 )}
 
                 {!isUploading && !allCompleted && (
