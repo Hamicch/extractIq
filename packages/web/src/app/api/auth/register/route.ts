@@ -9,6 +9,13 @@ import {
 } from '@/lib/api/response';
 import { ConflictError, ValidationError } from '@extractiq/core';
 import { z } from 'zod';
+import {
+    createRateLimitMiddleware,
+    AUTH_RATE_LIMITS,
+    addRateLimitHeaders,
+} from '@/lib/middleware/rate-limit';
+
+const rateLimitMiddleware = createRateLimitMiddleware(AUTH_RATE_LIMITS.register, 'register');
 
 const RegisterRequestSchema = z.object({
     email: z.string().email('Invalid email format').min(1, 'Email is required'),
@@ -23,6 +30,11 @@ const RegisterRequestSchema = z.object({
  * Register a new user
  */
 export async function POST(req: NextRequest) {
+    const rateLimitCheck = await rateLimitMiddleware(req);
+    if (!rateLimitCheck.success) {
+        return rateLimitCheck.response;
+    }
+
   try {
       const body = await req.json();
 
@@ -32,21 +44,18 @@ export async function POST(req: NextRequest) {
           return validationErrorResponse(validation.errors);
     }
 
-      const { email, password, firstName, lastName, tenantId } = validation.data;
+      const { email, password, firstName, lastName } = validation.data;
 
-    // Get or create tenant for user
-    let userTenantId = tenantId;
-    if (!userTenantId) {
-      // Use default tenant for new registrations (in production, create a new tenant per organization)
-        // This is the ID of the 'acme-legal' tenant from our default tenant data
-      userTenantId = process.env.DEFAULT_TENANT_ID || '61079324-b102-42e8-aec3-3aad2f2233e4';
-    }
+      // Always use default tenant for new registrations (hardcoded for now)
+      // tenantId field is accepted but ignored - always use default
+      // This is the ID of the 'acme-legal' tenant from our default tenant data
+      const defaultTenantId = process.env.DEFAULT_TENANT_ID || '61079324-b102-42e8-aec3-3aad2f2233e4';
 
     const registerUseCase = getRegisterUseCase();
     const useCaseResult = await registerUseCase.execute({
       email,
       password,
-      tenantId: userTenantId,
+        tenantId: defaultTenantId,
       firstName,
       lastName,
     });
@@ -67,7 +76,7 @@ export async function POST(req: NextRequest) {
 
     const data = useCaseResult.getValue();
 
-    return successResponse(
+      const response = successResponse(
       {
         user: data.user,
         token: data.accessToken,
@@ -75,6 +84,8 @@ export async function POST(req: NextRequest) {
       },
       201
     );
+
+      return addRateLimitHeaders(response, AUTH_RATE_LIMITS.register, rateLimitCheck.result);
   } catch (error) {
     console.error('Registration error:', error);
     return internalErrorResponse('An error occurred during registration');
