@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { ZodError, ZodSchema } from 'zod';
 
 /**
  * Standard API response formats for Next.js API routes
@@ -95,4 +96,37 @@ export function conflictResponse(message: string): NextResponse<ApiErrorResponse
  */
 export function internalErrorResponse(message: string = 'Internal server error'): NextResponse<ApiErrorResponse> {
   return errorResponse('INTERNAL_ERROR', message, 500);
+}
+
+/**
+ * Convert Zod validation errors to validation error response format
+ */
+export function formatZodErrors(error: ZodError): Record<string, string[]> {
+    const errors: Record<string, string[]> = {};
+    error.errors.forEach((err) => {
+        const field = err.path.join('.') || 'unknown';
+        errors[field] = errors[field] || [];
+        errors[field].push(err.message);
+    });
+    return errors;
+}
+
+/**
+ * Validate data with Zod schema and return formatted errors if validation fails
+ */
+export function validateWithZod<T>(
+    schema: ZodSchema<T>,
+    data: unknown
+): { success: true; data: T } | { success: false; errors: Record<string, string[]> } {
+    const result = schema.safeParse(data);
+    if (!result.success) {
+        return {
+            success: false,
+            errors: formatZodErrors(result.error),
+        };
+    }
+    return {
+        success: true,
+        data: result.data,
+    };
 }

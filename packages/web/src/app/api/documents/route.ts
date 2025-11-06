@@ -7,7 +7,29 @@ import {
   successResponse,
   validationErrorResponse,
   internalErrorResponse,
+    validateWithZod,
 } from '@/lib/api/response';
+import { z } from 'zod';
+import { DocumentStatus } from '@extractiq/core';
+
+const statusMap: Record<string, DocumentStatus> = {
+    pending: DocumentStatus.PENDING,
+    processing: DocumentStatus.PROCESSING,
+    completed: DocumentStatus.COMPLETED,
+    failed: DocumentStatus.FAILED,
+};
+
+const ListDocumentsQuerySchema = z.object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(10),
+    status: z
+        .enum(['pending', 'processing', 'completed', 'failed'])
+        .optional()
+        .transform((val): DocumentStatus | undefined => {
+            if (!val) return undefined;
+            return statusMap[val];
+        }),
+});
 
 /**
  * GET /api/documents
@@ -16,19 +38,31 @@ import {
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const status = searchParams.get('status') as any;
+
+      const queryParams = {
+          page: searchParams.get('page'),
+          limit: searchParams.get('limit'),
+          status: searchParams.get('status'),
+      };
+
+      const validation = validateWithZod(ListDocumentsQuerySchema, queryParams);
+      if (!validation.success) {
+          return validationErrorResponse(validation.errors);
+      }
+
+      const { page, limit, status } = validation.data;
+
+      const pageNum = page ?? 1;
+      const limitNum = limit ?? 10;
 
     // TODO: Get tenantId from authenticated user
     const tenantId = 'default';
 
-    // Execute use case
     const listUseCase = getListDocumentsUseCase();
     const result = await listUseCase.execute({
       tenantId,
-      pagination: { page, limit },
-      status,
+        pagination: { page: pageNum, limit: limitNum },
+        status: status as DocumentStatus | undefined,
     });
 
     if (result.isFailure) {
@@ -57,6 +91,15 @@ export async function GET(req: NextRequest) {
   }
 }
 
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'text/plain',
+];
+
 /**
  * POST /api/documents
  * Upload a new document
@@ -64,7 +107,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
+      const file = formData.get('file') as File | null;
 
     if (!file) {
       return validationErrorResponse({
@@ -72,7 +115,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Convert File to Buffer
+      if (file.size > MAX_FILE_SIZE) {
+          return validationErrorResponse({
+              file: [`File size exceeds maximum allowed size of ${MAX_FILE_SIZE / 1024 / 1024}MB`],
+          });
+      }
+
+      if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+          return validationErrorResponse({
+              file: [`File type not allowed. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`],
+          });
+      }
+
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -80,7 +134,6 @@ export async function POST(req: NextRequest) {
     const tenantId = 'default';
     const uploadedBy = 'user';
 
-    // Execute use case
     const uploadUseCase = getUploadDocumentUseCase();
     const result = await uploadUseCase.execute({
       file: {

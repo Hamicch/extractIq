@@ -69,11 +69,10 @@ databases:
     databaseName: extractiq
     plan: starter # $7/month
     region: frankfurt
-    postgresMajorVersion: 15
+    postgresMajorVersion: "15"
 
   # Redis (for BullMQ job queue)
   - name: extractiq-redis
     plan: starter # $10/month
     region: frankfurt
-    maxmemoryPolicy: allkeys-lru
     ipAllowList: [] # Allow all (Render services are in private network)

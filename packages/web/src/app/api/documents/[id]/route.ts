@@ -7,15 +7,20 @@ import {
   successResponse,
   notFoundResponse,
   forbiddenResponse,
+    validationErrorResponse,
   internalErrorResponse,
+    validateWithZod,
 } from '@/lib/api/response';
 import { NotFoundError, ForbiddenError } from '@extractiq/core';
+import { z } from 'zod';
 
 interface RouteParams {
   params: {
     id: string;
   };
 }
+
+const DocumentIdSchema = z.string().uuid('Invalid document ID format');
 
 /**
  * GET /api/documents/[id]
@@ -25,13 +30,19 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = params;
 
+      const validation = validateWithZod(DocumentIdSchema, id);
+      if (!validation.success) {
+          return validationErrorResponse(validation.errors);
+      }
+
+      const documentId = validation.data;
+
     // TODO: Get tenantId from authenticated user
     const tenantId = 'default';
 
-    // Execute use case
     const getUseCase = getGetDocumentUseCase();
     const result = await getUseCase.execute({
-      documentId: id,
+        documentId,
       tenantId,
     });
 
@@ -76,13 +87,19 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = params;
 
+      const validation = validateWithZod(DocumentIdSchema, id);
+      if (!validation.success) {
+          return validationErrorResponse(validation.errors);
+      }
+
+      const documentId = validation.data;
+
     // TODO: Get tenantId from authenticated user
     const tenantId = 'default';
 
-    // Execute use case
     const deleteUseCase = getDeleteDocumentUseCase();
     const result = await deleteUseCase.execute({
-      documentId: id,
+        documentId,
       tenantId,
     });
 

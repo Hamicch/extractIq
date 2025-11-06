@@ -51,7 +51,7 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
     }),
     {
-      name: 'docuflow-storage',
+        name: 'extractiq-storage',
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
         selectedTenant: state.selectedTenant,

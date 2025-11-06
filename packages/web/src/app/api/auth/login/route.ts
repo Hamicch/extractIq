@@ -5,8 +5,10 @@ import {
   validationErrorResponse,
   unauthorizedResponse,
   internalErrorResponse,
+    validateWithZod,
 } from '@/lib/api/response';
 import { UnauthorizedError } from '@extractiq/core';
+import { LoginRequestSchema } from '@extractiq/shared/api-schemas';
 
 /**
  * POST /api/auth/login
@@ -14,18 +16,15 @@ import { UnauthorizedError } from '@extractiq/core';
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, password } = body;
+      const body = await req.json();
 
-    // Basic validation
-    if (!email || !password) {
-      return validationErrorResponse({
-        email: !email ? ['Email is required'] : [],
-        password: !password ? ['Password is required'] : [],
-      });
+      const validation = validateWithZod(LoginRequestSchema, body);
+      if (!validation.success) {
+          return validationErrorResponse(validation.errors);
     }
 
-    // Execute use case
+      const { email, password } = validation.data;
+
     const loginUseCase = getLoginUseCase();
     const result = await loginUseCase.execute({
       email,

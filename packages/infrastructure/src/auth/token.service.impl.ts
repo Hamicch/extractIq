@@ -12,11 +12,11 @@ function validateSecret(secret: string): void {
 }
 
 export class JwtTokenService implements TokenService {
-  private readonly secret: string;
-  private readonly accessTokenExpiry: string;
-  private readonly refreshTokenExpiry: string;
+    private readonly secret: string;
+    private readonly accessTokenExpiry: string;
+    private readonly refreshTokenExpiry: string;
 
-  constructor(secret?: string, accessTokenExpiry?: string, refreshTokenExpiry?: string) {
+    constructor(secret?: string, accessTokenExpiry?: string, refreshTokenExpiry?: string) {
       const finalSecret = secret || authConfig.jwt.secret;
       validateSecret(finalSecret);
 
