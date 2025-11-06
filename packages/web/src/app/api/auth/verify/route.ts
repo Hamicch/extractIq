@@ -6,6 +6,7 @@ import {
 } from '@/lib/api/response';
 import { getUserRepository } from '@/lib/di/container';
 import jwt from 'jsonwebtoken';
+import { authConfig } from '@extractiq/infrastructure';
 
 /**
  * GET /api/auth/verify
@@ -18,19 +19,17 @@ export async function GET(req: NextRequest) {
       return unauthorizedResponse('Missing or invalid authorization header');
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      const token = authHeader.substring(7);
 
-    // Verify JWT token
-    const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+      const jwtSecret = authConfig.jwt.secret;
     let decoded: any;
 
     try {
-      decoded = jwt.verify(token, jwtSecret);
+        decoded = jwt.verify(token, jwtSecret as string);
     } catch (error) {
       return unauthorizedResponse('Invalid or expired token');
     }
 
-    // Fetch user from database using repository
     const userRepository = getUserRepository();
     const user = await userRepository.findById(decoded.userId);
 
@@ -44,7 +43,7 @@ export async function GET(req: NextRequest) {
         email: user.email,
         role: user.role,
         tenantId: user.tenantId,
-        fullName: user.getFullName() || user.email,
+            fullName: user.getFullName(),
       },
     });
   } catch (error) {

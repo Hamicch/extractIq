@@ -2,13 +2,25 @@ import { TokenService, TokenPayload, TokenPair, Result } from '@extractiq/core';
 import * as jwt from 'jsonwebtoken';
 import { authConfig } from '../config/auth.config';
 
+function validateSecret(secret: string): void {
+    if (!secret || secret.trim().length === 0) {
+        throw new Error('JWT secret cannot be empty');
+    }
+    if (secret.length < 32) {
+        throw new Error(`JWT secret must be at least 32 characters long. Current length: ${secret.length}`);
+    }
+}
+
 export class JwtTokenService implements TokenService {
   private readonly secret: string;
   private readonly accessTokenExpiry: string;
   private readonly refreshTokenExpiry: string;
 
   constructor(secret?: string, accessTokenExpiry?: string, refreshTokenExpiry?: string) {
-    this.secret = secret || authConfig.jwt.secret;
+      const finalSecret = secret || authConfig.jwt.secret;
+      validateSecret(finalSecret);
+
+      this.secret = finalSecret;
     this.accessTokenExpiry = accessTokenExpiry || authConfig.jwt.accessTokenExpiry;
     this.refreshTokenExpiry = refreshTokenExpiry || authConfig.jwt.refreshTokenExpiry;
   }

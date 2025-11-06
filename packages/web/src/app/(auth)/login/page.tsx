@@ -19,7 +19,8 @@ export default function LoginPage() {
       await login(email, password);
       toast.success('Logged in successfully');
     } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
+        toast.error('Login failed. Please check your credentials.');
+        console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -30,10 +31,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-            Docuflow
+            ExtractIQ
           </h1>
           <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-            Flow from upload to insight
+            From upload to insight
           </p>
         </div>
 

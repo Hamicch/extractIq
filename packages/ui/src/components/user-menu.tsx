@@ -23,8 +23,6 @@ export function UserMenu({
 }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log('UserMenu rendered:', { user, hasOnLogout: !!onLogout, isOpen });
-
   const initials = user.name
     .split(' ')
     .map((n) => n[0])
