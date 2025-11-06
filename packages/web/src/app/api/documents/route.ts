@@ -11,6 +11,7 @@ import {
 } from '@/lib/api/response';
 import { z } from 'zod';
 import { DocumentStatus } from '@extractiq/core';
+import { authenticateRequest } from '@/lib/middleware/auth';
 
 const statusMap: Record<string, DocumentStatus> = {
     pending: DocumentStatus.PENDING,
@@ -36,6 +37,13 @@ const ListDocumentsQuerySchema = z.object({
  * List documents with pagination
  */
 export async function GET(req: NextRequest) {
+    const authResult = await authenticateRequest(req);
+    if (!authResult.success) {
+        return authResult.response;
+    }
+
+    const { tenantId } = authResult.user;
+
   try {
     const searchParams = req.nextUrl.searchParams;
 
@@ -54,9 +62,6 @@ export async function GET(req: NextRequest) {
 
       const pageNum = page ?? 1;
       const limitNum = limit ?? 10;
-
-    // TODO: Get tenantId from authenticated user
-    const tenantId = 'default';
 
     const listUseCase = getListDocumentsUseCase();
     const result = await listUseCase.execute({
@@ -105,6 +110,13 @@ const ALLOWED_MIME_TYPES = [
  * Upload a new document
  */
 export async function POST(req: NextRequest) {
+    const authResult = await authenticateRequest(req);
+    if (!authResult.success) {
+        return authResult.response;
+    }
+
+    const { tenantId, userId } = authResult.user;
+
   try {
     const formData = await req.formData();
       const file = formData.get('file') as File | null;
@@ -130,9 +142,7 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // TODO: Get tenantId and userId from authenticated user
-    const tenantId = 'default';
-    const uploadedBy = 'user';
+      const uploadedBy = userId;
 
     const uploadUseCase = getUploadDocumentUseCase();
     const result = await uploadUseCase.execute({

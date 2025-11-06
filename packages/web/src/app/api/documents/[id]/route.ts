@@ -13,6 +13,7 @@ import {
 } from '@/lib/api/response';
 import { NotFoundError, ForbiddenError } from '@extractiq/core';
 import { z } from 'zod';
+import { authenticateRequest } from '@/lib/middleware/auth';
 
 interface RouteParams {
   params: {
@@ -27,6 +28,13 @@ const DocumentIdSchema = z.string().uuid('Invalid document ID format');
  * Get a single document by ID
  */
 export async function GET(req: NextRequest, { params }: RouteParams) {
+    const authResult = await authenticateRequest(req);
+    if (!authResult.success) {
+        return authResult.response;
+    }
+
+    const { tenantId } = authResult.user;
+
   try {
     const { id } = params;
 
@@ -36,9 +44,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       }
 
       const documentId = validation.data;
-
-    // TODO: Get tenantId from authenticated user
-    const tenantId = 'default';
 
     const getUseCase = getGetDocumentUseCase();
     const result = await getUseCase.execute({
@@ -84,6 +89,13 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
  * Delete a document by ID
  */
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
+    const authResult = await authenticateRequest(req);
+    if (!authResult.success) {
+        return authResult.response;
+    }
+
+    const { tenantId } = authResult.user;
+
   try {
     const { id } = params;
 
@@ -93,9 +105,6 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
       }
 
       const documentId = validation.data;
-
-    // TODO: Get tenantId from authenticated user
-    const tenantId = 'default';
 
     const deleteUseCase = getDeleteDocumentUseCase();
     const result = await deleteUseCase.execute({
